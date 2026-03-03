@@ -11,21 +11,38 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: white; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; margin: 0; font-weight: 500; }
+        body { 
+            font-family: 'Inter', sans-serif; background: #0f172a; color: white; 
+            height: 100vh; height: 100dvh; 
+            overflow: hidden; display: flex; flex-direction: column; margin: 0; font-weight: 500; 
+        }
         
-        #off-screen, #login-screen, #team-select-screen { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; background: #020617; }
+        #off-screen, #login-screen, #team-select-screen { 
+            position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; padding: 24px; text-align: center; background: #020617; 
+        }
         #login-screen { z-index: 20000; } 
-        #team-select-screen { z-index: 30000; }
+        #team-select-screen { z-index: 30000; overflow-y: auto; justify-content: flex-start; padding-top: 40px;}
 
-        .btn-status { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; transition: 0.2s; border-bottom-width: 4px; height: 55px; font-weight: 700; text-transform: uppercase; font-size: 10px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); cursor: pointer; outline: none; line-height: 1; }
+        .btn-status { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            border-radius: 12px; transition: 0.2s; border-bottom-width: 4px; 
+            height: 55px; font-weight: 700; text-transform: uppercase; font-size: 10px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); cursor: pointer; outline: none; line-height: 1; 
+        }
         .btn-status span { font-size: 22px; margin-bottom: 2px; }
         .btn-status:active { transform: scale(0.95); }
         
-        .btn-media { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; background: #1e293b; border: 1px solid #334155; height: 60px; transition: 0.2s; cursor: pointer; outline: none; }
+        .btn-media { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            border-radius: 12px; background: #1e293b; border: 1px solid #334155; 
+            height: 60px; transition: 0.2s; cursor: pointer; outline: none; 
+        }
         .btn-media span:first-child { font-size: 20px; margin-bottom: 2px; }
         .btn-media:active { background: #334155; transform: scale(0.95); }
         
@@ -46,25 +63,40 @@
 <body>
 
     <div id="team-select-screen" style="display: none;">
-        <div class="bg-slate-800 p-2 rounded-full h-24 w-24 flex items-center justify-center overflow-hidden shadow-inner border border-slate-700 mb-6">
-            <img src="logosala.png" alt="Logo PC Thiene" class="w-full h-full object-contain drop-shadow-lg" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-4xl\'>🛡️</span>';">
+        <div class="bg-slate-800 p-2 rounded-full h-20 w-20 flex shrink-0 items-center justify-center overflow-hidden shadow-inner border border-slate-700 mb-4 mx-auto">
+            <img src="logosala.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='🛡️';">
         </div>
-        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase">Protezione Civile Thiene</h1>
-        <h2 class="font-bold text-md mb-8 text-emerald-400 tracking-widest uppercase">Assegnazione Turno</h2>
-        <p class="text-slate-400 text-xs mb-4">Inserisci l'ID della squadra a cui sei assegnato oggi.</p>
-        <input type="text" id="team-input" class="bg-slate-900 border-2 border-slate-700 rounded-xl text-center text-3xl text-white py-3 w-full max-w-[200px] mb-6 tracking-widest outline-none focus:border-emerald-500 transition-colors uppercase" placeholder="Es. SQ1">
-        <button onclick="window.saveNewTeam()" class="w-full max-w-[200px] bg-emerald-600 hover:bg-emerald-500 py-4 rounded-xl font-bold uppercase text-sm shadow-lg active:scale-95 transition-all text-white">CONFERMA SQUADRA</button>
+        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase">PC Thiene</h1>
+        <h2 class="font-bold text-sm mb-6 text-emerald-400 tracking-widest uppercase">Assegnazione Turno</h2>
+        
+        <div class="bg-slate-800/80 border border-slate-600 rounded-xl p-4 w-full max-w-[320px] shadow-lg flex flex-col items-center">
+            
+            <div id="qr-reader" class="w-full bg-black rounded-lg overflow-hidden mb-3" style="display: none;"></div>
+            
+            <button onclick="window.startQRScanner()" id="btn-start-qr" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold uppercase text-xs shadow-lg mb-6 text-white flex items-center justify-center gap-2">
+                <span class="text-lg">📷</span> INQUADRA QR DELLA SALA
+            </button>
+            
+            <div class="w-full h-px bg-slate-600 mb-6 relative">
+                <span class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-800 px-2 text-xs text-slate-400 font-bold">OPPURE</span>
+            </div>
+
+            <p class="text-slate-300 text-[11px] mb-2 font-bold uppercase tracking-widest text-left w-full">Inserisci ID Squadra:</p>
+            <input type="text" id="team-input" class="bg-slate-900 border-2 border-slate-600 rounded-lg text-center text-2xl text-white py-3 w-full tracking-widest outline-none focus:border-emerald-500 transition-colors uppercase mb-3" placeholder="Es. SQ1">
+            <button onclick="window.saveNewTeam()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3 rounded-lg font-bold uppercase text-xs shadow-lg active:scale-95 transition-all text-white">CONFERMA MANUALE</button>
+        </div>
     </div>
 
-    <div id="login-screen">
+    <div id="login-screen" style="display: none;">
         <div class="bg-slate-800 p-2 rounded-full h-32 w-32 flex items-center justify-center overflow-hidden shadow-inner border border-slate-700 mb-6">
             <img src="logosala.png" alt="Logo PC Thiene" class="w-full h-full object-contain drop-shadow-lg" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-5xl\'>🛡️</span>';">
         </div>
         <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase">Protezione Civile Thiene</h1>
         <h2 class="font-bold text-md mb-8 text-blue-400 tracking-widest uppercase">APP CAPOSQUADRA</h2>
-        <p class="text-slate-400 text-xs mb-4">Inserisci il codice di sicurezza per <b id="login-sq-name" class="text-white">...</b>.</p>
+        <p class="text-slate-400 text-xs mb-4">Codice di sicurezza per <b id="login-sq-name" class="text-white">...</b></p>
         <input type="password" id="pin-input" class="bg-slate-900 border-2 border-slate-700 rounded-xl text-center text-3xl text-white py-3 w-full max-w-[200px] mb-6 tracking-widest outline-none focus:border-blue-500 transition-colors" placeholder="****" inputmode="numeric" maxlength="4">
         <button onclick="window.checkPin()" class="w-full max-w-[200px] bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold uppercase text-sm shadow-lg active:scale-95 transition-all text-white">SBLOCCA APP</button>
+        <button onclick="window.logoutApp(false)" class="mt-8 text-[10px] text-slate-500 underline uppercase">Cambia Squadra</button>
     </div>
 
     <div id="off-screen" style="display: none;">
@@ -87,11 +119,13 @@
             </div>
             <div class="flex flex-col flex-1">
                 <div class="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 leading-none">Protezione Civile Thiene <span class="text-blue-500 font-black">•</span> Terminale Caposquadra</div>
+                
                 <div class="flex items-center justify-between">
                     <h1 id="display-sq" class="font-black text-2xl tracking-tighter text-blue-400 leading-none">---</h1>
                     <div id="clock" class="font-mono text-base font-bold text-yellow-500 leading-none">00:00</div>
                 </div>
                 <div id="display-capo" class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-1 truncate w-48">CAPO: ---</div>
+                
                 <div class="flex items-center justify-between mt-1">
                     <div id="current-status" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-900/30 px-1.5 py-0.5 rounded border border-emerald-800">ATTESA...</div>
                     <div class="flex gap-1">
@@ -167,56 +201,113 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- SISTEMA INTELLIGENTE DI GESTIONE SQUADRA ---
+        // VARIABILI GLOBALI
         let sqId = null;
+        window.lastNotifiedTargetId = null;
+        window.lastNotifiedMsgTime = null;
+        window.ultimoContattoLocale = Date.now();
+        window.targetCompletato = null;
+
+        let liveTrackingTimer = null;
+        window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
+        window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
+        window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
+
+        let idSalaAttivo = null;
+        let viaAttiva = localStorage.getItem('app_ultima_via') || "";
+        let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
+
+        // -----------------------------------------------------
+        // FASE 1: RICONOSCIMENTO SQUADRA (URL, MEMORIA o MANUALE)
+        // -----------------------------------------------------
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
         const savedSqId = localStorage.getItem('pc_app_saved_team');
 
         if (sqIdRaw && sqIdRaw.trim() !== "") {
-            // Caso 1: Arriva dal QR Code (ha l'ID nel link)
+            // L'utente ha inquadrato un link con ?id=...
             sqId = sqIdRaw.trim().toUpperCase();
-            localStorage.setItem('pc_app_saved_team', sqId); // Lo salva per il futuro
+            localStorage.setItem('pc_app_saved_team', sqId);
+            // Pulisce la barra dell'indirizzo
+            window.history.replaceState({}, document.title, window.location.pathname);
         } else if (savedSqId) {
-            // Caso 2: Ha aperto l'App PWA e aveva già una squadra salvata
+            // L'utente aveva già salvato una squadra in memoria
             sqId = savedSqId;
-        } else {
-            // Caso 3: È un'App installata ma non ha nessuna squadra. Mostra selezione!
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('team-select-screen').style.display = 'flex';
         }
+
+        if (!sqId) {
+            // NESSUNA SQUADRA TROVATA -> Mostra la schermata di Selezione
+            document.getElementById('team-select-screen').style.display = 'flex';
+        } else {
+            // SQUADRA TROVATA -> Procedi alla verifica
+            verificaSquadraELogin();
+        }
+
+        // --- FUNZIONI DELLO SCANNER QR ---
+        let html5QrcodeScanner = null;
+        
+        window.startQRScanner = () => {
+            const btn = document.getElementById('btn-start-qr');
+            btn.style.display = 'none';
+            document.getElementById('qr-reader').style.display = 'block';
+
+            html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
+            html5QrcodeScanner.render(
+                (decodedText) => {
+                    // Cerca di estrarre l'ID (se il QR è un link)
+                    let extractedId = decodedText;
+                    if(decodedText.includes('?id=')) {
+                        extractedId = new URL(decodedText).searchParams.get('id');
+                    }
+                    if(extractedId) {
+                        html5QrcodeScanner.clear();
+                        document.getElementById('team-input').value = extractedId.toUpperCase();
+                        window.saveNewTeam();
+                    }
+                }, 
+                (error) => { /* Ignora errori di scansione continui */ }
+            );
+        };
 
         window.saveNewTeam = () => {
             const val = document.getElementById('team-input').value.trim().toUpperCase();
             if (val === '') return;
-            // Salva e ricarica la pagina fingendo di arrivare dal link
             localStorage.setItem('pc_app_saved_team', val);
-            window.location.href = window.location.pathname + "?id=" + val;
+            location.reload(); // Ricarica la pagina per inizializzare in modo pulito
         };
 
-        // SE L'ID NON C'È ANCORA, FERMA L'ESECUZIONE DEL CODICE QUI
-        if (!sqId) throw new Error("Attesa selezione squadra");
+        // -----------------------------------------------------
+        // FASE 2: VERIFICA DB E LOGIN
+        // -----------------------------------------------------
+        function verificaSquadraELogin() {
+            document.getElementById('display-sq').innerText = sqId;
+            document.getElementById('login-sq-name').innerText = sqId;
 
-        // --- SE ARRIVA QUI, LA SQUADRA È STATA SELEZIONATA ---
-        document.getElementById('display-sq').innerText = sqId;
-        document.getElementById('login-sq-name').innerText = sqId;
+            // Controlla se esiste nel Database
+            get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
+                if (!snap.exists()) {
+                    document.body.innerHTML = `
+                    <div class="h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-center z-[50000] absolute inset-0">
+                        <div class="bg-amber-900/20 border border-amber-500 p-8 rounded-2xl shadow-2xl mb-4">
+                            <span class="text-6xl block mb-4">🚫</span>
+                            <h1 class="text-white text-xl font-black mb-2 uppercase">SQUADRA NON REGISTRATA</h1>
+                            <p class="text-amber-200 text-sm mb-6">La squadra <b>${sqId}</b> non risulta nel database.<br>Controlla o chiedi alla Sala.</p>
+                            <button onclick="localStorage.removeItem('pc_app_saved_team'); location.reload();" class="bg-amber-600 text-white px-4 py-3 rounded-xl font-bold text-xs uppercase w-full">🔄 Cambia Squadra</button>
+                        </div>
+                    </div>`;
+                    return;
+                }
 
-        // VERIFICA CHE LA SQUADRA ESISTA NEL DATABASE
-        get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
-            if (!snap.exists()) {
-                document.body.innerHTML = `
-                <div class="h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-center z-[50000] absolute inset-0">
-                    <div class="bg-amber-900/20 border border-amber-500 p-8 rounded-2xl shadow-2xl mb-4">
-                        <span class="text-6xl block mb-4">🚫</span>
-                        <h1 class="text-white text-xl font-black mb-2 uppercase">SQUADRA NON REGISTRATA</h1>
-                        <p class="text-amber-200 text-sm mb-6">La squadra <b>${sqId}</b> non risulta nel database.<br>Controlla di aver scritto bene o chiedi alla Sala.</p>
-                        <button onclick="localStorage.removeItem('pc_app_saved_team'); location.href=location.pathname;" class="bg-amber-600 text-white px-4 py-3 rounded-xl font-bold text-xs uppercase w-full">🔄 Cambia Squadra</button>
-                    </div>
-                </div>`;
-            }
-        });
-
-        window.ultimoContattoLocale = Date.now();
+                // Se esiste, controlla se ha già inserito il PIN in passato
+                if(localStorage.getItem('pc_app_auth') === 'true') {
+                    // Ha già sbloccato! Avvia l'app direttamente
+                    avviaMotoreApp();
+                } else {
+                    // Mostra la schermata del PIN
+                    document.getElementById('login-screen').style.display = 'flex';
+                }
+            });
+        }
 
         window.checkPin = () => {
             const pin = document.getElementById('pin-input').value;
@@ -224,6 +315,7 @@
                 localStorage.setItem('pc_app_auth', 'true');
                 document.getElementById('login-screen').style.display = 'none';
                 update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); 
+                avviaMotoreApp();
             } else {
                 Swal.fire({ icon: 'error', title: 'Codice Errato', text: 'Riprova', background: '#1e293b', color: '#fff' });
                 document.getElementById('pin-input').value = '';
@@ -235,111 +327,162 @@
                 if (liveTrackingTimer) clearInterval(liveTrackingTimer);
                 localStorage.clear();
                 Swal.fire({
-                    title: 'SESSIONE SCADUTA',
-                    text: "L'app è stata disattivata per inattività prolungata (12 Ore).",
-                    icon: 'info', confirmButtonText: 'HO CAPITO', confirmButtonColor: '#2563eb',
-                    background: '#1e293b', color: '#fff', allowOutsideClick: false
-                }).then(() => { location.href = window.location.pathname; });
+                    title: 'SESSIONE SCADUTA', text: "L'app è disattivata per inattività (12h).", icon: 'info', confirmButtonText: 'OK', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff', allowOutsideClick: false
+                }).then(() => { location.reload(); });
             } else {
                 Swal.fire({
-                    title: 'DISCONNETTI?',
-                    text: "Tutti i dati verranno eliminati e dovrai inserire nuovamente la squadra.",
-                    icon: 'warning', showCancelButton: true, confirmButtonText: 'SÌ, DISCONNETTI',
-                    cancelButtonText: 'ANNULLA', confirmButtonColor: '#dc2626', background: '#1e293b', color: '#fff'
-                }).then((result) => {
-                    if (result.isConfirmed) {
+                    title: 'DISCONNETTI?', text: "Tutti i dati verranno eliminati.", icon: 'warning', showCancelButton: true, confirmButtonText: 'SÌ, ESCI', cancelButtonText: 'ANNULLA', confirmButtonColor: '#dc2626', background: '#1e293b', color: '#fff'
+                }).then((r) => {
+                    if (r.isConfirmed) {
                         if (liveTrackingTimer) clearInterval(liveTrackingTimer);
                         localStorage.clear();
-                        location.href = window.location.pathname; // Ricarica senza ID nel link!
+                        location.reload(); 
                     }
                 });
             }
         };
 
-        window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
-        window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
-        window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
-        let liveTrackingTimer = null;
-        
-        function updateGpsBadge() {
-            const badge = document.getElementById('gps-badge');
-            if(window.gpsAutoEnabled) {
-                badge.className = "inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase";
-                badge.innerText = "GPS AUT";
-            } else {
-                badge.className = "inline-block text-[7px] bg-slate-500/20 text-slate-400 px-1.5 py-0.5 rounded border border-slate-500/30 font-bold uppercase";
-                badge.innerText = "GPS OFF";
-            }
-
-            const liveBadge = document.getElementById('live-badge');
-            if(window.liveTrackingEnabled) liveBadge.style.display = 'inline-block';
-            else liveBadge.style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if(localStorage.getItem('pc_app_auth') === 'true' && document.getElementById('team-select-screen').style.display === 'none') {
-                document.getElementById('login-screen').style.display = 'none';
-            }
+        // -----------------------------------------------------
+        // FASE 3: AVVIO MOTORE OPERATIVO DELL'APP
+        // -----------------------------------------------------
+        function avviaMotoreApp() {
+            
             updateGpsBadge();
             if(window.liveTrackingEnabled) window.startLiveTracking();
-        });
 
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
-        
-        setInterval(() => {
-            const ore12_in_ms = 12 * 60 * 60 * 1000;
-            if (Date.now() - window.ultimoContattoLocale > ore12_in_ms) {
-                update(ref(db, `anagrafica_squadre/${sqId}`), { attiva: false });
-                window.logoutApp(true);
-            }
-        }, 60000);
+            // Orologio
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
+            
+            // Timeout 12 Ore
+            setInterval(() => {
+                if (Date.now() - window.ultimoContattoLocale > 43200000) { // 12 ore
+                    update(ref(db, `anagrafica_squadre/${sqId}`), { attiva: false });
+                    window.logoutApp(true);
+                }
+            }, 60000);
 
-        onValue(ref(db, ".info/connected"), (snap) => {
-            const badge = document.getElementById('net-badge');
-            if(snap.val() === true) {
-                badge.className = "inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase";
-                badge.innerText = "ONLINE";
-            } else {
-                badge.className = "inline-block text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse";
-                badge.innerText = "OFFLINE";
-            }
-        });
+            // Stato Connessione
+            onValue(ref(db, ".info/connected"), (snap) => {
+                const badge = document.getElementById('net-badge');
+                if(snap.val() === true) { badge.className = "inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase"; badge.innerText = "ONLINE"; } 
+                else { badge.className = "inline-block text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse"; badge.innerText = "OFFLINE"; }
+            });
 
-        let idSalaAttivo = null;
-        let viaAttiva = localStorage.getItem('app_ultima_via') || "";
-        let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
+            // Ascolto Brogliaccio (Ordini da Sala)
+            onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
+                const data = snap.val(); if (!data) return;
+                const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
+                
+                const target = logs.find(l => l.dir === 'SA' && l.squadra === sqId && l.m1 && l.m1.includes('📍') && l.id !== window.targetCompletato);
+                const banner = document.getElementById('target-banner');
+
+                if (target) {
+                    idSalaAttivo = target.id; 
+                    viaAttiva = target.m1.replace('📍', '').trim(); 
+                    localStorage.setItem('app_ultima_via', viaAttiva);
+                    
+                    if (target.lat && target.lng) { 
+                        ultimaPos = { lat: target.lat, lng: target.lng }; 
+                        localStorage.setItem('app_ultima_pos', JSON.stringify(ultimaPos)); 
+                    }
+
+                    if (target.stato === 'ATTESA') {
+                        if (window.lastNotifiedTargetId !== target.id) { 
+                            if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000]); 
+                            window.lastNotifiedTargetId = target.id; 
+                        }
+                        banner.className = "shrink-0 w-full bg-red-900/80 rounded-xl p-2.5 border pulse-red-border shadow-lg flex flex-col gap-2";
+                        banner.innerHTML = `<div class="flex items-center gap-2"><span class="text-3xl animate-bounce">🚨</span><div class="flex flex-col flex-1 overflow-hidden"><span class="text-[9px] text-red-300 font-bold uppercase tracking-widest">NUOVO ORDINE DALLA SALA</span><span class="text-[12px] text-white font-black truncate">${viaAttiva}</span></div></div><button onclick="window.cRic()" class="w-full bg-red-600 py-2.5 rounded-lg font-black uppercase text-[10px] shadow active:scale-95 text-white">✅ CONFERMA RICEZIONE</button>`;
+                    } else {
+                        banner.className = "shrink-0 w-full bg-blue-900/80 rounded-xl p-2.5 border pulse-blue-border shadow-lg flex flex-col gap-2";
+                        banner.innerHTML = `<div class="flex items-center gap-2 mb-0.5"><span class="text-2xl">🚐</span><div class="flex flex-col flex-1 overflow-hidden"><span class="text-[9px] text-blue-300 font-bold uppercase tracking-widest">IN VIAGGIO VERSO:</span><span class="text-[12px] text-white font-bold truncate">${viaAttiva}</span></div></div><div class="flex gap-2"><button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="flex-1 bg-emerald-600 py-2.5 rounded-lg font-bold uppercase text-[9px] shadow active:scale-95 text-white">📍 NAVIGA</button><button onclick="window.cArr()" class="flex-1 bg-red-600 py-2.5 rounded-lg font-bold uppercase text-[9px] shadow active:scale-95 text-white border border-red-800">🏁 SUL POSTO</button></div>`;
+                    }
+                } else { idSalaAttivo = null; window.disegnaBannerUltimaDest(); }
+
+                const msgBanner = document.getElementById('last-msg-banner');
+                const myLogs = logs.filter(l => l.squadra === sqId || l.squadra === 'COMUNICAZIONE GENERALE');
+                let lastMsgText = null; let lastMsgTime = ''; let isBroadcast = false;
+
+                for (let l of myLogs) {
+                    if (l.m1 && l.m1.includes('📍')) continue; 
+                    if (l.squadra === 'COMUNICAZIONE GENERALE') { lastMsgText = l.m1; lastMsgTime = l.ora; isBroadcast = true; break; } 
+                    else if (l.dir === 'SA' && l.m1 && l.m1 !== '---') { lastMsgText = l.m1; lastMsgTime = l.ora; isBroadcast = false; break; } 
+                    else if (l.dir === 'SQ' && l.m2 && l.m2 !== '---' && l.stato === 'OK') { lastMsgText = l.m2; lastMsgTime = l.ora; isBroadcast = false; break; }
+                }
+
+                if (lastMsgText) {
+                    if (window.lastNotifiedMsgTime !== lastMsgTime) { 
+                        if (isBroadcast || myLogs.find(l => l.ora === lastMsgTime && l.dir === 'SA')) { 
+                            if (navigator.vibrate) navigator.vibrate([200, 100, 200]); 
+                        } 
+                        window.lastNotifiedMsgTime = lastMsgTime; 
+                    }
+                    msgBanner.style.display = 'flex'; 
+                    document.getElementById('last-msg-time').innerText = lastMsgTime; 
+                    document.getElementById('last-msg-text').innerText = `"${lastMsgText}"`;
+                    
+                    if (isBroadcast) { 
+                        msgBanner.className = "shrink-0 w-full bg-amber-900/40 rounded-xl p-3 border border-amber-600/50 flex flex-col justify-center"; 
+                        document.getElementById('last-msg-title').innerText = "📢 COMUNICAZIONE GENERALE"; 
+                        document.getElementById('last-msg-title').className = "text-[10px] font-bold text-amber-400 uppercase tracking-widest"; 
+                    } else { 
+                        msgBanner.className = "shrink-0 w-full bg-slate-800/80 rounded-xl p-3 border border-slate-600 flex flex-col justify-center"; 
+                        document.getElementById('last-msg-title').innerText = "🎧 DALLA SALA"; 
+                        document.getElementById('last-msg-title').className = "text-[10px] font-bold text-blue-400 uppercase tracking-widest"; 
+                    }
+                } else { msgBanner.style.display = 'none'; }
+            });
+
+            // Ascolto Anagrafica (Blocco Sala e Dati)
+            onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => {
+                const sq = snap.val();
+                if (sq) {
+                    if (sq.ultimo_contatto) window.ultimoContattoLocale = sq.ultimo_contatto;
+                    
+                    const capoDisplay = document.getElementById('display-capo'); 
+                    if(sq.capo) capoDisplay.innerText = `CAPO: ${sq.capo.toUpperCase()}`; 
+                    else capoDisplay.innerText = "CAPO: N/D";
+                    
+                    document.getElementById('current-status').innerText = sq.stato ? sq.stato.toUpperCase() : 'ATTESA';
+                    
+                    const offScreen = document.getElementById('off-screen'); 
+                    if (sq.attiva === false) { offScreen.style.display = 'flex'; } 
+                    else { offScreen.style.display = 'none'; }
+                }
+            });
+        }
+
+        // -----------------------------------------------------
+        // FUNZIONI GLOBALI (GPS, INVIO DATI, INTERFACCIA)
+        // -----------------------------------------------------
+
+        function updateGpsBadge() {
+            const badge = document.getElementById('gps-badge');
+            if(window.gpsAutoEnabled) { badge.className = "inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase"; badge.innerText = "GPS AUT"; } 
+            else { badge.className = "inline-block text-[7px] bg-slate-500/20 text-slate-400 px-1.5 py-0.5 rounded border border-slate-500/30 font-bold uppercase"; badge.innerText = "GPS OFF"; }
+            document.getElementById('live-badge').style.display = window.liveTrackingEnabled ? 'inline-block' : 'none';
+        }
 
         window.inviaNuovo = async (testo, extra = {}) => {
             const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             let pos = { lat: '', lng: '' };
-            
             if (window.gpsAutoEnabled && navigator.geolocation) {
                 try {
                     const p = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 4000, maximumAge: 10000 }));
                     pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) };
                 } catch (e) {}
             }
-
             await update(ref(db, `anagrafica_squadre/${sqId}`), { ...pos, ultimo_contatto: Date.now() });
-
             try {
-                await push(ref(db, 'brogliaccio'), { 
-                    ora, data: new Date().toLocaleDateString('it-IT'), squadra: sqId, m1: testo.toUpperCase(), 
-                    dir: 'SQ', stato: 'OK', ...pos, ...extra 
-                });
+                await push(ref(db, 'brogliaccio'), { ora, data: new Date().toLocaleDateString('it-IT'), squadra: sqId, m1: testo.toUpperCase(), dir: 'SQ', stato: 'OK', ...pos, ...extra });
                 Swal.fire({ icon: 'success', title: 'INVIATO', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'Errore', text: 'Connessione assente.', background: '#1e293b', color: '#fff' });
-            }
+            } catch (e) { Swal.fire({ icon: 'error', title: 'Errore', text: 'Connessione assente.', background: '#1e293b', color: '#fff' }); }
         };
 
         window.sendSilentGPS = () => {
             if (navigator.geolocation && window.liveTrackingEnabled) {
                 navigator.geolocation.getCurrentPosition(
-                    (p) => {
-                        const pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) };
-                        update(ref(db, `anagrafica_squadre/${sqId}`), pos);
-                    },
+                    (p) => { update(ref(db, `anagrafica_squadre/${sqId}`), { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) }); },
                     (e) => { }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
             }
@@ -347,59 +490,30 @@
 
         window.startLiveTracking = () => {
             if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-            if (window.liveTrackingEnabled) {
-                window.sendSilentGPS(); 
-                liveTrackingTimer = setInterval(window.sendSilentGPS, window.liveTrackingInterval);
-            }
+            if (window.liveTrackingEnabled) { window.sendSilentGPS(); liveTrackingTimer = setInterval(window.sendSilentGPS, window.liveTrackingInterval); }
         };
 
         window.toggleLiveTrack = (val) => {
-            window.liveTrackingEnabled = val;
-            localStorage.setItem('app_live_track', val);
-            updateGpsBadge();
-            if (val) {
-                window.startLiveTracking();
-                Swal.fire({ title: 'LIVE GPS ATTIVO', text: 'Aggiornamento mappa in background.', icon: 'success', toast: true, position: 'top', timer: 3000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
-            } else {
-                if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-                Swal.fire({ title: 'LIVE GPS SPENTO', icon: 'info', toast: true, position: 'top', timer: 2000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
-            }
+            window.liveTrackingEnabled = val; localStorage.setItem('app_live_track', val); updateGpsBadge();
+            if (val) { window.startLiveTracking(); Swal.fire({ title: 'LIVE GPS ATTIVO', text: 'Mappa in aggiornamento.', icon: 'success', toast: true, position: 'top', timer: 3000, showConfirmButton: false, background: '#1e293b', color: '#fff' }); } 
+            else { if (liveTrackingTimer) clearInterval(liveTrackingTimer); Swal.fire({ title: 'LIVE GPS SPENTO', icon: 'info', toast: true, position: 'top', timer: 2000, showConfirmButton: false, background: '#1e293b', color: '#fff' }); }
         };
 
-        window.changeLiveInterval = (val) => {
-            window.liveTrackingInterval = parseInt(val);
-            localStorage.setItem('app_live_interval', val);
-            if (window.liveTrackingEnabled) window.startLiveTracking();
-        };
+        window.changeLiveInterval = (val) => { window.liveTrackingInterval = parseInt(val); localStorage.setItem('app_live_interval', val); if (window.liveTrackingEnabled) window.startLiveTracking(); };
 
         window.openGPSPanel = () => {
-            const isCheckedAuto = window.gpsAutoEnabled ? 'checked' : '';
-            const isCheckedLive = window.liveTrackingEnabled ? 'checked' : '';
-            
             Swal.fire({
                 title: 'GESTIONE GPS',
                 html: `
                     <div style="text-align: left; display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
                         <div style="background: #1e293b; padding: 12px; border-radius: 12px; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; flex-direction: column;">
-                                <span style="font-size: 13px; font-weight: bold; color: white;">GPS nei Messaggi</span>
-                                <span style="font-size: 9px; color: #94a3b8;">Allega posizione ai log</span>
-                            </div>
-                            <label class="switch">
-                                <input type="checkbox" id="gps-toggle" ${isCheckedAuto} onchange="window.toggleGpsApp(this.checked)">
-                                <span class="slider"></span>
-                            </label>
+                            <div style="display: flex; flex-direction: column;"><span style="font-size: 13px; font-weight: bold; color: white;">GPS nei Messaggi</span><span style="font-size: 9px; color: #94a3b8;">Allega posizione ai log</span></div>
+                            <label class="switch"><input type="checkbox" id="gps-toggle" ${window.gpsAutoEnabled ? 'checked' : ''} onchange="window.toggleGpsApp(this.checked)"><span class="slider"></span></label>
                         </div>
                         <div style="background: #1e293b; padding: 12px; border-radius: 12px; border: 1px solid #334155;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="font-size: 13px; font-weight: bold; color: #ef4444;">LIVE Tracking 🔴</span>
-                                    <span style="font-size: 9px; color: #94a3b8;">Aggiorna mappa silenziosamente</span>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" id="live-toggle" ${isCheckedLive} onchange="window.toggleLiveTrack(this.checked)">
-                                    <span class="slider"></span>
-                                </label>
+                                <div style="display: flex; flex-direction: column;"><span style="font-size: 13px; font-weight: bold; color: #ef4444;">LIVE Tracking 🔴</span><span style="font-size: 9px; color: #94a3b8;">Aggiorna mappa silenziosamente</span></div>
+                                <label class="switch"><input type="checkbox" id="live-toggle" ${window.liveTrackingEnabled ? 'checked' : ''} onchange="window.toggleLiveTrack(this.checked)"><span class="slider"></span></label>
                             </div>
                             <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #334155; padding-top: 10px;">
                                 <span style="font-size: 11px; color: #cbd5e1; font-weight: 600;">Frequenza invio:</span>
@@ -415,7 +529,7 @@
                         <div style="background: #1e293b; padding: 12px; border-radius: 12px; border: 1px solid #334155;">
                             <span style="font-size: 10px; font-weight: bold; color: #3b82f6; text-transform: uppercase; margin-bottom: 8px; display: block;">INVIA POSIZIONE MANUALE</span>
                             <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-                                <input type="text" id="app-man-ind" placeholder="Es. Via Roma, Thiene" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 13px; outline: none;">
+                                <input type="text" id="app-man-ind" placeholder="Es. Via Roma" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; font-size: 13px; outline: none;">
                                 <button onclick="window.cercaViaApp()" style="background: #3b82f6; color: white; padding: 0 14px; border-radius: 8px; font-weight: bold;">🔍</button>
                             </div>
                             <div style="display: flex; gap: 6px;">
@@ -424,81 +538,64 @@
                             </div>
                             <button onclick="window.inviaGPSManuale()" style="width: 100%; padding: 12px; background: #10b981; color: white; border-radius: 8px; font-weight: bold; margin-top: 12px; text-transform: uppercase; font-size: 12px;">🚀 Invia</button>
                         </div>
-                    </div>
-                `,
+                    </div>`,
                 showConfirmButton: true, confirmButtonText: 'CHIUDI PANNELLO', confirmButtonColor: '#475569', background: '#0f172a', color: '#fff'
             });
         };
 
-        window.toggleGpsApp = (val) => {
-            window.gpsAutoEnabled = val;
-            localStorage.setItem('app_gps_auto', val);
-            updateGpsBadge();
-        };
+        window.toggleGpsApp = (val) => { window.gpsAutoEnabled = val; localStorage.setItem('app_gps_auto', val); updateGpsBadge(); };
 
         window.cercaViaApp = async () => {
-            const ind = document.getElementById('app-man-ind').value;
-            if(!ind) return;
+            const ind = document.getElementById('app-man-ind').value; if(!ind) return;
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ind)}&limit=1`);
                 const data = await res.json();
-                if(data && data.length > 0) {
-                    document.getElementById('app-man-lat').value = parseFloat(data[0].lat).toFixed(6);
-                    document.getElementById('app-man-lng').value = parseFloat(data[0].lon).toFixed(6);
-                    document.getElementById('app-man-ind').value = data[0].display_name.split(',')[0].toUpperCase();
-                } else { Swal.showValidationMessage('Indirizzo non trovato'); }
+                if(data && data.length > 0) { document.getElementById('app-man-lat').value = parseFloat(data[0].lat).toFixed(6); document.getElementById('app-man-lng').value = parseFloat(data[0].lon).toFixed(6); document.getElementById('app-man-ind').value = data[0].display_name.split(',')[0].toUpperCase(); } 
+                else { Swal.showValidationMessage('Indirizzo non trovato'); }
             } catch(e) {}
         };
 
         window.inviaGPSManuale = () => {
-            const lat = document.getElementById('app-man-lat').value;
-            const lng = document.getElementById('app-man-lng').value;
-            const via = document.getElementById('app-man-ind').value || "POSIZIONE MANUALE";
+            const lat = document.getElementById('app-man-lat').value; const lng = document.getElementById('app-man-lng').value; const via = document.getElementById('app-man-ind').value || "POSIZIONE MANUALE";
             if(!lat || !lng) return Swal.showValidationMessage('Cerca un indirizzo prima di inviare');
-            window.inviaNuovo(`📍 RIFERIMENTO: ${via}`, { lat: lat, lng: lng });
-            Swal.close();
+            window.inviaNuovo(`📍 RIFERIMENTO: ${via}`, { lat: lat, lng: lng }); Swal.close();
         };
 
-        window.askStatus = (s, icon) => {
-            Swal.fire({
-                title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b class="text-lg">${s.toUpperCase()}</b>`,
-                showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
-            }).then((r) => { 
-                if(r.isConfirmed) { 
-                    update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s, ultimo_contatto: Date.now() }); 
-                } 
-            });
+        window.askStatus = (s, icon) => { 
+            Swal.fire({ title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b class="text-lg">${s.toUpperCase()}</b>`, showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { 
+                if(r.isConfirmed) { update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s, ultimo_contatto: Date.now() }); } 
+            }); 
         };
 
-        window.askFreeMsg = () => {
-            const t = document.getElementById('msg-input').value.trim();
-            if(!t) return;
-            Swal.fire({ title: 'INVIARE?', text: `"${t}"`, icon: 'question', showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { if(r.isConfirmed) window.inviaNuovo(t).then(() => { document.getElementById('msg-input').value = ""; }); });
+        window.askFreeMsg = () => { 
+            const t = document.getElementById('msg-input').value.trim(); if(!t) return; 
+            Swal.fire({ title: 'INVIARE?', text: `"${t}"`, icon: 'question', showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { 
+                if(r.isConfirmed) window.inviaNuovo(t).then(() => { document.getElementById('msg-input').value = ""; }); 
+            }); 
         };
 
-        window.upFoto = (f) => {
-            if (!f) return; const reader = new FileReader();
-            reader.onload = (e) => {
-                Swal.fire({ title: 'INVIARE FOTO?', html: `<img src="${e.target.result}" class="w-full rounded border border-slate-600 mt-2">`, showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { if(r.isConfirmed) window.inviaNuovo("📷 FOTO INVIATA DAL CAMPO", { mediaUrl: e.target.result, mediaType: 'IMG' }); });
-            }; reader.readAsDataURL(f);
+        window.upFoto = (f) => { 
+            if (!f) return; const reader = new FileReader(); 
+            reader.onload = (e) => { 
+                Swal.fire({ title: 'INVIARE FOTO?', html: `<img src="${e.target.result}" class="w-full rounded border border-slate-600 mt-2">`, showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { 
+                    if(r.isConfirmed) window.inviaNuovo("📷 FOTO INVIATA DAL CAMPO", { mediaUrl: e.target.result, mediaType: 'IMG' }); 
+                }); 
+            }; 
+            reader.readAsDataURL(f); 
         };
 
-        let mediaRecorder; let audioChunks = [];
-        let recTimer; let recSeconds = 0;
+        let mediaRecorder; let audioChunks = []; let recTimer; let recSeconds = 0;
 
         document.getElementById('btn-voc').onclick = async () => {
-            const btn = document.getElementById('btn-voc');
-            const icon = document.getElementById('voc-icon');
-            const txt = document.getElementById('voc-txt');
-
+            const btn = document.getElementById('btn-voc'); const icon = document.getElementById('voc-icon'); const txt = document.getElementById('voc-txt');
+            
             if (!mediaRecorder || mediaRecorder.state === "inactive") {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    
-                    let options = {};
+                    let options = {}; 
                     if (MediaRecorder.isTypeSupported('audio/webm')) { options = { mimeType: 'audio/webm' }; } 
                     else if (MediaRecorder.isTypeSupported('audio/mp4')) { options = { mimeType: 'audio/mp4' }; }
-
+                    
                     mediaRecorder = new MediaRecorder(stream, options); 
                     audioChunks = [];
                     
@@ -508,206 +605,69 @@
                         stream.getTracks().forEach(t => t.stop()); 
                         clearInterval(recTimer);
                         
-                        const finalMime = mediaRecorder.mimeType || 'audio/webm';
+                        const finalMime = mediaRecorder.mimeType || 'audio/webm'; 
                         const audioBlob = new Blob(audioChunks, { type: finalMime }); 
-
                         if(recSeconds < 1) return; 
-
+                        
                         const reader = new FileReader();
-                        reader.onload = (e) => {
-                            Swal.fire({
-                                title: 'ANTEPRIMA VOCALE', 
-                                html: `<div class="text-slate-300 text-xs mb-3">Ascolta prima di inviare:</div><audio controls class="w-full mt-2" style="height: 40px;"><source src="${e.target.result}" type="${finalMime}"></audio>`,
-                                showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
-                            }).then((res) => { if(res.isConfirmed) window.inviaNuovo("🎤 MESSAGGIO VOCALE", { mediaUrl: e.target.result, mediaType: 'AUDIO' }); });
-                        }; reader.readAsDataURL(audioBlob);
+                        reader.onload = (e) => { 
+                            Swal.fire({ title: 'ANTEPRIMA VOCALE', html: `<div class="text-slate-300 text-xs mb-3">Ascolta prima di inviare:</div><audio controls class="w-full mt-2" style="height: 40px;"><source src="${e.target.result}" type="${finalMime}"></audio>`, showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((res) => { 
+                                if(res.isConfirmed) window.inviaNuovo("🎤 MESSAGGIO VOCALE", { mediaUrl: e.target.result, mediaType: 'AUDIO' }); 
+                            }); 
+                        }; 
+                        reader.readAsDataURL(audioBlob);
                     };
                     
                     mediaRecorder.start(500); 
-                    
-                    btn.classList.add('pulse-red-border');
-                    btn.style.backgroundColor = 'rgba(220, 38, 38, 0.2)';
-                    icon.innerText = "🔴";
-                    icon.classList.add('animate-pulse');
-                    
-                    recSeconds = 0;
-                    txt.innerText = "REC 0:00";
-                    txt.classList.replace('text-slate-300', 'text-red-400');
-                    
-                    recTimer = setInterval(() => {
-                        recSeconds++;
-                        const m = Math.floor(recSeconds / 60);
-                        const s = (recSeconds % 60).toString().padStart(2, '0');
-                        txt.innerText = `REC ${m}:${s}`;
+                    btn.classList.add('pulse-red-border'); btn.style.backgroundColor = 'rgba(220, 38, 38, 0.2)'; icon.innerText = "🔴"; icon.classList.add('animate-pulse');
+                    recSeconds = 0; txt.innerText = "REC 0:00"; txt.classList.replace('text-slate-300', 'text-red-400');
+                    recTimer = setInterval(() => { 
+                        recSeconds++; 
+                        const m = Math.floor(recSeconds / 60); const s = (recSeconds % 60).toString().padStart(2, '0'); 
+                        txt.innerText = `REC ${m}:${s}`; 
                     }, 1000);
-                    
-                } catch(err) { 
-                    Swal.fire({ title: 'Microfono Bloccato', html: 'Assicurati di aver dato i permessi.', icon: 'error', background: '#1e293b', color: '#fff' }); 
-                }
-            } else {
-                mediaRecorder.stop(); 
-                clearInterval(recTimer);
-                btn.classList.remove('pulse-red-border');
-                btn.style.backgroundColor = '';
-                icon.innerText = "🎤";
-                icon.classList.remove('animate-pulse');
-                txt.innerText = "VOCALE";
-                txt.classList.replace('text-red-400', 'text-slate-300');
+                } catch(err) { Swal.fire({ title: 'Microfono Bloccato', html: 'Assicurati di aver dato i permessi.', icon: 'error', background: '#1e293b', color: '#fff' }); }
+            } else { 
+                mediaRecorder.stop(); clearInterval(recTimer); 
+                btn.classList.remove('pulse-red-border'); btn.style.backgroundColor = ''; 
+                icon.innerText = "🎤"; icon.classList.remove('animate-pulse'); 
+                txt.innerText = "VOCALE"; txt.classList.replace('text-red-400', 'text-slate-300'); 
             }
         };
 
-        window.cRic = async () => {
-            if (idSalaAttivo) {
-                await update(ref(db, `brogliaccio/${idSalaAttivo}`), { 
-                    stato: 'OK', m2: '✅ RICEVUTO', ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
-                });
-                await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento', ultimo_contatto: Date.now() });
-                Swal.fire({ icon: 'success', title: 'Ricevuto!', toast: true, position: 'top', timer: 2000, showConfirmButton: false });
-            }
+        window.cRic = async () => { 
+            if (idSalaAttivo) { 
+                await update(ref(db, `brogliaccio/${idSalaAttivo}`), { stato: 'OK', m2: '✅ RICEVUTO', ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) }); 
+                await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento', ultimo_contatto: Date.now() }); 
+                Swal.fire({ icon: 'success', title: 'Ricevuto!', toast: true, position: 'top', timer: 2000, showConfirmButton: false }); 
+            } 
         };
-
-        window.cArr = () => {
-            if (!idSalaAttivo) return;
-            Swal.fire({ 
-                title: 'CONFERMA ARRIVO', text: "Verrà aperto un nuovo log in attesa per la Sala.", icon: 'warning', 
-                showCancelButton: true, confirmButtonText: 'SÌ, SUL POSTO', confirmButtonColor: '#dc2626', background: '#0f172a', color: '#fff' 
-            }).then(async (r) => {
-                if (r.isConfirmed) {
-                    window.targetCompletato = idSalaAttivo;
-                    await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento', ultimo_contatto: Date.now() });
-                    await window.inviaNuovo(`🏁 ARRIVATI SUL POSTO: ${viaAttiva}`, { stato: 'ATTESA', dir: 'SQ' });
+        
+        window.cArr = () => { 
+            if (!idSalaAttivo) return; 
+            Swal.fire({ title: 'CONFERMA ARRIVO', text: "Verrà aperto un nuovo log in attesa per la Sala.", icon: 'warning', showCancelButton: true, confirmButtonText: 'SÌ, SUL POSTO', confirmButtonColor: '#dc2626', background: '#0f172a', color: '#fff' }).then(async (r) => { 
+                if (r.isConfirmed) { 
+                    window.targetCompletato = idSalaAttivo; 
+                    await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento', ultimo_contatto: Date.now() }); 
+                    await window.inviaNuovo(`🏁 ARRIVATI SUL POSTO: ${viaAttiva}`, { stato: 'ATTESA', dir: 'SQ' }); 
                     idSalaAttivo = null; window.disegnaBannerUltimaDest(); 
-                }
-            });
+                } 
+            }); 
         };
 
         window.disegnaBannerUltimaDest = () => {
             const banner = document.getElementById('target-banner');
-            if (viaAttiva && ultimaPos.lat) {
-                banner.className = "shrink-0 w-full bg-slate-800/80 rounded-xl p-2.5 border border-slate-700 shadow flex items-center justify-between";
-                banner.innerHTML = `
-                    <div class="flex flex-col w-[65%]">
-                        <span class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Ultima Destinazione</span>
-                        <span class="text-[11px] text-white font-bold truncate">${viaAttiva}</span>
-                    </div>
-                    <button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="w-[30%] bg-slate-700 hover:bg-slate-600 text-emerald-400 py-2 rounded-lg font-bold text-[9px] uppercase border border-slate-600">📍 NAVIGA</button>
-                `;
-            } else {
-                banner.className = "shrink-0 w-full bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 shadow-inner flex flex-col justify-center min-h-[60px]";
-                banner.innerHTML = `<div class="text-center text-slate-500 text-[10px] uppercase font-bold italic tracking-widest">Nessun Target in corso</div>`;
+            if (viaAttiva && ultimaPos.lat) { 
+                banner.className = "shrink-0 w-full bg-slate-800/80 rounded-xl p-2.5 border border-slate-700 shadow flex items-center justify-between"; 
+                banner.innerHTML = `<div class="flex flex-col w-[65%]"><span class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Ultima Destinazione</span><span class="text-[11px] text-white font-bold truncate">${viaAttiva}</span></div><button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="w-[30%] bg-slate-700 hover:bg-slate-600 text-emerald-400 py-2 rounded-lg font-bold text-[9px] uppercase border border-slate-600">📍 NAVIGA</button>`; 
+            } 
+            else { 
+                banner.className = "shrink-0 w-full bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 shadow-inner flex flex-col justify-center min-h-[60px]"; 
+                banner.innerHTML = `<div class="text-center text-slate-500 text-[10px] uppercase font-bold italic tracking-widest">Nessun Target in corso</div>`; 
             }
         };
 
-        window.navig = (lat, lng) => {
-            if(lat && lng) window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
-        };
-
-        onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
-            const data = snap.val(); if (!data) return;
-            const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
-            
-            const target = logs.find(l => l.dir === 'SA' && l.squadra === sqId && l.m1 && l.m1.includes('📍') && l.id !== window.targetCompletato);
-            const banner = document.getElementById('target-banner');
-
-            if (target) {
-                idSalaAttivo = target.id; 
-                viaAttiva = target.m1.replace('📍', '').trim();
-                localStorage.setItem('app_ultima_via', viaAttiva);
-                
-                if (target.lat && target.lng) { 
-                    ultimaPos = { lat: target.lat, lng: target.lng }; 
-                    localStorage.setItem('app_ultima_pos', JSON.stringify(ultimaPos));
-                }
-
-                if (target.stato === 'ATTESA') {
-                    if (window.lastNotifiedTargetId !== target.id) {
-                        if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000]);
-                        window.lastNotifiedTargetId = target.id;
-                    }
-
-                    banner.className = "shrink-0 w-full bg-red-900/80 rounded-xl p-2.5 border pulse-red-border shadow-lg flex flex-col gap-2";
-                    banner.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="text-3xl animate-bounce">🚨</span>
-                            <div class="flex flex-col flex-1 overflow-hidden">
-                                <span class="text-[9px] text-red-300 font-bold uppercase tracking-widest">NUOVO ORDINE DALLA SALA</span>
-                                <span class="text-[12px] text-white font-black truncate">${viaAttiva}</span>
-                            </div>
-                        </div>
-                        <button onclick="window.cRic()" class="w-full bg-red-600 py-2.5 rounded-lg font-black uppercase text-[10px] shadow active:scale-95 text-white">✅ CONFERMA RICEZIONE</button>
-                    `;
-                } else {
-                    banner.className = "shrink-0 w-full bg-blue-900/80 rounded-xl p-2.5 border pulse-blue-border shadow-lg flex flex-col gap-2";
-                    banner.innerHTML = `
-                        <div class="flex items-center gap-2 mb-0.5">
-                            <span class="text-2xl">🚐</span>
-                            <div class="flex flex-col flex-1 overflow-hidden">
-                                <span class="text-[9px] text-blue-300 font-bold uppercase tracking-widest">IN VIAGGIO VERSO:</span>
-                                <span class="text-[12px] text-white font-bold truncate">${viaAttiva}</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="flex-1 bg-emerald-600 py-2.5 rounded-lg font-bold uppercase text-[9px] shadow active:scale-95 text-white">📍 NAVIGA</button>
-                            <button onclick="window.cArr()" class="flex-1 bg-red-600 py-2.5 rounded-lg font-bold uppercase text-[9px] shadow active:scale-95 text-white border border-red-800">🏁 SUL POSTO</button>
-                        </div>
-                    `;
-                }
-            } else {
-                idSalaAttivo = null;
-                window.disegnaBannerUltimaDest();
-            }
-
-            const msgBanner = document.getElementById('last-msg-banner');
-            const myLogs = logs.filter(l => l.squadra === sqId || l.squadra === 'COMUNICAZIONE GENERALE');
-            let lastMsgText = null; let lastMsgTime = ''; let isBroadcast = false;
-
-            for (let l of myLogs) {
-                if (l.m1 && l.m1.includes('📍')) continue; 
-                if (l.squadra === 'COMUNICAZIONE GENERALE') { lastMsgText = l.m1; lastMsgTime = l.ora; isBroadcast = true; break; } 
-                else if (l.dir === 'SA' && l.m1 && l.m1 !== '---') { lastMsgText = l.m1; lastMsgTime = l.ora; isBroadcast = false; break; } 
-                else if (l.dir === 'SQ' && l.m2 && l.m2 !== '---' && l.stato === 'OK') { lastMsgText = l.m2; lastMsgTime = l.ora; isBroadcast = false; break; }
-            }
-
-            if (lastMsgText) {
-                if (window.lastNotifiedMsgTime !== lastMsgTime) {
-                    if (isBroadcast || myLogs.find(l => l.ora === lastMsgTime && l.dir === 'SA')) {
-                        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                    }
-                    window.lastNotifiedMsgTime = lastMsgTime;
-                }
-
-                msgBanner.style.display = 'flex';
-                document.getElementById('last-msg-time').innerText = lastMsgTime;
-                document.getElementById('last-msg-text').innerText = `"${lastMsgText}"`;
-                if (isBroadcast) {
-                    msgBanner.className = "shrink-0 w-full bg-amber-900/40 rounded-xl p-3 border border-amber-600/50 flex flex-col justify-center";
-                    document.getElementById('last-msg-title').innerText = "📢 COMUNICAZIONE GENERALE";
-                    document.getElementById('last-msg-title').className = "text-[10px] font-bold text-amber-400 uppercase tracking-widest";
-                } else {
-                    msgBanner.className = "shrink-0 w-full bg-slate-800/80 rounded-xl p-3 border border-slate-600 flex flex-col justify-center";
-                    document.getElementById('last-msg-title').innerText = "🎧 DALLA SALA";
-                    document.getElementById('last-msg-title').className = "text-[10px] font-bold text-blue-400 uppercase tracking-widest";
-                }
-            } else { msgBanner.style.display = 'none'; }
-        });
-
-        onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => {
-            const sq = snap.val();
-            if (sq) {
-                
-                if (sq.ultimo_contatto) window.ultimoContattoLocale = sq.ultimo_contatto;
-
-                const capoDisplay = document.getElementById('display-capo');
-                if(sq.capo) capoDisplay.innerText = `CAPO: ${sq.capo.toUpperCase()}`;
-                else capoDisplay.innerText = "CAPO: N/D";
-
-                document.getElementById('current-status').innerText = sq.stato ? sq.stato.toUpperCase() : 'ATTESA';
-                
-                const offScreen = document.getElementById('off-screen');
-                if (sq.attiva === false) { offScreen.style.display = 'flex'; } 
-                else { offScreen.style.display = 'none'; }
-            }
-        });
+        window.navig = (lat, lng) => { if(lat && lng) window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank'); };
 
     </script>
 </body>
