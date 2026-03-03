@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -5,18 +7,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-
-    <script>
-        const cfg = { 
-            apiKey: "AIzaSyDMcnP_3TD1h9fYobsN6PN5aNGDGHe1y0c", 
-            databaseURL: "https://so-pcthiene-default-rtdb.europe-west1.firebasedatabase.app" 
-        };
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) firebase.initializeApp(cfg);
-        const db = typeof firebase !== 'undefined' ? firebase.database() : null;
-    </script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -155,7 +145,15 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, update, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+        // --- INIZIALIZZAZIONE FIREBASE MODULARE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMcnP_3TD1h9fYobsN6PN5aNGDGHe1y0c",
+            databaseURL: "https://so-pcthiene-default-rtdb.europe-west1.firebasedatabase.app"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         // --- GESTIONE PIN / LOGIN ---
         window.checkPin = () => {
@@ -190,7 +188,7 @@
             updateGpsBadge();
         });
 
-// OROLOGIO E URL PARAMS
+        // OROLOGIO E URL PARAMS
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
         
         const urlParams = new URLSearchParams(window.location.search);
@@ -206,15 +204,14 @@
                         <p class="text-red-200 text-sm">L'app non può avviarsi senza un identificativo valido.<br>Chiudi e riapri dal link corretto.</p>
                     </div>
                 </div>`;
-            throw new Error("ID Squadra non valido"); // Blocca l'esecuzione degli script successivi
+            throw new Error("ID Squadra non valido"); 
         }
 
         const sqId = sqIdRaw.trim().toUpperCase();
         document.getElementById('display-sq').innerText = sqId;
 
         // --- BLOCCO DI VERIFICA SUL DATABASE ---
-        // Controlla se questa squadra esiste davvero nella lista autorizzata dalla Sala
-        db.ref('anagrafica_squadre/' + sqId).once('value').then(snap => {
+        get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
             if (!snap.exists()) {
                 document.body.innerHTML = `
                     <div class="h-screen bg-slate-900 flex items-center justify-center p-6 text-center">
@@ -225,10 +222,9 @@
                             <button onclick="location.href='index.html'" class="mt-6 bg-amber-600 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase">Torna alla Dashboard</button>
                         </div>
                     </div>`;
-                // Opzionale: cancella il log sporco se si era creato
-                db.ref('anagrafica_squadre/undefined').remove(); 
             }
         });
+
         // RETE
         onValue(ref(db, ".info/connected"), (snap) => {
             const badge = document.getElementById('net-badge');
@@ -340,13 +336,12 @@
             Swal.close();
         };
 
-window.askStatus = (s, icon) => {
+        window.askStatus = (s, icon) => {
             Swal.fire({
                 title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b class="text-lg">${s.toUpperCase()}</b>`,
                 showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
             }).then((r) => {
                 if(r.isConfirmed) { 
-                    // Aggiorna solo l'anagrafica, non invia log
                     update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s }); 
                 }
             });
@@ -394,7 +389,6 @@ window.askStatus = (s, icon) => {
                     
                     mediaRecorder.start(); 
                     
-                    // Modifica Grafica Registrazione in corso
                     btn.classList.add('pulse-red-border');
                     btn.style.backgroundColor = 'rgba(220, 38, 38, 0.2)';
                     icon.innerText = "🔴";
@@ -407,7 +401,7 @@ window.askStatus = (s, icon) => {
                 }
             } else {
                 mediaRecorder.stop(); 
-                mediaRecorder.stream.getTracks().forEach(t => t.stop()); // Spegne la spia sul telefono
+                mediaRecorder.stream.getTracks().forEach(t => t.stop()); 
                 
                 btn.classList.remove('pulse-red-border');
                 btn.style.backgroundColor = '';
@@ -418,20 +412,16 @@ window.askStatus = (s, icon) => {
             }
         };
 
-// PUNTO 2: L'operatore preme RICEVUTO
+        // PUNTO 2: L'operatore preme RICEVUTO
         window.cRic = async () => {
             if (idSalaAttivo) {
-                // Chiude il log originale (diventa bianco in Dash)
                 await update(ref(db, `brogliaccio/${idSalaAttivo}`), { 
                     stato: 'OK', 
                     m2: '✅ RICEVUTO',
                     ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
                 });
-                // Aggiorna lo stato squadra
                 await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento' });
                 Swal.fire({ icon: 'success', title: 'Ricevuto!', toast: true, position: 'top', timer: 2000, showConfirmButton: false });
-                
-                // IMPORTANTE: NON resettiamo idSalaAttivo, serve per il banner "Sul Posto"
             }
         };
 
@@ -448,14 +438,8 @@ window.askStatus = (s, icon) => {
                 background: '#0f172a', color: '#fff' 
             }).then(async (r) => {
                 if (r.isConfirmed) {
-                    // 1. Memorizziamo che questo target è completato per nascondere il banner
                     window.targetCompletato = idSalaAttivo;
-
-                    // 2. Aggiorna stato squadra
                     await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento' });
-
-                    // 3. Crea il NUOVO LOG (Punto 3 della sequenza)
-                    // Lo impostiamo in 'ATTESA' così appare ROSSO in Dashboard
                     await window.inviaNuovo(`🏁 ARRIVATI SUL POSTO: ${viaAttiva}`, { 
                         stato: 'ATTESA', 
                         dir: 'SQ' 
@@ -484,14 +468,15 @@ window.askStatus = (s, icon) => {
             }
         };
 
-// --- ASCOLTO DATI DA SALA RADIO E GESTIONE RISPOSTE ---
-        // Aumentato a 100 per non perdere i messaggi se il brogliaccio è lungo
+        window.navig = (lat, lng) => {
+            if(lat && lng) window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
+        };
+
+        // --- ASCOLTO DATI DA SALA RADIO E GESTIONE RISPOSTE ---
         onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
             const data = snap.val(); if (!data) return;
             const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
             
-            // Cerca l'ultimo target inviato dalla sala. 
-            // Lo mostra finché non è stato marcato come "targetCompletato" dall'app (tasto Sul Posto)
             const target = logs.find(l => 
                 l.dir === 'SA' && 
                 l.squadra === sqId && 
@@ -511,9 +496,7 @@ window.askStatus = (s, icon) => {
                     localStorage.setItem('app_ultima_pos', JSON.stringify(ultimaPos));
                 }
 
-                // LOGICA STATI BANNER
                 if (target.stato === 'ATTESA') {
-                    // 1. STATO ATTESA: Banner Rosso (Nuovo Ordine)
                     banner.className = "shrink-0 w-full bg-red-900/80 rounded-xl p-2.5 border pulse-red-border shadow-lg flex flex-col gap-2";
                     banner.innerHTML = `
                         <div class="flex items-center gap-2">
@@ -526,8 +509,6 @@ window.askStatus = (s, icon) => {
                         <button onclick="window.cRic()" class="w-full bg-red-600 py-2.5 rounded-lg font-black uppercase text-[10px] shadow active:scale-95 text-white">✅ CONFERMA RICEZIONE</button>
                     `;
                 } else {
-                    // 2. STATO OK (Già ricevuto): Banner Blu (In Viaggio / Naviga)
-                    // Usiamo 'else' perché se non è più in ATTESA significa che l'hai ricevuto
                     banner.className = "shrink-0 w-full bg-blue-900/80 rounded-xl p-2.5 border pulse-blue-border shadow-lg flex flex-col gap-2";
                     banner.innerHTML = `
                         <div class="flex items-center gap-2 mb-0.5">
@@ -544,12 +525,11 @@ window.askStatus = (s, icon) => {
                     `;
                 }
             } else {
-                // Nessun target attivo o target completato: mostra ultima destinazione statica
                 idSalaAttivo = null;
                 window.disegnaBannerUltimaDest();
             }
 
-            // --- GESTIONE ALTRI MESSAGGI (BROADCAST E SALA) ---
+            // --- GESTIONE ALTRI MESSAGGI ---
             const msgBanner = document.getElementById('last-msg-banner');
             const myLogs = logs.filter(l => l.squadra === sqId || l.squadra === 'COMUNICAZIONE GENERALE');
             let lastMsgText = null; let lastMsgTime = ''; let isBroadcast = false;
