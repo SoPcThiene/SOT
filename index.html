@@ -142,7 +142,7 @@
         </div>
 
         <div class="shrink-0 mt-2">
-            <button onclick="window.logoutApp()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-400 font-bold uppercase text-[10px] tracking-widest transition-all">
+            <button onclick="window.logoutApp(false)" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-400 font-bold uppercase text-[10px] tracking-widest transition-all">
                 🚪 Disconnetti e Cancella Dati
             </button>
         </div>
@@ -168,37 +168,56 @@
 
         window.lastNotifiedTargetId = null;
         window.lastNotifiedMsgTime = null;
+        
+        // --- MEMORIA ULTIMO CONTATTO (Per disattivazione automatica 12h) ---
+        window.ultimoContattoLocale = Date.now();
 
         window.checkPin = () => {
             const pin = document.getElementById('pin-input').value;
             if(pin === '2026') {
                 localStorage.setItem('pc_app_auth', 'true');
                 document.getElementById('login-screen').style.display = 'none';
+                update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); // Registra l'accesso
             } else {
                 Swal.fire({ icon: 'error', title: 'Codice Errato', text: 'Riprova', background: '#1e293b', color: '#fff' });
                 document.getElementById('pin-input').value = '';
             }
         };
 
-        // --- FUNZIONE DI DISCONNESSIONE E PULIZIA MEMORIA ---
-        window.logoutApp = () => {
-            Swal.fire({
-                title: 'DISCONNETTI?',
-                text: "L'app verrà bloccata, il tracciamento verrà interrotto e tutti i dati temporanei salvati su questo telefono verranno eliminati.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'SÌ, DISCONNETTI',
-                cancelButtonText: 'ANNULLA',
-                confirmButtonColor: '#dc2626',
-                background: '#1e293b',
-                color: '#fff'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-                    localStorage.clear();
-                    location.reload();
-                }
-            });
+        // --- GESTIONE LOGOUT (Manuale o Automatico) ---
+        window.logoutApp = (isAuto = false) => {
+            if (isAuto) {
+                if (liveTrackingTimer) clearInterval(liveTrackingTimer);
+                localStorage.clear();
+                Swal.fire({
+                    title: 'SESSIONE SCADUTA',
+                    text: "L'app è stata disattivata in automatico per inattività prolungata (12 Ore). La privacy è protetta e il tracciamento è fermo.",
+                    icon: 'info',
+                    confirmButtonText: 'HO CAPITO',
+                    confirmButtonColor: '#2563eb',
+                    background: '#1e293b',
+                    color: '#fff',
+                    allowOutsideClick: false
+                }).then(() => { location.reload(); });
+            } else {
+                Swal.fire({
+                    title: 'DISCONNETTI?',
+                    text: "L'app verrà bloccata, il tracciamento verrà interrotto e tutti i dati temporanei salvati su questo telefono verranno eliminati.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'SÌ, DISCONNETTI',
+                    cancelButtonText: 'ANNULLA',
+                    confirmButtonColor: '#dc2626',
+                    background: '#1e293b',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (liveTrackingTimer) clearInterval(liveTrackingTimer);
+                        localStorage.clear();
+                        location.reload();
+                    }
+                });
+            }
         };
 
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
@@ -231,6 +250,16 @@
 
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
         
+        // --- IL GUARDIANO DEL TEMPO (Controlla le 12 ore ogni minuto) ---
+        setInterval(() => {
+            const ore12_in_ms = 12 * 60 * 60 * 1000;
+            if (Date.now() - window.ultimoContattoLocale > ore12_in_ms) {
+                // Spengo la squadra nel database e butto fuori l'utente dall'app
+                update(ref(db, `anagrafica_squadre/${sqId}`), { attiva: false });
+                window.logoutApp(true);
+            }
+        }, 60000);
+
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
         
@@ -271,9 +300,11 @@
                 try {
                     const p = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 4000, maximumAge: 10000 }));
                     pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) };
-                    await update(ref(db, `anagrafica_squadre/${sqId}`), pos);
                 } catch (e) {}
             }
+
+            // REGISTRA L'ATTIVITÀ UMANA NEL DATABASE
+            await update(ref(db, `anagrafica_squadre/${sqId}`), { ...pos, ultimo_contatto: Date.now() });
 
             try {
                 await push(ref(db, 'brogliaccio'), { 
@@ -293,6 +324,7 @@
                 navigator.geolocation.getCurrentPosition(
                     (p) => {
                         const pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) };
+                        // Questo aggiorna il GPS MA NON azzera il timer delle 12 ore!
                         update(ref(db, `anagrafica_squadre/${sqId}`), pos);
                     },
                     (e) => { }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -420,7 +452,11 @@
             Swal.fire({
                 title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b class="text-lg">${s.toUpperCase()}</b>`,
                 showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
-            }).then((r) => { if(r.isConfirmed) { update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s }); } });
+            }).then((r) => { 
+                if(r.isConfirmed) { 
+                    update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s, ultimo_contatto: Date.now() }); 
+                } 
+            });
         };
 
         window.askFreeMsg = () => {
@@ -514,7 +550,7 @@
                 await update(ref(db, `brogliaccio/${idSalaAttivo}`), { 
                     stato: 'OK', m2: '✅ RICEVUTO', ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
                 });
-                await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento' });
+                await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento', ultimo_contatto: Date.now() });
                 Swal.fire({ icon: 'success', title: 'Ricevuto!', toast: true, position: 'top', timer: 2000, showConfirmButton: false });
             }
         };
@@ -527,7 +563,7 @@
             }).then(async (r) => {
                 if (r.isConfirmed) {
                     window.targetCompletato = idSalaAttivo;
-                    await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento' });
+                    await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento', ultimo_contatto: Date.now() });
                     await window.inviaNuovo(`🏁 ARRIVATI SUL POSTO: ${viaAttiva}`, { stato: 'ATTESA', dir: 'SQ' });
                     idSalaAttivo = null; window.disegnaBannerUltimaDest(); 
                 }
@@ -647,6 +683,10 @@
         onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => {
             const sq = snap.val();
             if (sq) {
+                
+                // Mantiene il timer locale sincronizzato con il database
+                if (sq.ultimo_contatto) window.ultimoContattoLocale = sq.ultimo_contatto;
+
                 const capoDisplay = document.getElementById('display-capo');
                 if(sq.capo) capoDisplay.innerText = `CAPO: ${sq.capo.toUpperCase()}`;
                 else capoDisplay.innerText = "CAPO: N/D";
