@@ -1,0 +1,21 @@
+{
+  "name": "PC Thiene - App Squadre",
+  "short_name": "PC Thiene",
+  "description": "Terminale Operativo per Capisquadra della Protezione Civile Thiene",
+  "start_url": "./app.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "logosala.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logosala.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
