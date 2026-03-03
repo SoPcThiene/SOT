@@ -98,6 +98,7 @@
                 <div class="flex items-center justify-between mt-1">
                     <div id="current-status" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-900/30 px-1.5 py-0.5 rounded border border-emerald-800">ATTESA...</div>
                     <div class="flex gap-1">
+                        <div id="live-badge" class="hidden text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse">LIVE 🔴</div>
                         <div id="gps-badge" class="inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase">GPS AUT</div>
                         <div id="net-badge" class="inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase">ONLINE</div>
                     </div>
@@ -154,7 +155,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, update, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-        // --- INIZIALIZZAZIONE FIREBASE MODULARE ---
         const firebaseConfig = {
             apiKey: "AIzaSyDMcnP_3TD1h9fYobsN6PN5aNGDGHe1y0c",
             databaseURL: "https://so-pcthiene-default-rtdb.europe-west1.firebasedatabase.app"
@@ -174,8 +174,11 @@
             }
         };
 
-        // --- GESTIONE PRIVACY GPS ---
+        // --- GESTIONE PRIVACY GPS E LIVE TRACKING ---
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
+        window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
+        window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); // Default 1 min
+        let liveTrackingTimer = null;
         
         function updateGpsBadge() {
             const badge = document.getElementById('gps-badge');
@@ -186,6 +189,13 @@
                 badge.className = "inline-block text-[7px] bg-slate-500/20 text-slate-400 px-1.5 py-0.5 rounded border border-slate-500/30 font-bold uppercase";
                 badge.innerText = "GPS OFF";
             }
+
+            const liveBadge = document.getElementById('live-badge');
+            if(window.liveTrackingEnabled) {
+                liveBadge.style.display = 'inline-block';
+            } else {
+                liveBadge.style.display = 'none';
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -193,6 +203,7 @@
                 document.getElementById('login-screen').style.display = 'none';
             }
             updateGpsBadge();
+            if(window.liveTrackingEnabled) window.startLiveTracking();
         });
 
         // OROLOGIO E URL PARAMS
@@ -216,7 +227,7 @@
         const sqId = sqIdRaw.trim().toUpperCase();
         document.getElementById('display-sq').innerText = sqId;
 
-        // --- BLOCCO DI VERIFICA SUL DATABASE ---
+        // VERIFICA SUL DATABASE
         get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
             if (!snap.exists()) {
                 document.body.innerHTML = `
@@ -225,7 +236,6 @@
                             <span class="text-6xl block mb-4">🚫</span>
                             <h1 class="text-white text-xl font-black mb-2 uppercase">SQUADRA NON REGISTRATA</h1>
                             <p class="text-amber-200 text-sm">La squadra <b>${sqId}</b> non risulta nel database.<br>Registrala prima dalla Dashboard Sala Radio.</p>
-                            <button onclick="location.href='index.html'" class="mt-6 bg-amber-600 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase">Torna alla Dashboard</button>
                         </div>
                     </div>`;
             }
@@ -247,7 +257,7 @@
         let viaAttiva = localStorage.getItem('app_ultima_via') || "";
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
-        // --- MOTORE DI INVIO DATI ---
+        // --- MOTORE DI INVIO DATI STANDARD ---
         window.inviaNuovo = async (testo, extra = {}) => {
             const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             let pos = { lat: '', lng: '' };
@@ -273,23 +283,92 @@
             }
         };
 
-        // --- PANNELLO GESTIONE GPS (AUTO/MANUALE) ---
+        // --- MOTORE LIVE TRACKING SILENZIOSO ---
+        window.sendSilentGPS = () => {
+            if (navigator.geolocation && window.liveTrackingEnabled) {
+                navigator.geolocation.getCurrentPosition(
+                    (p) => {
+                        const pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) };
+                        // Aggiorna SOLO anagrafica (silenzioso), NIENTE brogliaccio
+                        update(ref(db, `anagrafica_squadre/${sqId}`), pos);
+                    },
+                    (e) => { console.warn("Errore GPS Silenzioso", e); },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            }
+        };
+
+        window.startLiveTracking = () => {
+            if (liveTrackingTimer) clearInterval(liveTrackingTimer);
+            if (window.liveTrackingEnabled) {
+                window.sendSilentGPS(); // Invia subito il primo
+                liveTrackingTimer = setInterval(window.sendSilentGPS, window.liveTrackingInterval);
+            }
+        };
+
+        window.toggleLiveTrack = (val) => {
+            window.liveTrackingEnabled = val;
+            localStorage.setItem('app_live_track', val);
+            updateGpsBadge();
+            if (val) {
+                window.startLiveTracking();
+                Swal.fire({ title: 'LIVE GPS ATTIVO', text: 'La tua posizione aggiornerà la mappa in Sala senza inviare messaggi di log.', icon: 'success', toast: true, position: 'top', timer: 3000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
+            } else {
+                if (liveTrackingTimer) clearInterval(liveTrackingTimer);
+                Swal.fire({ title: 'LIVE GPS SPENTO', text: 'Tracciamento silenzioso interrotto.', icon: 'info', toast: true, position: 'top', timer: 2000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
+            }
+        };
+
+        window.changeLiveInterval = (val) => {
+            window.liveTrackingInterval = parseInt(val);
+            localStorage.setItem('app_live_interval', val);
+            if (window.liveTrackingEnabled) {
+                window.startLiveTracking();
+            }
+        };
+
+        // --- PANNELLO GESTIONE GPS AGGIORNATO ---
         window.openGPSPanel = () => {
-            const isChecked = window.gpsAutoEnabled ? 'checked' : '';
+            const isCheckedAuto = window.gpsAutoEnabled ? 'checked' : '';
+            const isCheckedLive = window.liveTrackingEnabled ? 'checked' : '';
+            
             Swal.fire({
-                title: 'GESTIONE POSIZIONE',
+                title: 'GESTIONE GPS',
                 html: `
                     <div style="text-align: left; display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
                         
                         <div style="background: #1e293b; padding: 12px; border-radius: 12px; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; flex-direction: column;">
-                                <span style="font-size: 13px; font-weight: bold; color: white;">Tracciamento GPS</span>
-                                <span style="font-size: 9px; color: #94a3b8;">Invia posizione insieme ai log</span>
+                                <span style="font-size: 13px; font-weight: bold; color: white;">GPS nei Messaggi</span>
+                                <span style="font-size: 9px; color: #94a3b8;">Allega posizione ai log inviati</span>
                             </div>
                             <label class="switch">
-                                <input type="checkbox" id="gps-toggle" ${isChecked} onchange="window.toggleGpsApp(this.checked)">
+                                <input type="checkbox" id="gps-toggle" ${isCheckedAuto} onchange="window.toggleGpsApp(this.checked)">
                                 <span class="slider"></span>
                             </label>
+                        </div>
+
+                        <div style="background: #1e293b; padding: 12px; border-radius: 12px; border: 1px solid #334155;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-size: 13px; font-weight: bold; color: #ef4444;">LIVE Tracking 🔴</span>
+                                    <span style="font-size: 9px; color: #94a3b8;">Aggiorna mappa in Sala silenziosamente</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="live-toggle" ${isCheckedLive} onchange="window.toggleLiveTrack(this.checked)">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #334155; padding-top: 10px;">
+                                <span style="font-size: 11px; color: #cbd5e1; font-weight: 600;">Frequenza invio:</span>
+                                <select onchange="window.changeLiveInterval(this.value)" style="background: #0f172a; color: white; border: 1px solid #475569; padding: 4px; border-radius: 6px; font-size: 11px; outline: none;">
+                                    <option value="15000" ${window.liveTrackingInterval == 15000 ? 'selected' : ''}>Ogni 15 Sec</option>
+                                    <option value="30000" ${window.liveTrackingInterval == 30000 ? 'selected' : ''}>Ogni 30 Sec</option>
+                                    <option value="60000" ${window.liveTrackingInterval == 60000 ? 'selected' : ''}>Ogni 1 Min</option>
+                                    <option value="180000" ${window.liveTrackingInterval == 180000 ? 'selected' : ''}>Ogni 3 Min</option>
+                                    <option value="300000" ${window.liveTrackingInterval == 300000 ? 'selected' : ''}>Ogni 5 Min</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <div style="background: #1e293b; padding: 12px; border-radius: 12px; border: 1px solid #334155;">
@@ -314,7 +393,7 @@
             window.gpsAutoEnabled = val;
             localStorage.setItem('app_gps_auto', val);
             updateGpsBadge();
-            Swal.fire({ title: val ? 'GPS ON' : 'GPS OFF', text: val ? 'Posizione automatica attivata' : 'Tracciamento sospeso', icon: val ? 'success' : 'info', toast: true, position: 'top', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
+            Swal.fire({ title: val ? 'GPS ON' : 'GPS OFF', text: val ? 'Posizione automatica nei log attivata' : 'Allega posizione sospeso', icon: val ? 'success' : 'info', toast: true, position: 'top', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
         };
 
         window.cercaViaApp = async () => {
@@ -365,7 +444,7 @@
             }; reader.readAsDataURL(f);
         };
 
-        // --- MOTORE AUDIO CORRETTO ---
+        // --- MOTORE AUDIO ---
         let mediaRecorder; let audioChunks = [];
         document.getElementById('btn-voc').onclick = async () => {
             const btn = document.getElementById('btn-voc');
@@ -381,7 +460,6 @@
                     mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
                     
                     mediaRecorder.onstop = () => {
-                        // LA MODIFICA È QUI: Fermiamo i binari dell'audio SOLO DOPO che la registrazione è finita
                         stream.getTracks().forEach(t => t.stop()); 
                         
                         const audioBlob = new Blob(audioChunks); 
@@ -405,12 +483,10 @@
                     txt.classList.replace('text-slate-300', 'text-red-400');
                     
                 } catch(err) { 
-                    Swal.fire({ title: 'Microfono Bloccato', html: 'Assicurati di aver dato i <b>Permessi</b> al microfono.<br><br><b>Per iPhone (Safari):</b><br>1. Vai su Impostazioni > Safari > Microfono<br>2. Imposta su "Consenti".', icon: 'error', background: '#1e293b', color: '#fff' }); 
+                    Swal.fire({ title: 'Microfono Bloccato', html: 'Assicurati di aver dato i permessi.', icon: 'error', background: '#1e293b', color: '#fff' }); 
                 }
             } else {
-                // Ferma semplicemente il registratore. L'evento onstop farà il resto!
                 mediaRecorder.stop(); 
-                
                 btn.classList.remove('pulse-red-border');
                 btn.style.backgroundColor = '';
                 icon.innerText = "🎤";
@@ -420,41 +496,27 @@
             }
         };
 
-        // PUNTO 2: L'operatore preme RICEVUTO
         window.cRic = async () => {
             if (idSalaAttivo) {
                 await update(ref(db, `brogliaccio/${idSalaAttivo}`), { 
-                    stato: 'OK', 
-                    m2: '✅ RICEVUTO',
-                    ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+                    stato: 'OK', m2: '✅ RICEVUTO', ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
                 });
                 await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento' });
                 Swal.fire({ icon: 'success', title: 'Ricevuto!', toast: true, position: 'top', timer: 2000, showConfirmButton: false });
             }
         };
 
-        // PUNTO 3: L'operatore preme ARRIVATI
         window.cArr = () => {
             if (!idSalaAttivo) return;
             Swal.fire({ 
-                title: 'CONFERMA ARRIVO', 
-                text: "Verrà aperto un nuovo log in attesa per la Sala.", 
-                icon: 'warning', 
-                showCancelButton: true, 
-                confirmButtonText: 'SÌ, SUL POSTO', 
-                confirmButtonColor: '#dc2626', 
-                background: '#0f172a', color: '#fff' 
+                title: 'CONFERMA ARRIVO', text: "Verrà aperto un nuovo log in attesa per la Sala.", icon: 'warning', 
+                showCancelButton: true, confirmButtonText: 'SÌ, SUL POSTO', confirmButtonColor: '#dc2626', background: '#0f172a', color: '#fff' 
             }).then(async (r) => {
                 if (r.isConfirmed) {
                     window.targetCompletato = idSalaAttivo;
                     await update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento' });
-                    await window.inviaNuovo(`🏁 ARRIVATI SUL POSTO: ${viaAttiva}`, { 
-                        stato: 'ATTESA', 
-                        dir: 'SQ' 
-                    });
-                    
-                    idSalaAttivo = null; 
-                    window.disegnaBannerUltimaDest(); 
+                    await window.inviaNuovo(`🏁 ARRIVATI SUL POSTO: ${viaAttiva}`, { stato: 'ATTESA', dir: 'SQ' });
+                    idSalaAttivo = null; window.disegnaBannerUltimaDest(); 
                 }
             });
         };
@@ -485,13 +547,7 @@
             const data = snap.val(); if (!data) return;
             const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
             
-            const target = logs.find(l => 
-                l.dir === 'SA' && 
-                l.squadra === sqId && 
-                l.m1 && l.m1.includes('📍') && 
-                l.id !== window.targetCompletato
-            );
-
+            const target = logs.find(l => l.dir === 'SA' && l.squadra === sqId && l.m1 && l.m1.includes('📍') && l.id !== window.targetCompletato);
             const banner = document.getElementById('target-banner');
 
             if (target) {
@@ -537,7 +593,6 @@
                 window.disegnaBannerUltimaDest();
             }
 
-            // --- GESTIONE ALTRI MESSAGGI ---
             const msgBanner = document.getElementById('last-msg-banner');
             const myLogs = logs.filter(l => l.squadra === sqId || l.squadra === 'COMUNICAZIONE GENERALE');
             let lastMsgText = null; let lastMsgTime = ''; let isBroadcast = false;
@@ -569,18 +624,12 @@
         onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => {
             const sq = snap.val();
             if (sq) {
-                // Aggiorna Nome Caposquadra
                 const capoDisplay = document.getElementById('display-capo');
-                if(sq.capo) {
-                    capoDisplay.innerText = `CAPO: ${sq.capo.toUpperCase()}`;
-                } else {
-                    capoDisplay.innerText = "CAPO: N/D";
-                }
+                if(sq.capo) capoDisplay.innerText = `CAPO: ${sq.capo.toUpperCase()}`;
+                else capoDisplay.innerText = "CAPO: N/D";
 
-                // Aggiorna stato attuale
                 document.getElementById('current-status').innerText = sq.stato ? sq.stato.toUpperCase() : 'ATTESA';
                 
-                // Gestione schermata blocco
                 const offScreen = document.getElementById('off-screen');
                 if (sq.attiva === false) { offScreen.style.display = 'flex'; } 
                 else { offScreen.style.display = 'none'; }
