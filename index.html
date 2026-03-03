@@ -141,6 +141,12 @@
             <button onclick="window.askFreeMsg()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold uppercase text-[11px] shadow-lg active:scale-95 transition-all tracking-widest text-white">Invia alla Sala</button>
         </div>
 
+        <div class="shrink-0 mt-2">
+            <button onclick="window.logoutApp()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-400 font-bold uppercase text-[10px] tracking-widest transition-all">
+                🚪 Disconnetti e Cancella Dati
+            </button>
+        </div>
+
         <div class="shrink-0 text-center pb-1 pt-2 opacity-80">
             <span class="text-[9px] font-bold text-slate-400 tracking-widest uppercase">
                 System Powered by <span class="text-white">Jok</span><span class="text-red-500">art</span>
@@ -160,11 +166,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // VARIABILI PER LA VIBRAZIONE E NOTIFICHE
         window.lastNotifiedTargetId = null;
         window.lastNotifiedMsgTime = null;
 
-        // --- GESTIONE PIN / LOGIN ---
         window.checkPin = () => {
             const pin = document.getElementById('pin-input').value;
             if(pin === '2026') {
@@ -176,7 +180,27 @@
             }
         };
 
-        // --- GESTIONE PRIVACY GPS E LIVE TRACKING ---
+        // --- FUNZIONE DI DISCONNESSIONE E PULIZIA MEMORIA ---
+        window.logoutApp = () => {
+            Swal.fire({
+                title: 'DISCONNETTI?',
+                text: "L'app verrà bloccata, il tracciamento verrà interrotto e tutti i dati temporanei salvati su questo telefono verranno eliminati.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'SÌ, DISCONNETTI',
+                cancelButtonText: 'ANNULLA',
+                confirmButtonColor: '#dc2626',
+                background: '#1e293b',
+                color: '#fff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (liveTrackingTimer) clearInterval(liveTrackingTimer);
+                    localStorage.clear();
+                    location.reload();
+                }
+            });
+        };
+
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
         window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
@@ -239,7 +263,6 @@
         let viaAttiva = localStorage.getItem('app_ultima_via') || "";
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
-        // --- MOTORE DI INVIO DATI STANDARD ---
         window.inviaNuovo = async (testo, extra = {}) => {
             const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             let pos = { lat: '', lng: '' };
@@ -265,7 +288,6 @@
             }
         };
 
-        // --- MOTORE LIVE TRACKING SILENZIOSO ---
         window.sendSilentGPS = () => {
             if (navigator.geolocation && window.liveTrackingEnabled) {
                 navigator.geolocation.getCurrentPosition(
@@ -305,7 +327,6 @@
             if (window.liveTrackingEnabled) window.startLiveTracking();
         };
 
-        // --- PANNELLO GESTIONE GPS AGGIORNATO ---
         window.openGPSPanel = () => {
             const isCheckedAuto = window.gpsAutoEnabled ? 'checked' : '';
             const isCheckedLive = window.liveTrackingEnabled ? 'checked' : '';
@@ -415,7 +436,6 @@
             }; reader.readAsDataURL(f);
         };
 
-        // --- MOTORE AUDIO 2.0 (Fixato e con Cronometro) ---
         let mediaRecorder; let audioChunks = [];
         let recTimer; let recSeconds = 0;
 
@@ -428,7 +448,6 @@
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     
-                    // Scelta intelligente del formato (Vitale per iOS/Safari)
                     let options = {};
                     if (MediaRecorder.isTypeSupported('audio/webm')) { options = { mimeType: 'audio/webm' }; } 
                     else if (MediaRecorder.isTypeSupported('audio/mp4')) { options = { mimeType: 'audio/mp4' }; }
@@ -442,11 +461,10 @@
                         stream.getTracks().forEach(t => t.stop()); 
                         clearInterval(recTimer);
                         
-                        // Generazione Blob Sicuro
                         const finalMime = mediaRecorder.mimeType || 'audio/webm';
                         const audioBlob = new Blob(audioChunks, { type: finalMime }); 
 
-                        if(recSeconds < 1) return; // Evita invii vuoti accidentali
+                        if(recSeconds < 1) return; 
 
                         const reader = new FileReader();
                         reader.onload = (e) => {
@@ -458,10 +476,8 @@
                         }; reader.readAsDataURL(audioBlob);
                     };
                     
-                    // Richiede dati in pezzetti (Risolve il bug di tempo zero)
                     mediaRecorder.start(500); 
                     
-                    // Avvio Grafica e Cronometro
                     btn.classList.add('pulse-red-border');
                     btn.style.backgroundColor = 'rgba(220, 38, 38, 0.2)';
                     icon.innerText = "🔴";
@@ -539,7 +555,6 @@
             if(lat && lng) window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
         };
 
-        // --- ASCOLTO DATI DA SALA RADIO E GESTIONE VIBRAZIONI ---
         onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
             const data = snap.val(); if (!data) return;
             const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
@@ -558,7 +573,6 @@
                 }
 
                 if (target.stato === 'ATTESA') {
-                    // SE IL TARGET E' NUOVO, VIBRA FORTE (Allarme)
                     if (window.lastNotifiedTargetId !== target.id) {
                         if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000]);
                         window.lastNotifiedTargetId = target.id;
@@ -608,7 +622,6 @@
             }
 
             if (lastMsgText) {
-                // SE IL MESSAGGIO E' NUOVO E PROVIENE DALLA SALA, VIBRA LEGGERO
                 if (window.lastNotifiedMsgTime !== lastMsgTime) {
                     if (isBroadcast || myLogs.find(l => l.ora === lastMsgTime && l.dir === 'SA')) {
                         if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
