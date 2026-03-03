@@ -11,18 +11,15 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         
-        /* IMPEDISCE LO SCROLLING E TIENE TUTTO SU UNA SCHERMATA */
         body { 
             font-family: 'Inter', sans-serif; background: #0f172a; color: white; 
             height: 100vh; height: 100dvh; 
             overflow: hidden; display: flex; flex-direction: column; margin: 0; font-weight: 500; 
         }
         
-        /* SCHERMATE DI BLOCCO (Login, App Spenta) */
         #off-screen, #login-screen { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; background: #020617; }
         #login-screen { z-index: 20000; } 
 
-        /* BOTTONI DI STATO COMPATTI */
         .btn-status { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             border-radius: 12px; transition: 0.2s; border-bottom-width: 4px; 
@@ -32,7 +29,6 @@
         .btn-status span { font-size: 22px; margin-bottom: 2px; }
         .btn-status:active { transform: scale(0.95); }
         
-        /* BOTTONI MULTIMEDIALI COMPATTI */
         .btn-media { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             border-radius: 12px; background: #1e293b; border: 1px solid #334155; 
@@ -41,14 +37,12 @@
         .btn-media span:first-child { font-size: 20px; margin-bottom: 2px; }
         .btn-media:active { background: #334155; transform: scale(0.95); }
         
-        /* ANIMAZIONI TARGET E REC */
         .pulse-red-border { animation: p-red-border 1.5s infinite; border: 2px solid #ef4444; }
         @keyframes p-red-border { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         
         .pulse-blue-border { animation: p-blue-border 2s infinite; border: 2px solid #3b82f6; }
         @keyframes p-blue-border { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
 
-        /* Stile Toggle Switch Custom GPS */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 34px; }
@@ -89,7 +83,6 @@
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-md" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xl\'>🛡️</span>';">
             </div>
             <div class="flex flex-col flex-1">
-                
                 <div class="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 leading-none">Protezione Civile Thiene <span class="text-blue-500 font-black">•</span> Terminale Caposquadra</div>
                 
                 <div class="flex items-center justify-between">
@@ -167,6 +160,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // VARIABILI PER LA VIBRAZIONE E NOTIFICHE
+        window.lastNotifiedTargetId = null;
+        window.lastNotifiedMsgTime = null;
+
         // --- GESTIONE PIN / LOGIN ---
         window.checkPin = () => {
             const pin = document.getElementById('pin-input').value;
@@ -182,7 +179,7 @@
         // --- GESTIONE PRIVACY GPS E LIVE TRACKING ---
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
-        window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); // Default 1 min
+        window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
         let liveTrackingTimer = null;
         
         function updateGpsBadge() {
@@ -196,11 +193,8 @@
             }
 
             const liveBadge = document.getElementById('live-badge');
-            if(window.liveTrackingEnabled) {
-                liveBadge.style.display = 'inline-block';
-            } else {
-                liveBadge.style.display = 'none';
-            }
+            if(window.liveTrackingEnabled) liveBadge.style.display = 'inline-block';
+            else liveBadge.style.display = 'none';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -211,42 +205,25 @@
             if(window.liveTrackingEnabled) window.startLiveTracking();
         });
 
-        // OROLOGIO E URL PARAMS
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
         
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
         
         if (!sqIdRaw || sqIdRaw === "undefined" || sqIdRaw.trim() === "") {
-            document.body.innerHTML = `
-                <div class="h-screen bg-slate-900 flex items-center justify-center p-6 text-center">
-                    <div class="bg-red-900/20 border border-red-500 p-8 rounded-2xl shadow-2xl">
-                        <span class="text-6xl block mb-4">⚠️</span>
-                        <h1 class="text-white text-xl font-black mb-2 uppercase">ID SQUADRA MANCANTE</h1>
-                        <p class="text-red-200 text-sm">L'app non può avviarsi senza un identificativo valido.<br>Chiudi e riapri dal link corretto.</p>
-                    </div>
-                </div>`;
+            document.body.innerHTML = `<div class="h-screen bg-slate-900 flex items-center justify-center p-6 text-center"><div class="bg-red-900/20 border border-red-500 p-8 rounded-2xl shadow-2xl"><span class="text-6xl block mb-4">⚠️</span><h1 class="text-white text-xl font-black mb-2 uppercase">ID SQUADRA MANCANTE</h1></div></div>`;
             throw new Error("ID Squadra non valido"); 
         }
 
         const sqId = sqIdRaw.trim().toUpperCase();
         document.getElementById('display-sq').innerText = sqId;
 
-        // VERIFICA SUL DATABASE
         get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
             if (!snap.exists()) {
-                document.body.innerHTML = `
-                    <div class="h-screen bg-slate-900 flex items-center justify-center p-6 text-center">
-                        <div class="bg-amber-900/20 border border-amber-500 p-8 rounded-2xl shadow-2xl">
-                            <span class="text-6xl block mb-4">🚫</span>
-                            <h1 class="text-white text-xl font-black mb-2 uppercase">SQUADRA NON REGISTRATA</h1>
-                            <p class="text-amber-200 text-sm">La squadra <b>${sqId}</b> non risulta nel database.<br>Registrala prima dalla Dashboard Sala Radio.</p>
-                        </div>
-                    </div>`;
+                document.body.innerHTML = `<div class="h-screen bg-slate-900 flex items-center justify-center p-6 text-center"><div class="bg-amber-900/20 border border-amber-500 p-8 rounded-2xl shadow-2xl"><span class="text-6xl block mb-4">🚫</span><h1 class="text-white text-xl font-black mb-2 uppercase">SQUADRA NON REGISTRATA</h1></div></div>`;
             }
         });
 
-        // RETE
         onValue(ref(db, ".info/connected"), (snap) => {
             const badge = document.getElementById('net-badge');
             if(snap.val() === true) {
@@ -294,11 +271,9 @@
                 navigator.geolocation.getCurrentPosition(
                     (p) => {
                         const pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) };
-                        // Aggiorna SOLO anagrafica (silenzioso), NIENTE brogliaccio
                         update(ref(db, `anagrafica_squadre/${sqId}`), pos);
                     },
-                    (e) => { console.warn("Errore GPS Silenzioso", e); },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    (e) => { }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                 );
             }
         };
@@ -306,7 +281,7 @@
         window.startLiveTracking = () => {
             if (liveTrackingTimer) clearInterval(liveTrackingTimer);
             if (window.liveTrackingEnabled) {
-                window.sendSilentGPS(); // Invia subito il primo
+                window.sendSilentGPS(); 
                 liveTrackingTimer = setInterval(window.sendSilentGPS, window.liveTrackingInterval);
             }
         };
@@ -317,19 +292,17 @@
             updateGpsBadge();
             if (val) {
                 window.startLiveTracking();
-                Swal.fire({ title: 'LIVE GPS ATTIVO', text: 'La tua posizione aggiornerà la mappa in Sala senza inviare messaggi di log.', icon: 'success', toast: true, position: 'top', timer: 3000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
+                Swal.fire({ title: 'LIVE GPS ATTIVO', text: 'Aggiornamento mappa in background.', icon: 'success', toast: true, position: 'top', timer: 3000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
             } else {
                 if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-                Swal.fire({ title: 'LIVE GPS SPENTO', text: 'Tracciamento silenzioso interrotto.', icon: 'info', toast: true, position: 'top', timer: 2000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
+                Swal.fire({ title: 'LIVE GPS SPENTO', icon: 'info', toast: true, position: 'top', timer: 2000, showConfirmButton: false, background: '#1e293b', color: '#fff' });
             }
         };
 
         window.changeLiveInterval = (val) => {
             window.liveTrackingInterval = parseInt(val);
             localStorage.setItem('app_live_interval', val);
-            if (window.liveTrackingEnabled) {
-                window.startLiveTracking();
-            }
+            if (window.liveTrackingEnabled) window.startLiveTracking();
         };
 
         // --- PANNELLO GESTIONE GPS AGGIORNATO ---
@@ -341,7 +314,6 @@
                 title: 'GESTIONE GPS',
                 html: `
                     <div style="text-align: left; display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
-                        
                         <div style="background: #1e293b; padding: 12px; border-radius: 12px; border: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; flex-direction: column;">
                                 <span style="font-size: 13px; font-weight: bold; color: white;">GPS nei Messaggi</span>
@@ -398,7 +370,6 @@
             window.gpsAutoEnabled = val;
             localStorage.setItem('app_gps_auto', val);
             updateGpsBadge();
-            Swal.fire({ title: val ? 'GPS ON' : 'GPS OFF', text: val ? 'Posizione automatica nei log attivata' : 'Allega posizione sospeso', icon: val ? 'success' : 'info', toast: true, position: 'top', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' });
         };
 
         window.cercaViaApp = async () => {
@@ -420,7 +391,6 @@
             const lng = document.getElementById('app-man-lng').value;
             const via = document.getElementById('app-man-ind').value || "POSIZIONE MANUALE";
             if(!lat || !lng) return Swal.showValidationMessage('Cerca un indirizzo prima di inviare');
-            
             window.inviaNuovo(`📍 RIFERIMENTO: ${via}`, { lat: lat, lng: lng });
             Swal.close();
         };
@@ -429,11 +399,7 @@
             Swal.fire({
                 title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b class="text-lg">${s.toUpperCase()}</b>`,
                 showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
-            }).then((r) => {
-                if(r.isConfirmed) { 
-                    update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s }); 
-                }
-            });
+            }).then((r) => { if(r.isConfirmed) { update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s }); } });
         };
 
         window.askFreeMsg = () => {
@@ -449,8 +415,10 @@
             }; reader.readAsDataURL(f);
         };
 
-        // --- MOTORE AUDIO ---
+        // --- MOTORE AUDIO 2.0 (Fixato e con Cronometro) ---
         let mediaRecorder; let audioChunks = [];
+        let recTimer; let recSeconds = 0;
+
         document.getElementById('btn-voc').onclick = async () => {
             const btn = document.getElementById('btn-voc');
             const icon = document.getElementById('voc-icon');
@@ -459,39 +427,63 @@
             if (!mediaRecorder || mediaRecorder.state === "inactive") {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream); 
+                    
+                    // Scelta intelligente del formato (Vitale per iOS/Safari)
+                    let options = {};
+                    if (MediaRecorder.isTypeSupported('audio/webm')) { options = { mimeType: 'audio/webm' }; } 
+                    else if (MediaRecorder.isTypeSupported('audio/mp4')) { options = { mimeType: 'audio/mp4' }; }
+
+                    mediaRecorder = new MediaRecorder(stream, options); 
                     audioChunks = [];
                     
                     mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
                     
                     mediaRecorder.onstop = () => {
                         stream.getTracks().forEach(t => t.stop()); 
+                        clearInterval(recTimer);
                         
-                        const audioBlob = new Blob(audioChunks); 
+                        // Generazione Blob Sicuro
+                        const finalMime = mediaRecorder.mimeType || 'audio/webm';
+                        const audioBlob = new Blob(audioChunks, { type: finalMime }); 
+
+                        if(recSeconds < 1) return; // Evita invii vuoti accidentali
+
                         const reader = new FileReader();
                         reader.onload = (e) => {
                             Swal.fire({
                                 title: 'ANTEPRIMA VOCALE', 
-                                html: `<div class="text-slate-300 text-xs mb-3">Ascolta il messaggio prima di inviarlo:</div><audio controls class="w-full mt-2" style="height: 40px;"><source src="${e.target.result}"></audio>`,
+                                html: `<div class="text-slate-300 text-xs mb-3">Ascolta il messaggio prima di inviarlo:</div><audio controls class="w-full mt-2" style="height: 40px;"><source src="${e.target.result}" type="${finalMime}"></audio>`,
                                 showCancelButton: true, confirmButtonText: 'INVIA VOCALE', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff'
                             }).then((res) => { if(res.isConfirmed) window.inviaNuovo("🎤 MESSAGGIO VOCALE", { mediaUrl: e.target.result, mediaType: 'AUDIO' }); });
                         }; reader.readAsDataURL(audioBlob);
                     };
                     
-                    mediaRecorder.start(); 
+                    // Richiede dati in pezzetti (Risolve il bug di tempo zero)
+                    mediaRecorder.start(500); 
                     
+                    // Avvio Grafica e Cronometro
                     btn.classList.add('pulse-red-border');
                     btn.style.backgroundColor = 'rgba(220, 38, 38, 0.2)';
                     icon.innerText = "🔴";
                     icon.classList.add('animate-pulse');
-                    txt.innerText = "STOP REC";
+                    
+                    recSeconds = 0;
+                    txt.innerText = "REC 0:00";
                     txt.classList.replace('text-slate-300', 'text-red-400');
+                    
+                    recTimer = setInterval(() => {
+                        recSeconds++;
+                        const m = Math.floor(recSeconds / 60);
+                        const s = (recSeconds % 60).toString().padStart(2, '0');
+                        txt.innerText = `REC ${m}:${s}`;
+                    }, 1000);
                     
                 } catch(err) { 
                     Swal.fire({ title: 'Microfono Bloccato', html: 'Assicurati di aver dato i permessi.', icon: 'error', background: '#1e293b', color: '#fff' }); 
                 }
             } else {
                 mediaRecorder.stop(); 
+                clearInterval(recTimer);
                 btn.classList.remove('pulse-red-border');
                 btn.style.backgroundColor = '';
                 icon.innerText = "🎤";
@@ -547,7 +539,7 @@
             if(lat && lng) window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank');
         };
 
-        // --- ASCOLTO DATI DA SALA RADIO E GESTIONE RISPOSTE ---
+        // --- ASCOLTO DATI DA SALA RADIO E GESTIONE VIBRAZIONI ---
         onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
             const data = snap.val(); if (!data) return;
             const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
@@ -566,6 +558,12 @@
                 }
 
                 if (target.stato === 'ATTESA') {
+                    // SE IL TARGET E' NUOVO, VIBRA FORTE (Allarme)
+                    if (window.lastNotifiedTargetId !== target.id) {
+                        if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000]);
+                        window.lastNotifiedTargetId = target.id;
+                    }
+
                     banner.className = "shrink-0 w-full bg-red-900/80 rounded-xl p-2.5 border pulse-red-border shadow-lg flex flex-col gap-2";
                     banner.innerHTML = `
                         <div class="flex items-center gap-2">
@@ -610,6 +608,14 @@
             }
 
             if (lastMsgText) {
+                // SE IL MESSAGGIO E' NUOVO E PROVIENE DALLA SALA, VIBRA LEGGERO
+                if (window.lastNotifiedMsgTime !== lastMsgTime) {
+                    if (isBroadcast || myLogs.find(l => l.ora === lastMsgTime && l.dir === 'SA')) {
+                        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+                    }
+                    window.lastNotifiedMsgTime = lastMsgTime;
+                }
+
                 msgBanner.style.display = 'flex';
                 document.getElementById('last-msg-time').innerText = lastMsgTime;
                 document.getElementById('last-msg-text').innerText = `"${lastMsgText}"`;
@@ -625,7 +631,6 @@
             } else { msgBanner.style.display = 'none'; }
         });
 
-        // --- ASCOLTO BLOCCO APP, STATO E CAPOSQUADRA ---
         onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => {
             const sq = snap.val();
             if (sq) {
