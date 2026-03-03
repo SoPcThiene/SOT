@@ -83,22 +83,25 @@
         <p class="text-slate-400 text-[11px] uppercase tracking-widest leading-relaxed text-center">App temporaneamente bloccata<br>dalla Sala Radio</p>
     </div>
 
-    <header class="px-3 py-2 bg-slate-900 border-b border-slate-800 flex justify-between items-center shrink-0 shadow-md h-[60px]">
-        <div class="flex items-center gap-3">
-            <div class="bg-slate-800 p-0.5 rounded-full h-10 w-10 flex items-center justify-center overflow-hidden shadow-inner shrink-0 border border-slate-700">
+    <header class="px-3 py-2.5 bg-slate-900 border-b border-slate-700 flex justify-between items-center shrink-0 shadow-lg">
+        <div class="flex items-center gap-3 w-full">
+            <div class="bg-slate-800 p-1 rounded-lg h-12 w-12 flex items-center justify-center overflow-hidden shadow-inner shrink-0 border border-slate-600">
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-md" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-xl\'>🛡️</span>';">
             </div>
-            <div class="flex flex-col">
-                <h1 id="display-sq" class="font-black text-2xl tracking-tighter text-blue-400 leading-none">---</h1>
-                <div id="current-status" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">ATTESA...</div>
-            </div>
-        </div>
-        
-        <div class="text-right flex flex-col items-end shrink-0 gap-1">
-            <div id="clock" class="font-mono text-lg font-bold text-yellow-500 leading-none">00:00</div>
-            <div class="flex gap-1">
-                <div id="gps-badge" class="inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase">GPS AUT</div>
-                <div id="net-badge" class="inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase">ONLINE</div>
+            <div class="flex flex-col flex-1">
+                <div class="flex items-center justify-between">
+                    <h1 id="display-sq" class="font-black text-2xl tracking-tighter text-blue-400 leading-none">---</h1>
+                    <div id="clock" class="font-mono text-base font-bold text-yellow-500 leading-none">00:00</div>
+                </div>
+                <div id="display-capo" class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-1 truncate w-48">CAPO: ---</div>
+                
+                <div class="flex items-center justify-between mt-1">
+                    <div id="current-status" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-900/30 px-1.5 py-0.5 rounded border border-emerald-800">ATTESA...</div>
+                    <div class="flex gap-1">
+                        <div id="gps-badge" class="inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase">GPS AUT</div>
+                        <div id="net-badge" class="inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase">ONLINE</div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -122,9 +125,9 @@
         </div>
 
         <div class="shrink-0 grid grid-cols-3 gap-2">
-            <button onclick="document.getElementById('file-foto').click()" class="btn-media text-white"><span>📷</span><span class="text-[9px] font-bold text-slate-300">FOTO</span></button>
-            <button id="btn-voc" class="btn-media text-white"><span id="voc-icon">🎤</span><span id="voc-txt" class="text-[9px] font-bold text-slate-300">VOCALE</span></button>
-            <button onclick="window.openGPSPanel()" class="btn-media text-emerald-400"><span>📍</span><span class="text-[9px] font-bold text-emerald-500">POSIZIONE</span></button>
+            <button onclick="document.getElementById('file-foto').click()" class="btn-media text-white hover:bg-slate-700"><span>📷</span><span class="text-[9px] font-bold text-slate-300">FOTO</span></button>
+            <button id="btn-voc" class="btn-media text-white hover:bg-slate-700"><span id="voc-icon">🎤</span><span id="voc-txt" class="text-[9px] font-bold text-slate-300">VOCALE</span></button>
+            <button onclick="window.openGPSPanel()" class="btn-media text-emerald-400 hover:bg-slate-700"><span>📍</span><span class="text-[9px] font-bold text-emerald-500">POSIZIONE</span></button>
         </div>
         <input type="file" id="file-foto" accept="image/*" capture="camera" class="hidden" onchange="window.upFoto(this.files[0])">
 
@@ -136,9 +139,13 @@
             <span id="last-msg-text" class="text-[13px] text-white font-medium italic leading-snug"></span>
         </div>
 
-        <div class="mt-auto shrink-0 bg-slate-800/40 p-2 rounded-xl border border-slate-700 flex flex-col gap-2">
-            <textarea id="msg-input" class="w-full bg-slate-900/60 border border-slate-700 rounded-lg p-2.5 text-sm placeholder-slate-500 resize-none h-14 text-white leading-tight" placeholder="Messaggio libero per la sala..."></textarea>
+        <div class="mt-auto shrink-0 bg-slate-800 p-2.5 rounded-xl border border-slate-600 flex flex-col gap-2 shadow-lg">
+            <textarea id="msg-input" class="w-full bg-slate-600 border border-slate-500 rounded-lg p-2.5 text-sm placeholder-slate-300 resize-none h-14 text-white leading-tight focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all" placeholder="Scrivi un messaggio per la sala..."></textarea>
             <button onclick="window.askFreeMsg()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold uppercase text-[11px] shadow-lg active:scale-95 transition-all tracking-widest text-white">Invia alla Sala</button>
+        </div>
+
+        <div class="shrink-0 text-center pb-1 pt-2 opacity-50">
+            <span class="text-[9px] font-bold text-slate-400 tracking-widest uppercase">System Powered by Jokart</span>
         </div>
 
     </main>
@@ -194,7 +201,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
         
-        // Se sqIdRaw è nullo, o è la stringa "undefined", o è vuoto, lo blocchiamo
         if (!sqIdRaw || sqIdRaw === "undefined" || sqIdRaw.trim() === "") {
             document.body.innerHTML = `
                 <div class="h-screen bg-slate-900 flex items-center justify-center p-6 text-center">
@@ -241,12 +247,11 @@
         let viaAttiva = localStorage.getItem('app_ultima_via') || "";
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
-        // --- MOTORE DI INVIO DATI (CON CONTROLLO GPS) ---
+        // --- MOTORE DI INVIO DATI ---
         window.inviaNuovo = async (testo, extra = {}) => {
             const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             let pos = { lat: '', lng: '' };
             
-            // INVIA POSIZIONE AUTOMATICA SOLO SE IL TOGGLE È ON
             if (window.gpsAutoEnabled && navigator.geolocation) {
                 try {
                     const p = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 4000, maximumAge: 10000 }));
@@ -360,7 +365,7 @@
             }; reader.readAsDataURL(f);
         };
 
-        // --- MOTORE AUDIO ---
+        // --- MOTORE AUDIO CORRETTO ---
         let mediaRecorder; let audioChunks = [];
         document.getElementById('btn-voc').onclick = async () => {
             const btn = document.getElementById('btn-voc');
@@ -376,6 +381,9 @@
                     mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
                     
                     mediaRecorder.onstop = () => {
+                        // LA MODIFICA È QUI: Fermiamo i binari dell'audio SOLO DOPO che la registrazione è finita
+                        stream.getTracks().forEach(t => t.stop()); 
+                        
                         const audioBlob = new Blob(audioChunks); 
                         const reader = new FileReader();
                         reader.onload = (e) => {
@@ -400,8 +408,8 @@
                     Swal.fire({ title: 'Microfono Bloccato', html: 'Assicurati di aver dato i <b>Permessi</b> al microfono.<br><br><b>Per iPhone (Safari):</b><br>1. Vai su Impostazioni > Safari > Microfono<br>2. Imposta su "Consenti".', icon: 'error', background: '#1e293b', color: '#fff' }); 
                 }
             } else {
+                // Ferma semplicemente il registratore. L'evento onstop farà il resto!
                 mediaRecorder.stop(); 
-                mediaRecorder.stream.getTracks().forEach(t => t.stop()); 
                 
                 btn.classList.remove('pulse-red-border');
                 btn.style.backgroundColor = '';
@@ -557,11 +565,22 @@
             } else { msgBanner.style.display = 'none'; }
         });
 
-        // --- ASCOLTO BLOCCO APP E STATO ---
+        // --- ASCOLTO BLOCCO APP, STATO E CAPOSQUADRA ---
         onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => {
             const sq = snap.val();
             if (sq) {
+                // Aggiorna Nome Caposquadra
+                const capoDisplay = document.getElementById('display-capo');
+                if(sq.capo) {
+                    capoDisplay.innerText = `CAPO: ${sq.capo.toUpperCase()}`;
+                } else {
+                    capoDisplay.innerText = "CAPO: N/D";
+                }
+
+                // Aggiorna stato attuale
                 document.getElementById('current-status').innerText = sq.stato ? sq.stato.toUpperCase() : 'ATTESA';
+                
+                // Gestione schermata blocco
                 const offScreen = document.getElementById('off-screen');
                 if (sq.attiva === false) { offScreen.style.display = 'flex'; } 
                 else { offScreen.style.display = 'none'; }
