@@ -128,9 +128,9 @@
 
     <div id="team-select-screen" style="display: none;">
         
-        <div class="relative h-60 w-60 shrink-0 mb-4 mx-auto rounded-full glow-logo-blue logo-container">
+        <div class="relative h-52 w-52 shrink-0 mb-4 mx-auto rounded-full glow-logo-blue logo-container">
             <div class="chasing-border-blue"></div>
-            <div class="inner-circle p-7">
+            <div class="inner-circle p-2">
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl relative z-20">
             </div>
         </div>
@@ -168,9 +168,9 @@
 
     <div id="login-screen" style="display: none;">
         
-        <div class="relative h-60 w-60 shrink-0 mb-4 mx-auto rounded-full glow-logo-blue logo-container">
+        <div class="relative h-52 w-52 shrink-0 mb-4 mx-auto rounded-full glow-logo-blue logo-container">
             <div class="chasing-border-blue"></div>
-            <div class="inner-circle p-7">
+            <div class="inner-circle p-2">
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl relative z-20">
             </div>
         </div>
@@ -201,9 +201,9 @@
 
     <div id="off-screen" style="display: none;">
         
-        <div class="relative h-60 w-60 shrink-0 mb-6 mx-auto rounded-full glow-logo-red logo-container">
+        <div class="relative h-52 w-52 shrink-0 mb-6 mx-auto rounded-full glow-logo-red logo-container">
             <div class="chasing-border-red"></div>
-            <div class="inner-circle p-7">
+            <div class="inner-circle p-2">
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain grayscale opacity-60 drop-shadow-2xl relative z-20">
             </div>
         </div>
@@ -314,7 +314,7 @@
         window.targetCompletato = null;
         let liveTrackingTimer = null;
 
-        // Recupero preferenze salvate (funzioni di memoria richieste)
+        // Recupero preferenze salvate
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
         window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
@@ -324,7 +324,7 @@
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
         // -----------------------------------------------------
-        // 1. GESTIONE SELEZIONE SQUADRA CON MEMORIA
+        // 1. GESTIONE SELEZIONE SQUADRA
         // -----------------------------------------------------
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
@@ -332,7 +332,7 @@
 
         if (sqIdRaw && sqIdRaw.trim() !== "") {
             sqId = sqIdRaw.trim().toUpperCase();
-            localStorage.setItem('pc_app_saved_team', sqId); // Salva ID per il futuro
+            localStorage.setItem('pc_app_saved_team', sqId); 
             window.history.replaceState({}, document.title, window.location.pathname);
             verificaSquadraELogin();
         } else if (savedSqId) {
@@ -367,7 +367,7 @@
         window.saveNewTeam = () => {
             const val = document.getElementById('team-input').value.trim().toUpperCase();
             if (val === '') return;
-            localStorage.setItem('pc_app_saved_team', val); // Salva identificativo
+            localStorage.setItem('pc_app_saved_team', val);
             location.reload();
         };
 
@@ -400,7 +400,7 @@
 
         window.checkPin = () => {
             if(document.getElementById('pin-input').value === '2026') {
-                localStorage.setItem('pc_app_auth', 'true'); // Memoria login
+                localStorage.setItem('pc_app_auth', 'true'); 
                 document.getElementById('login-screen').style.display = 'none';
                 update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() });
                 avviaMotoreApp();
@@ -412,7 +412,6 @@
 
         window.logoutApp = (isAuto = false) => {
             if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-            // CANCELLA TUTTI I DATI SALVATI
             localStorage.clear();
             if (isAuto) {
                 Swal.fire({
@@ -470,11 +469,11 @@
                 if (target) {
                     idSalaAttivo = target.id;
                     viaAttiva = target.m1.replace('📍', '').trim();
-                    localStorage.setItem('app_ultima_via', viaAttiva); // Salva via attiva
+                    localStorage.setItem('app_ultima_via', viaAttiva);
                     
                     if (target.lat && target.lng) { 
                         ultimaPos = { lat: target.lat, lng: target.lng }; 
-                        localStorage.setItem('app_ultima_pos', JSON.stringify(ultimaPos)); // Salva posizione attiva
+                        localStorage.setItem('app_ultima_pos', JSON.stringify(ultimaPos)); 
                     }
 
                     if (target.stato === 'ATTESA') {
