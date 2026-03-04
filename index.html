@@ -22,23 +22,23 @@
             color: white; 
             height: 100vh; 
             height: 100dvh; 
-            overflow: hidden; /* BLOCCA LO SCORRIMENTO DI TUTTA L'APP */
+            overflow: hidden; /* NESSUN SCORRIMENTO */
             display: flex; 
             flex-direction: column; 
             margin: 0; 
             font-weight: 500; 
         }
         
-        /* SCHERMATE DI SISTEMA COMPLETAMENTE FISSE E CENTRATE */
+        /* SCHERMATE DI SISTEMA FISSE */
         #off-screen, #login-screen, #team-select-screen { 
             position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; padding: 16px; text-align: center; 
-            background: #020617; overflow: hidden; /* NESSUNO SCORRIMENTO */
+            background: #020617; overflow: hidden; 
         }
         #login-screen { z-index: 20000; } 
         #team-select-screen { z-index: 30000; }
 
-        /* BOTTONI OPERATIVI */
+        /* BOTTONI OPERATIVI APP */
         .btn-status { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             border-radius: 12px; transition: 0.2s; border-bottom-width: 4px; 
@@ -58,7 +58,6 @@
         
         /* EFFETTI LUCE E ANIMAZIONI */
         .glow-blue { box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
-        .glow-logo { box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(0,0,0,0.5); }
         
         .pulse-red-border { animation: p-red-border 1.5s infinite; border: 2px solid #ef4444; }
         @keyframes p-red-border { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
@@ -79,14 +78,15 @@
 
     <div id="team-select-screen" style="display: none;">
         
-        <div class="bg-slate-800 p-4 rounded-full h-32 w-32 flex shrink-0 items-center justify-center border-4 border-slate-700 mb-4 mx-auto glow-logo">
-            <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-lg">
+        <div class="relative h-44 w-44 flex shrink-0 items-center justify-center mb-4 mx-auto">
+            <div class="absolute inset-4 bg-white/20 rounded-full blur-2xl"></div>
+            <img src="logosala.png" alt="Logo" class="relative z-10 w-full h-full object-contain drop-shadow-2xl">
         </div>
         
-        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase">PC Thiene</h1>
+        <h1 class="font-black text-xl sm:text-2xl mb-1 text-white tracking-tight uppercase leading-none">Protezione Civile Thiene</h1>
         <h2 class="font-bold text-xs mb-4 text-emerald-400 tracking-widest uppercase text-center">Assegnazione Turno</h2>
         
-        <div class="bg-slate-800/80 border border-slate-600 rounded-2xl p-4 w-full max-w-[320px] shadow-2xl flex flex-col items-center backdrop-blur-sm">
+        <div class="relative z-20 bg-slate-800/80 border border-slate-600 rounded-2xl p-4 w-full max-w-[320px] shadow-2xl flex flex-col items-center backdrop-blur-sm mb-6">
             
             <button id="btn-install-manual" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-[10px] mb-4 text-white glow-blue animate-pulse">
                 📲 INSTALLA APP SULLA HOME
@@ -108,45 +108,61 @@
                 CONFERMA SQUADRA
             </button>
         </div>
+
+        <div class="absolute bottom-4 left-0 w-full text-center opacity-60">
+            <span class="text-[9px] font-bold text-slate-400 tracking-widest uppercase">System Powered by <span class="text-white">Jok</span><span class="text-red-500">art</span></span>
+        </div>
     </div>
 
     <div id="login-screen" style="display: none;">
         
-        <div class="bg-slate-800 p-4 rounded-full h-32 w-32 flex shrink-0 items-center justify-center border-4 border-slate-700 mb-4 mx-auto glow-logo">
-            <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-lg">
+        <div class="relative h-44 w-44 flex shrink-0 items-center justify-center mb-4 mx-auto">
+            <div class="absolute inset-4 bg-white/20 rounded-full blur-2xl"></div>
+            <img src="logosala.png" alt="Logo" class="relative z-10 w-full h-full object-contain drop-shadow-2xl">
         </div>
         
-        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase text-center">PC Thiene</h1>
+        <h1 class="font-black text-xl sm:text-2xl mb-1 text-white tracking-tight uppercase leading-none text-center">Protezione Civile Thiene</h1>
         <h2 class="font-bold text-xs mb-6 text-blue-400 tracking-widest uppercase text-center">SBLOCCO TERMINALE</h2>
         
-        <button id="btn-install-login" style="display:none;" class="w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-[10px] mb-5 text-white glow-blue animate-pulse">
+        <button id="btn-install-login" style="display:none;" class="w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-[10px] mb-5 text-white glow-blue animate-pulse relative z-20">
             📲 INSTALLA APP SULLA HOME
         </button>
 
-        <p class="text-slate-400 text-xs mb-3">Codice di sicurezza per <b id="login-sq-name" class="text-white text-sm">...</b></p>
+        <p class="text-slate-400 text-xs mb-3 relative z-20">Codice di sicurezza per <b id="login-sq-name" class="text-white text-sm">...</b></p>
         
-        <input type="password" id="pin-input" class="bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-4xl text-white py-3 w-full max-w-[250px] mb-5 tracking-[0.5em] outline-none focus:border-blue-500 transition-colors shadow-inner" placeholder="****" inputmode="numeric" maxlength="4">
+        <input type="password" id="pin-input" class="relative z-20 bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-4xl text-white py-3 w-full max-w-[250px] mb-5 tracking-[0.5em] outline-none focus:border-blue-500 transition-colors shadow-inner" placeholder="****" inputmode="numeric" maxlength="4">
         
-        <button onclick="window.checkPin()" class="w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-3.5 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white tracking-widest">
+        <button onclick="window.checkPin()" class="relative z-20 w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-3.5 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white tracking-widest">
             SBLOCCA APP
         </button>
         
-        <button onclick="window.logoutApp(false)" class="mt-6 text-[10px] font-bold text-slate-500 underline uppercase tracking-widest">
+        <button onclick="window.logoutApp(false)" class="relative z-20 mt-6 text-[10px] font-bold text-slate-500 underline uppercase tracking-widest">
             🔄 Cambia Squadra
         </button>
+
+        <div class="absolute bottom-4 left-0 w-full text-center opacity-60">
+            <span class="text-[9px] font-bold text-slate-400 tracking-widest uppercase">System Powered by <span class="text-white">Jok</span><span class="text-red-500">art</span></span>
+        </div>
     </div>
 
     <div id="off-screen" style="display: none;">
-        <div class="bg-slate-800/50 p-4 rounded-full h-32 w-32 flex shrink-0 items-center justify-center border border-slate-700 mb-6 drop-shadow-2xl">
-            <img src="logosala.png" alt="Logo" class="w-full h-full object-contain grayscale opacity-60">
+        
+        <div class="relative h-44 w-44 flex shrink-0 items-center justify-center mb-6 mx-auto">
+            <div class="absolute inset-4 bg-white/5 rounded-full blur-2xl"></div>
+            <img src="logosala.png" alt="Logo" class="relative z-10 w-full h-full object-contain grayscale opacity-60 drop-shadow-2xl">
         </div>
-        <h1 class="font-black text-3xl mb-3 text-white tracking-tight uppercase">PC Thiene</h1>
-        <div class="bg-red-500/10 border border-red-500/30 px-6 py-3 rounded-full mb-6 shadow-lg">
+        
+        <h1 class="font-black text-3xl mb-3 text-white tracking-tight uppercase text-center leading-none">Protezione Civile<br>Thiene</h1>
+        <div class="bg-red-500/10 border border-red-500/30 px-6 py-3 rounded-full mb-6 shadow-lg relative z-20">
             <h2 class="font-bold text-sm text-red-400 tracking-widest uppercase flex items-center gap-2">
                 <span class="animate-pulse text-red-500">●</span> Standby Operativo
             </h2>
         </div>
-        <p class="text-slate-400 text-[11px] uppercase tracking-widest leading-relaxed text-center">App temporaneamente bloccata<br>dalla Sala Radio</p>
+        <p class="text-slate-400 text-xs uppercase tracking-widest leading-relaxed text-center relative z-20">App temporaneamente bloccata<br>dalla Sala Radio</p>
+
+        <div class="absolute bottom-4 left-0 w-full text-center opacity-60">
+            <span class="text-[9px] font-bold text-slate-400 tracking-widest uppercase">System Powered by <span class="text-white">Jok</span><span class="text-red-500">art</span></span>
+        </div>
     </div>
 
     <header class="px-3 py-2.5 bg-slate-900 border-b border-slate-700 flex justify-between items-center shrink-0 shadow-lg">
@@ -155,7 +171,7 @@
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain">
             </div>
             <div class="flex flex-col flex-1">
-                <div class="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 leading-none">PC Thiene <span class="text-blue-500 font-black">•</span> Terminale</div>
+                <div class="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 leading-none">Protezione Civile Thiene <span class="text-blue-500 font-black">•</span> Terminale</div>
                 <div class="flex items-center justify-between">
                     <h1 id="display-sq" class="font-black text-2xl tracking-tighter text-blue-400 leading-none">---</h1>
                     <div id="clock" class="font-mono text-base font-bold text-yellow-500 leading-none">00:00</div>
@@ -217,7 +233,7 @@
             </button>
         </div>
 
-        <div class="shrink-0 text-center pb-1 pt-2 opacity-80">
+        <div class="shrink-0 text-center pb-1 pt-2 opacity-60">
             <span class="text-[9px] font-bold text-slate-400 tracking-widest uppercase">System Powered by <span class="text-white">Jok</span><span class="text-red-500">art</span></span>
         </div>
     </main>
@@ -242,7 +258,6 @@
         window.targetCompletato = null;
         let liveTrackingTimer = null;
 
-        // Recupero preferenze salvate
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
         window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
