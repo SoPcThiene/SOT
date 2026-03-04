@@ -35,9 +35,9 @@
             align-items: center; justify-content: center; padding: 24px; text-align: center; background: #020617; 
         }
         #login-screen { z-index: 20000; } 
-        #team-select-screen { z-index: 30000; overflow-y: auto; justify-content: flex-start; padding-top: 40px;}
+        #team-select-screen { z-index: 30000; overflow-y: auto; justify-content: flex-start; padding-top: 50px;}
 
-        /* BOTTONI OPERATIVI */
+        /* BOTTONI OPERATIVI (DENTRO L'APP) */
         .btn-status { 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             border-radius: 12px; transition: 0.2s; border-bottom-width: 4px; 
@@ -55,7 +55,9 @@
         .btn-media span:first-child { font-size: 20px; margin-bottom: 2px; }
         .btn-media:active { background: #334155; transform: scale(0.95); }
         
-        /* ANIMAZIONI */
+        /* ANIMAZIONI E GLOW */
+        .glow-blue { box-shadow: 0 0 20px rgba(37, 99, 235, 0.6); }
+        
         .pulse-red-border { animation: p-red-border 1.5s infinite; border: 2px solid #ef4444; }
         @keyframes p-red-border { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
         
@@ -74,66 +76,80 @@
 <body>
 
     <div id="team-select-screen" style="display: none;">
-        <div class="bg-slate-800 p-4 rounded-full h-24 w-24 flex shrink-0 items-center justify-center border border-slate-700 mb-4 mx-auto">
+        
+        <div class="h-36 w-36 flex shrink-0 items-center justify-center mb-6 mx-auto drop-shadow-2xl">
             <img src="logosala.png" alt="Logo" class="w-full h-full object-contain">
         </div>
-        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase">PC Thiene</h1>
-        <h2 class="font-bold text-sm mb-6 text-emerald-400 tracking-widest uppercase text-center">Assegnazione Turno</h2>
         
-        <div class="bg-slate-800/80 border border-slate-600 rounded-xl p-4 w-full max-w-[320px] shadow-lg flex flex-col items-center">
+        <h1 class="font-black text-3xl mb-1 text-white tracking-tight uppercase">PC Thiene</h1>
+        <h2 class="font-bold text-sm mb-8 text-emerald-400 tracking-widest uppercase text-center">Assegnazione Turno</h2>
+        
+        <div class="bg-slate-800/80 border border-slate-600 rounded-2xl p-5 w-full max-w-[340px] shadow-2xl flex flex-col items-center backdrop-blur-sm">
             
-            <button id="btn-install-manual" style="display:none;" class="w-full bg-blue-600 py-3 rounded-lg font-bold uppercase text-[10px] mb-4 text-white shadow-xl animate-bounce">
+            <button id="btn-install-manual" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-4 rounded-xl font-black uppercase text-xs mb-6 text-white glow-blue animate-pulse">
                 📲 INSTALLA APP SULLA HOME
             </button>
 
-            <div id="qr-reader" class="w-full bg-black rounded-lg overflow-hidden mb-3" style="display: none;"></div>
+            <div id="qr-reader" class="w-full bg-black rounded-xl overflow-hidden mb-4 border border-slate-600 shadow-inner" style="display: none;"></div>
             
-            <button onclick="window.startQRScanner()" id="btn-start-qr" class="w-full bg-slate-700 py-3 rounded-lg font-bold uppercase text-xs mb-6 text-white flex items-center justify-center gap-2">
-                <span>📷</span> SCANSIONA QR DELLA SALA
+            <button onclick="window.startQRScanner()" id="btn-start-qr" class="w-full bg-gradient-to-r from-slate-700 to-slate-600 border border-slate-500 hover:from-slate-600 hover:to-slate-500 py-4 rounded-xl font-bold uppercase text-sm mb-6 text-white flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
+                <span class="text-2xl">📷</span> SCANSIONA QR SALA
             </button>
             
             <div class="w-full h-px bg-slate-600 mb-6 relative">
-                <span class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-800 px-2 text-[9px] text-slate-400 font-bold uppercase tracking-widest">Oppure manuale</span>
+                <span class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-800 px-3 py-0.5 rounded-full text-[10px] text-slate-400 font-bold uppercase tracking-widest border border-slate-700">Oppure manuale</span>
             </div>
 
-            <input type="text" id="team-input" class="bg-slate-900 border-2 border-slate-600 rounded-lg text-center text-2xl text-white py-3 w-full tracking-widest outline-none focus:border-emerald-500 transition-colors uppercase mb-3" placeholder="Es. SQ1">
-            <button onclick="window.saveNewTeam()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3 rounded-lg font-bold uppercase text-xs shadow-lg active:scale-95 transition-all text-white uppercase tracking-widest">Conferma ID</button>
+            <input type="text" id="team-input" class="bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-3xl text-white py-4 w-full tracking-widest outline-none focus:border-emerald-500 transition-colors uppercase mb-4 shadow-inner" placeholder="Es. SQ1">
+            
+            <button onclick="window.saveNewTeam()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 py-4 rounded-xl font-black uppercase text-sm shadow-lg active:scale-95 transition-all text-white tracking-widest">
+                CONFERMA ID
+            </button>
         </div>
     </div>
 
     <div id="login-screen" style="display: none;">
-        <div class="bg-slate-800 p-4 rounded-full h-32 w-32 flex items-center justify-center border border-slate-700 mb-6">
+        
+        <div class="h-36 w-36 flex items-center justify-center mb-6 mx-auto drop-shadow-2xl">
             <img src="logosala.png" alt="Logo" class="w-full h-full object-contain">
         </div>
-        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase text-center">Protezione Civile Thiene</h1>
-        <h2 class="font-bold text-md mb-8 text-blue-400 tracking-widest uppercase">APP CAPOSQUADRA</h2>
         
-        <button id="btn-install-login" style="display:none;" class="w-full max-w-[200px] bg-blue-600 py-3 rounded-lg font-bold uppercase text-[10px] mb-6 text-white shadow-xl animate-bounce">
+        <h1 class="font-black text-3xl mb-1 text-white tracking-tight uppercase text-center">PC Thiene</h1>
+        <h2 class="font-bold text-sm mb-8 text-blue-400 tracking-widest uppercase text-center">SBLOCCO TERMINALE</h2>
+        
+        <button id="btn-install-login" style="display:none;" class="w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 py-4 rounded-xl font-black uppercase text-xs mb-6 text-white glow-blue animate-pulse">
             📲 INSTALLA APP SULLA HOME
         </button>
 
-        <p class="text-slate-400 text-xs mb-4">Codice di sicurezza per <b id="login-sq-name" class="text-white">...</b></p>
-        <input type="password" id="pin-input" class="bg-slate-900 border-2 border-slate-700 rounded-xl text-center text-3xl text-white py-3 w-full max-w-[200px] mb-6 tracking-widest outline-none focus:border-blue-500 transition-colors" placeholder="****" inputmode="numeric" maxlength="4">
-        <button onclick="window.checkPin()" class="w-full max-w-[200px] bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold uppercase text-sm shadow-lg active:scale-95 transition-all text-white">SBLOCCA APP</button>
-        <button onclick="window.logoutApp(false)" class="mt-8 text-[10px] text-slate-500 underline uppercase">Cambia Squadra</button>
+        <p class="text-slate-400 text-xs mb-4">Codice di sicurezza per <b id="login-sq-name" class="text-white text-sm">...</b></p>
+        
+        <input type="password" id="pin-input" class="bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-4xl text-white py-4 w-full max-w-[250px] mb-6 tracking-[0.5em] outline-none focus:border-blue-500 transition-colors shadow-inner" placeholder="****" inputmode="numeric" maxlength="4">
+        
+        <button onclick="window.checkPin()" class="w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-4 rounded-xl font-black uppercase text-sm shadow-lg active:scale-95 transition-all text-white tracking-widest">
+            SBLOCCA APP
+        </button>
+        
+        <button onclick="window.logoutApp(false)" class="mt-8 text-[11px] font-bold text-slate-500 underline uppercase tracking-widest">
+            🔄 Cambia Squadra
+        </button>
     </div>
 
     <div id="off-screen" style="display: none;">
-        <div class="bg-slate-800/50 p-4 rounded-full h-32 w-32 flex items-center justify-center border border-slate-700 mb-6">
+        <div class="h-36 w-36 flex items-center justify-center mb-6 drop-shadow-2xl">
             <img src="logosala.png" alt="Logo" class="w-full h-full object-contain grayscale opacity-60">
         </div>
-        <h1 class="font-black text-3xl mb-3 text-white tracking-tight uppercase">PC Thiene</h1>
-        <div class="bg-red-500/10 border border-red-500/30 px-5 py-2.5 rounded-full mb-6 shadow-lg">
+        <h1 class="font-black text-4xl mb-3 text-white tracking-tight uppercase">PC Thiene</h1>
+        <div class="bg-red-500/10 border border-red-500/30 px-6 py-3 rounded-full mb-6 shadow-lg">
             <h2 class="font-bold text-sm text-red-400 tracking-widest uppercase flex items-center gap-2">
                 <span class="animate-pulse text-red-500">●</span> Standby Operativo
             </h2>
         </div>
-        <p class="text-slate-400 text-[11px] uppercase tracking-widest leading-relaxed text-center">App temporaneamente bloccata<br>dalla Sala Radio</p>
+        <p class="text-slate-400 text-xs uppercase tracking-widest leading-relaxed text-center">App temporaneamente bloccata<br>dalla Sala Radio</p>
     </div>
 
     <header class="px-3 py-2.5 bg-slate-900 border-b border-slate-700 flex justify-between items-center shrink-0 shadow-lg">
         <div class="flex items-center gap-3 w-full">
-            <div class="bg-slate-800 p-1.5 rounded-lg h-12 w-12 flex items-center justify-center overflow-hidden shrink-0 border border-slate-600">
+            <div class="h-12 w-12 flex items-center justify-center overflow-hidden shrink-0 drop-shadow-md">
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain">
             </div>
             <div class="flex flex-col flex-1">
@@ -208,6 +224,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, update, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
+        // Configurazione Database
         const firebaseConfig = { 
             apiKey: "AIzaSyDMcnP_3TD1h9fYobsN6PN5aNGDGHe1y0c", 
             databaseURL: "https://so-pcthiene-default-rtdb.europe-west1.firebasedatabase.app" 
@@ -215,6 +232,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Variabili globali per stato e notifiche
         let sqId = null;
         window.lastNotifiedTargetId = null;
         window.lastNotifiedMsgTime = null;
@@ -222,6 +240,7 @@
         window.targetCompletato = null;
         let liveTrackingTimer = null;
 
+        // Recupero preferenze salvate
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
         window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
@@ -230,7 +249,9 @@
         let viaAttiva = localStorage.getItem('app_ultima_via') || "";
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
+        // -----------------------------------------------------
         // 1. GESTIONE SELEZIONE SQUADRA
+        // -----------------------------------------------------
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
         const savedSqId = localStorage.getItem('pc_app_saved_team');
@@ -247,7 +268,9 @@
             document.getElementById('team-select-screen').style.display = 'flex';
         }
 
-        // 2. FUNZIONI SCANNER QR
+        // -----------------------------------------------------
+        // 2. FUNZIONI SCANNER QR E INSERIMENTO MANUALE
+        // -----------------------------------------------------
         let html5QrcodeScanner = null;
         window.startQRScanner = () => {
             document.getElementById('btn-start-qr').style.display = 'none';
@@ -274,7 +297,9 @@
             location.reload();
         };
 
+        // -----------------------------------------------------
         // 3. VERIFICA SQUADRA E LOGIN
+        // -----------------------------------------------------
         function verificaSquadraELogin() {
             document.getElementById('display-sq').innerText = sqId;
             document.getElementById('login-sq-name').innerText = sqId;
@@ -331,7 +356,9 @@
             }
         };
 
-        // 4. MOTORE OPERATIVO
+        // -----------------------------------------------------
+        // 4. MOTORE OPERATIVO PRINCIPALE
+        // -----------------------------------------------------
         function avviaMotoreApp() {
             updateGpsBadge();
             if(window.liveTrackingEnabled) window.startLiveTracking();
@@ -714,26 +741,25 @@
 
         let deferredPrompt;
         
-        // Collega i due bottoni di installazione
         const btnInstallManual = document.getElementById('btn-install-manual');
         const btnInstallLogin = document.getElementById('btn-install-login');
 
         window.addEventListener('beforeinstallprompt', (e) => {
+            // Previene la visualizzazione del mini-banner di default
             e.preventDefault();
+            // Salva l'evento
             deferredPrompt = e;
             
-            // Accende entrambi i bottoni, in base a dove si trova il volontario
+            // Fa apparire i tasti di installazione dove serve
             if(btnInstallManual) btnInstallManual.style.display = 'block';
             if(btnInstallLogin) btnInstallLogin.style.display = 'block';
         });
 
-        // Crea una funzione unica per avviare l'installazione
         async function installaApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
-                    // Nasconde i bottoni a installazione riuscita
                     if(btnInstallManual) btnInstallManual.style.display = 'none';
                     if(btnInstallLogin) btnInstallLogin.style.display = 'none';
                 }
@@ -741,7 +767,6 @@
             }
         }
 
-        // Assegna la funzione al click dei bottoni
         if(btnInstallManual) btnInstallManual.addEventListener('click', installaApp);
         if(btnInstallLogin) btnInstallLogin.addEventListener('click', installaApp);
     </script>
