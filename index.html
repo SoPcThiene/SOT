@@ -78,7 +78,7 @@
             <img src="logosala.png" alt="Logo" class="w-full h-full object-contain">
         </div>
         <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase">PC Thiene</h1>
-        <h2 class="font-bold text-sm mb-6 text-emerald-400 tracking-widest uppercase">Assegnazione Turno</h2>
+        <h2 class="font-bold text-sm mb-6 text-emerald-400 tracking-widest uppercase text-center">Assegnazione Turno</h2>
         
         <div class="bg-slate-800/80 border border-slate-600 rounded-xl p-4 w-full max-w-[320px] shadow-lg flex flex-col items-center">
             
@@ -93,7 +93,7 @@
             </button>
             
             <div class="w-full h-px bg-slate-600 mb-6 relative">
-                <span class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-800 px-2 text-[9px] text-slate-400 font-bold uppercase">Oppure inserimento manuale</span>
+                <span class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-800 px-2 text-[9px] text-slate-400 font-bold uppercase tracking-widest">Oppure manuale</span>
             </div>
 
             <input type="text" id="team-input" class="bg-slate-900 border-2 border-slate-600 rounded-lg text-center text-2xl text-white py-3 w-full tracking-widest outline-none focus:border-emerald-500 transition-colors uppercase mb-3" placeholder="Es. SQ1">
@@ -107,6 +107,11 @@
         </div>
         <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase text-center">Protezione Civile Thiene</h1>
         <h2 class="font-bold text-md mb-8 text-blue-400 tracking-widest uppercase">APP CAPOSQUADRA</h2>
+        
+        <button id="btn-install-login" style="display:none;" class="w-full max-w-[200px] bg-blue-600 py-3 rounded-lg font-bold uppercase text-[10px] mb-6 text-white shadow-xl animate-bounce">
+            📲 INSTALLA APP SULLA HOME
+        </button>
+
         <p class="text-slate-400 text-xs mb-4">Codice di sicurezza per <b id="login-sq-name" class="text-white">...</b></p>
         <input type="password" id="pin-input" class="bg-slate-900 border-2 border-slate-700 rounded-xl text-center text-3xl text-white py-3 w-full max-w-[200px] mb-6 tracking-widest outline-none focus:border-blue-500 transition-colors" placeholder="****" inputmode="numeric" maxlength="4">
         <button onclick="window.checkPin()" class="w-full max-w-[200px] bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold uppercase text-sm shadow-lg active:scale-95 transition-all text-white">SBLOCCA APP</button>
@@ -203,7 +208,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, update, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-        // Configurazione Database
         const firebaseConfig = { 
             apiKey: "AIzaSyDMcnP_3TD1h9fYobsN6PN5aNGDGHe1y0c", 
             databaseURL: "https://so-pcthiene-default-rtdb.europe-west1.firebasedatabase.app" 
@@ -211,7 +215,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Variabili globali per stato e notifiche
         let sqId = null;
         window.lastNotifiedTargetId = null;
         window.lastNotifiedMsgTime = null;
@@ -219,7 +222,6 @@
         window.targetCompletato = null;
         let liveTrackingTimer = null;
 
-        // Recupero preferenze salvate
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
         window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
@@ -228,9 +230,7 @@
         let viaAttiva = localStorage.getItem('app_ultima_via') || "";
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
-        // -----------------------------------------------------
         // 1. GESTIONE SELEZIONE SQUADRA
-        // -----------------------------------------------------
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
         const savedSqId = localStorage.getItem('pc_app_saved_team');
@@ -247,9 +247,7 @@
             document.getElementById('team-select-screen').style.display = 'flex';
         }
 
-        // -----------------------------------------------------
-        // 2. FUNZIONI SCANNER QR E INSERIMENTO MANUALE
-        // -----------------------------------------------------
+        // 2. FUNZIONI SCANNER QR
         let html5QrcodeScanner = null;
         window.startQRScanner = () => {
             document.getElementById('btn-start-qr').style.display = 'none';
@@ -266,9 +264,7 @@
                     document.getElementById('team-input').value = extractedId.toUpperCase();
                     window.saveNewTeam();
                 }
-            }, (error) => {
-                // Gli errori di scansione vengono ignorati finché non inquadra il QR giusto
-            });
+            }, (error) => {});
         };
 
         window.saveNewTeam = () => {
@@ -278,9 +274,7 @@
             location.reload();
         };
 
-        // -----------------------------------------------------
         // 3. VERIFICA SQUADRA E LOGIN
-        // -----------------------------------------------------
         function verificaSquadraELogin() {
             document.getElementById('display-sq').innerText = sqId;
             document.getElementById('login-sq-name').innerText = sqId;
@@ -329,7 +323,7 @@
             } else {
                 Swal.fire({
                     title: 'DISCONNETTI?',
-                    text: "Tutti i dati verranno eliminati e dovrai inserire la squadra.",
+                    text: "Tutti i dati verranno eliminati.",
                     icon: 'warning', showCancelButton: true, confirmButtonText: 'SÌ, ESCI', confirmButtonColor: '#dc2626', background: '#1e293b', color: '#fff'
                 }).then((r) => {
                     if (r.isConfirmed) location.reload();
@@ -337,19 +331,15 @@
             }
         };
 
-        // -----------------------------------------------------
-        // 4. MOTORE OPERATIVO PRINCIPALE
-        // -----------------------------------------------------
+        // 4. MOTORE OPERATIVO
         function avviaMotoreApp() {
             updateGpsBadge();
             if(window.liveTrackingEnabled) window.startLiveTracking();
 
-            // Orologio
             setInterval(() => { 
                 document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); 
             }, 1000);
 
-            // Timeout 12 Ore Sicurezza
             setInterval(() => { 
                 if (Date.now() - window.ultimoContattoLocale > 43200000) { 
                     update(ref(db, `anagrafica_squadre/${sqId}`), { attiva: false }); 
@@ -357,7 +347,6 @@
                 } 
             }, 60000);
 
-            // Connessione Online/Offline
             onValue(ref(db, ".info/connected"), (snap) => {
                 const badge = document.getElementById('net-badge');
                 if(snap.val() === true) { 
@@ -369,7 +358,6 @@
                 }
             });
 
-            // Ascolto Messaggi e Destinazioni
             onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
                 const data = snap.val(); if (!data) return;
                 const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
@@ -403,7 +391,6 @@
                     window.disegnaBannerUltimaDest();
                 }
 
-                // Ricerca ultimo messaggio di testo
                 const msgBanner = document.getElementById('last-msg-banner');
                 const myLogs = logs.filter(l => l.squadra === sqId || l.squadra === 'COMUNICAZIONE GENERALE');
                 let lastMsgText = null; let lastMsgTime = ''; let isBroadcast = false;
@@ -434,7 +421,6 @@
                 }
             });
 
-            // Ascolto Profilo Anagrafica
             onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => {
                 const sq = snap.val();
                 if (sq) {
@@ -446,9 +432,7 @@
             });
         }
 
-        // -----------------------------------------------------
-        // 5. FUNZIONI GPS, INVIO E MULTIMEDIA
-        // -----------------------------------------------------
+        // 5. FUNZIONI GPS E MULTIMEDIA
         function updateGpsBadge() {
             const badge = document.getElementById('gps-badge');
             if(window.gpsAutoEnabled) { 
@@ -729,31 +713,37 @@
         }
 
         let deferredPrompt;
+        
+        // Collega i due bottoni di installazione
         const btnInstallManual = document.getElementById('btn-install-manual');
+        const btnInstallLogin = document.getElementById('btn-install-login');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Previene la visualizzazione del mini-banner di default
             e.preventDefault();
-            // Salva l'evento per usarlo quando cliccano il tasto
             deferredPrompt = e;
-            // Mostra il pulsante di installazione
-            if(btnInstallManual) {
-                btnInstallManual.style.display = 'block';
-            }
+            
+            // Accende entrambi i bottoni, in base a dove si trova il volontario
+            if(btnInstallManual) btnInstallManual.style.display = 'block';
+            if(btnInstallLogin) btnInstallLogin.style.display = 'block';
         });
 
-        if(btnInstallManual) {
-            btnInstallManual.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        btnInstallManual.style.display = 'none';
-                    }
-                    deferredPrompt = null;
+        // Crea una funzione unica per avviare l'installazione
+        async function installaApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    // Nasconde i bottoni a installazione riuscita
+                    if(btnInstallManual) btnInstallManual.style.display = 'none';
+                    if(btnInstallLogin) btnInstallLogin.style.display = 'none';
                 }
-            });
+                deferredPrompt = null;
+            }
         }
+
+        // Assegna la funzione al click dei bottoni
+        if(btnInstallManual) btnInstallManual.addEventListener('click', installaApp);
+        if(btnInstallLogin) btnInstallLogin.addEventListener('click', installaApp);
     </script>
 </body>
 </html>
