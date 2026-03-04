@@ -672,8 +672,21 @@
     </script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker Registrato!'))
+                    .catch(err => console.log('Errore SW:', err));
+            });
         }
+
+        // Trucco per far apparire il banner di installazione più velocemente
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log("App pronta per essere installata automaticamente");
+        });
     </script>
 </body>
 </html>
+
