@@ -79,26 +79,17 @@
         input:checked + .slider:before { transform: translateX(20px); }
 
         /* =========================================
-           UI SCANNER QR CORRETTA (No Errori Hardware)
+           UI SCANNER QR (Risolti glitch rendering e aspect ratio)
            ========================================= */
         #qr-reader { 
             width: 100%; 
-            max-width: 300px; 
-            min-height: 260px; 
-            border-radius: 20px; 
+            max-width: 320px; 
+            border-radius: 16px; 
             overflow: hidden; 
             background: #000; 
             border: 2px solid #334155; 
             position: relative; 
             margin: 0 auto; 
-        }
-        
-        #qr-reader video { 
-            width: 100% !important; 
-            height: 100% !important; 
-            object-fit: cover; 
-            transform: scale(1.3); /* Zoom puramente visivo */
-            transform-origin: center;
         }
         
         /* Overlay Conferma Lettura */
@@ -110,9 +101,9 @@
         .scan-success-icon { font-size: 60px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Mirino ottico */
+        /* Mirino Ottico Naturale */
         .scan-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .scan-target { width: 200px; height: 200px; border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 20px; position: relative; box-shadow: 0 0 20px rgba(59,130,246,0.2); }
+        .scan-target { width: 220px; height: 220px; border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 16px; position: relative; box-shadow: 0 0 20px rgba(59,130,246,0.2); }
         .scan-target::before, .scan-target::after, .scan-target .corner-bl, .scan-target .corner-br { content: ""; position: absolute; width: 40px; height: 40px; border-color: #3b82f6; border-style: solid; }
         .scan-target::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-radius: 6px 0 0 0; }
         .scan-target::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-radius: 0 6px 0 0; }
@@ -140,13 +131,9 @@
         
         <div class="relative z-20 bg-slate-800/80 border border-slate-600 rounded-3xl p-5 w-full max-w-[340px] shadow-2xl flex flex-col items-center backdrop-blur-md mb-8">
             
-            <button id="btn-install-manual" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-[10px] mb-4 text-white animate-pulse shadow-lg">
-                📲 INSTALLA APP SULLA HOME
-            </button>
-
             <div id="qr-box-container" class="w-full relative mb-4" style="display: none;">
                 <div id="qr-reader"></div>
-                <div class="scan-overlay">
+                <div class="scan-overlay" id="mirino-overlay">
                     <div class="scan-target">
                         <div class="corner-bl"></div>
                         <div class="corner-br"></div>
@@ -189,10 +176,6 @@
         <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase leading-none text-center">Protezione Civile Thiene</h1>
         <h2 class="font-bold text-[10px] mb-8 text-blue-400 tracking-[0.3em] uppercase text-center">SBLOCCO TERMINALE</h2>
         
-        <button id="btn-install-login" style="display:none;" class="w-full max-w-[260px] bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-[10px] mb-5 text-white animate-pulse shadow-lg relative z-20">
-            📲 INSTALLA APP SULLA HOME
-        </button>
-
         <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-3 relative z-20">Codice per <b id="login-sq-name" class="text-white text-sm">...</b></p>
         
         <input type="password" id="pin-input" class="relative z-20 bg-slate-900 border-2 border-slate-600 rounded-2xl text-center text-5xl text-white py-4 w-full max-w-[260px] mb-6 tracking-[0.4em] outline-none focus:border-blue-500 transition-colors shadow-inner font-black" placeholder="****" inputmode="numeric" maxlength="4">
@@ -335,16 +318,15 @@
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
         // =========================================================
-        // PULIZIA E CHECK URL (Evita il login automatico indesiderato)
+        // PULIZIA E CHECK URL (Evita il loop della vecchia squadra)
         // =========================================================
         const urlParams = new URLSearchParams(window.location.search);
-        const sqIdRaw = urlParams.get('id');
+        const sqIdRaw = urlParams.get('id') || urlParams.get('sq');
         const savedSqId = localStorage.getItem('pc_app_saved_team');
 
         if (sqIdRaw && sqIdRaw.trim() !== "") {
             sqId = sqIdRaw.trim().toUpperCase();
             localStorage.setItem('pc_app_saved_team', sqId); 
-            // Pulisce l'URL per evitare problemi al prossimo reload
             window.history.replaceState({}, document.title, window.location.pathname);
             verificaSquadraELogin();
         } else if (savedSqId) {
@@ -355,23 +337,25 @@
         }
 
         // =========================================================
-        // MOTORE SCANNER QR: NESSUNA FORZATURA HARDWARE
+        // MOTORE SCANNER QR: NATURALE, SENZA FORZATURE, 1.5S DELAY
         // =========================================================
         let html5QrCode = null;
 
         window.startQRScanner = () => {
             const wrapper = document.getElementById('qr-box-container');
             const successIndicator = document.getElementById('scan-success-indicator');
-            document.getElementById('btn-start-qr').style.display = 'none';
+            const mirino = document.getElementById('mirino-overlay');
             
+            document.getElementById('btn-start-qr').style.display = 'none';
             wrapper.style.display = 'block';
             successIndicator.style.display = 'none';
+            mirino.style.display = 'flex';
             
             let btnChiudi = document.getElementById('btn-chiudi-qr');
             if(!btnChiudi) {
                 btnChiudi = document.createElement('button');
                 btnChiudi.id = 'btn-chiudi-qr';
-                btnChiudi.className = 'w-full bg-red-900/50 border border-red-500 text-red-400 py-3 rounded-xl font-black uppercase text-[10px] mb-4 mt-2 transition-all';
+                btnChiudi.className = 'w-full bg-red-900/50 border border-red-500 text-red-400 py-3 rounded-xl font-black uppercase text-[10px] mb-4 mt-2 transition-all shadow-lg active:scale-95';
                 btnChiudi.innerText = '✖ ANNULLA SCANSIONE';
                 btnChiudi.onclick = window.stopQRScanner;
                 wrapper.after(btnChiudi);
@@ -382,43 +366,48 @@
                 if (html5QrCode) { try { html5QrCode.clear(); } catch(e){} }
                 html5QrCode = new Html5Qrcode("qr-reader");
 
-                // Configurazione Base: nessuna richiesta di risoluzione estrema che crasha l'app
+                // Configurazione "Safe Mobile": lascia al telefono decidere la risoluzione
                 const qrConfig = {
-                    fps: 15,
-                    qrbox: { width: 250, height: 250 }, // quadrato standard
-                    aspectRatio: 1.0 
+                    fps: 10,
+                    // Evita ritagli errati
+                    qrbox: (viewfinderWidth, viewFinderHeight) => {
+                        let minEdgePercentage = 0.7; 
+                        let minEdgeSize = Math.floor(Math.min(viewfinderWidth, viewFinderHeight) * minEdgePercentage);
+                        return { width: minEdgeSize, height: minEdgeSize };
+                    }
                 };
 
                 html5QrCode.start(
                     { facingMode: "environment" },
                     qrConfig,
                     (decodedText) => {
-                        // Ferma immediatamente lo scanner per evitare di leggere 10 volte
+                        // FERMA LO SCANNER SUBITO
                         if (html5QrCode.isScanning) {
                             html5QrCode.stop().catch(()=>{});
                         }
                         
-                        // Mostra il segno di spunta "LETTO!"
+                        // MOSTRA GRAFICA "LETTO!" E NASCONDI MIRINO
+                        mirino.style.display = 'none';
                         successIndicator.style.display = 'flex';
                         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-                        // Aspetta 1 secondo e poi analizza il codice
+                        // ATTENDI 1.2 SECONDI PRIMA DI ELABORARE IL CODICE
                         setTimeout(() => {
                             window.processQR(decodedText);
                         }, 1200);
                     },
                     (errorMessage) => { 
-                        // Errori vuoti durante la scansione ignorati
+                        // Ignora log in background
                     }
                 ).catch((err) => {
-                    console.error("Errore Camera:", err);
+                    console.error("Camera Error:", err);
                     window.stopQRScanner();
-                    Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: "Impossibile aprire la fotocamera. Inserisci il codice a mano.", background: '#0f172a', color: '#fff' });
+                    Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: "Impossibile aprire la fotocamera. Controlla i permessi o ricarica la pagina.", background: '#0f172a', color: '#fff' });
                 });
-            }, 300);
+            }, 200);
         };
 
-        // PARSER DEL CODICE QR (Estrazione infallibile)
+        // PARSER DEL CODICE QR INFAILIBILE
         window.processQR = (text) => {
             let extractedId = text.trim();
             try {
@@ -428,12 +417,11 @@
             
             extractedId = extractedId.replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
             
-            // Se ha trovato qualcosa di valido
             if(extractedId && extractedId.length > 0) { 
                 document.getElementById('team-input').value = extractedId; 
                 window.saveNewTeam(); 
             } else {
-                Swal.fire({ icon: 'error', title: 'QR NON VALIDO', text: "Il QR code non contiene un identificativo di squadra.", background: '#0f172a', color: '#fff' });
+                Swal.fire({ icon: 'error', title: 'QR NON VALIDO', text: "Il QR code non contiene un identificativo di squadra valido.", background: '#0f172a', color: '#fff' });
                 window.stopQRScanner();
             }
         };
@@ -445,26 +433,42 @@
             if(document.getElementById('btn-chiudi-qr')) document.getElementById('btn-chiudi-qr').style.display = 'none';
         };
 
+        // SALVATAGGIO SQUADRA: IMPONE IL LOGOUT DELLA SQUADRA PRECEDENTE
         window.saveNewTeam = () => {
             const val = document.getElementById('team-input').value.trim().toUpperCase();
             if (val === '') return;
+            
+            // Salva la nuova squadra
             localStorage.setItem('pc_app_saved_team', val);
-            // Reindirizza "pulito" togliendo eventuali parametri dall'URL
+            
+            // CRITICO: Dimentica il PIN della squadra di prima
+            localStorage.removeItem('pc_app_auth'); 
+            
+            // Ricarica la pagina pulita senza id= nella URL
             window.location.href = window.location.pathname; 
         };
 
         function verificaSquadraELogin() {
-            if (!db) return;
+            if (!db) {
+                // Avviso Offline Hard
+                return;
+            }
+            
             document.getElementById('display-sq').innerText = sqId;
             document.getElementById('login-sq-name').innerText = sqId;
             document.getElementById('team-select-screen').style.display = 'none';
 
             get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
                 if (!snap.exists()) {
-                    Swal.fire({ icon: 'error', title: 'UNITÀ NON TROVATA', text: `L'unità ${sqId} non è registrata.`, background: '#0f172a', color: '#fff' }).then(() => { window.logoutApp(true); });
+                    Swal.fire({ icon: 'error', title: 'UNITÀ NON TROVATA', text: `L'unità ${sqId} non è registrata in Sala Radio.`, background: '#0f172a', color: '#fff' }).then(() => { window.logoutApp(true); });
                     return;
                 }
-                if(localStorage.getItem('pc_app_auth') === 'true') { avviaMotoreApp(); } else { document.getElementById('login-screen').style.display = 'flex'; }
+                
+                if(localStorage.getItem('pc_app_auth') === 'true') { 
+                    avviaMotoreApp(); 
+                } else { 
+                    document.getElementById('login-screen').style.display = 'flex'; 
+                }
             });
         }
 
@@ -481,7 +485,7 @@
             }
         };
 
-        // GESTIONE DEL LOGOUT CORRETTA
+        // LOGOUT DEFINITIVO E CAMBIO SQUADRA
         window.logoutApp = (isAuto = false) => {
             if (liveTrackingTimer) clearInterval(liveTrackingTimer);
             localStorage.removeItem('pc_app_auth'); 
@@ -494,6 +498,7 @@
             } else { 
                 Swal.fire({ 
                     title: 'CAMBIO UNITÀ?', 
+                    text: 'Tornerai alla schermata di lettura.',
                     icon: 'warning', 
                     showCancelButton: true, 
                     confirmButtonText: 'SÌ', 
@@ -501,12 +506,15 @@
                     background: '#1e293b', color: '#fff' 
                 }).then((r) => { 
                     if (r.isConfirmed) {
-                        window.location.href = window.location.pathname; // Rimanda all'app pulita
+                        window.location.href = window.location.pathname;
                     }
                 }); 
             }
         };
 
+        // =========================================================
+        // MOTORE APP TATTICO
+        // =========================================================
         function avviaMotoreApp() {
             document.getElementById('main-header').classList.remove('hidden'); document.getElementById('main-content').classList.remove('hidden'); updateGpsBadge(); if(window.liveTrackingEnabled) window.startLiveTracking();
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
