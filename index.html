@@ -352,27 +352,47 @@
         } else {
             document.getElementById('team-select-screen').style.display = 'flex';
         }
-
-        // -----------------------------------------------------
+// -----------------------------------------------------
         // 2. FUNZIONI SCANNER QR E INSERIMENTO MANUALE
         // -----------------------------------------------------
-        let html5QrcodeScanner = null;
         window.startQRScanner = () => {
             document.getElementById('btn-start-qr').style.display = 'none';
             document.getElementById('qr-reader').style.display = 'block';
-            
-            html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
-            html5QrcodeScanner.render((decodedText) => {
-                let extractedId = decodedText;
-                if(decodedText.includes('?id=')) {
-                    extractedId = new URL(decodedText).searchParams.get('id');
+
+            // Usiamo il motore puro per forzare la fotocamera posteriore
+            const html5QrCode = new Html5Qrcode("qr-reader");
+
+            html5QrCode.start(
+                { facingMode: "environment" }, // FORZA LA FOTOCAMERA POSTERIORE
+                { fps: 10, qrbox: { width: 220, height: 220 } },
+                (decodedText) => {
+                    // QR LETTO CON SUCCESSO
+                    let extractedId = decodedText;
+                    if(decodedText.includes('?id=')) extractedId = new URL(decodedText).searchParams.get('id');
+                    if(decodedText.includes('?sq=')) extractedId = new URL(decodedText).searchParams.get('sq');
+                    
+                    if(extractedId) {
+                        html5QrCode.stop().then(() => {
+                            document.getElementById('qr-reader').style.display = 'none';
+                            document.getElementById('team-input').value = extractedId.toUpperCase();
+                            window.saveNewTeam();
+                        });
+                    }
+                },
+                (errorMessage) => { 
+                    // Ignora i frame vuoti durante la scansione
                 }
-                if(extractedId) {
-                    html5QrcodeScanner.clear();
-                    document.getElementById('team-input').value = extractedId.toUpperCase();
-                    window.saveNewTeam();
-                }
-            }, (error) => {});
+            ).catch((err) => {
+                // ERRORE PERMESSI NEGATI O FOTOCAMERA NON TROVATA
+                Swal.fire({
+                    icon: 'error',
+                    title: 'FOTOCAMERA BLOCCATA',
+                    text: "Assicurati di aver dato i permessi alla fotocamera e di aprire l'App su Chrome o Safari.",
+                    background: '#0f172a', color: '#fff'
+                });
+                document.getElementById('btn-start-qr').style.display = 'flex';
+                document.getElementById('qr-reader').style.display = 'none';
+            });
         };
 
         window.saveNewTeam = () => {
