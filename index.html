@@ -357,7 +357,7 @@
             document.getElementById('team-select-screen').style.display = 'flex';
         }
 
-        // -----------------------------------------------------
+// -----------------------------------------------------
         // 2. FUNZIONI SCANNER QR E INSERIMENTO MANUALE
         // -----------------------------------------------------
         let html5QrCode = null;
@@ -366,7 +366,7 @@
             document.getElementById('btn-start-qr').style.display = 'none';
             document.getElementById('qr-reader').style.display = 'block';
             
-            // Mostra il tasto per annullare
+            // Tasto di emergenza per chiudere la camera
             let btnChiudi = document.getElementById('btn-chiudi-qr');
             if(!btnChiudi) {
                 btnChiudi = document.createElement('button');
@@ -378,57 +378,53 @@
             }
             btnChiudi.style.display = 'block';
 
-            html5QrCode = new Html5Qrcode("qr-reader");
-
-            // Riquadro di scansione responsivo (70% dello schermo)
-            const qrConfig = {
-                fps: 10,
-                qrbox: (viewfinderWidth, viewFinderHeight) => {
-                    let minEdgeSize = Math.min(viewfinderWidth, viewFinderHeight);
-                    return { width: Math.floor(minEdgeSize * 0.7), height: Math.floor(minEdgeSize * 0.7) };
-                }
-            };
+            if (!html5QrCode) { html5QrCode = new Html5Qrcode("qr-reader"); }
 
             html5QrCode.start(
-                { facingMode: "environment" }, // Forza la camera posteriore
-                qrConfig,
+                { facingMode: "environment" },
+                { fps: 10, qrbox: 250 }, // Usa un riquadro fisso per non accecare la libreria al riavvio
                 (decodedText) => {
-                    // 1. Ferma subito la camera per evitare doppie letture
-                    window.stopQRScanner();
-
-                    // 2. Lettura sicura del dato (Previene il crash se non è un URL)
-                    let extractedId = decodedText.trim();
-                    try {
-                        if (decodedText.includes('http')) {
-                            const url = new URL(decodedText);
-                            if (url.searchParams.get('sq')) extractedId = url.searchParams.get('sq');
-                            else if (url.searchParams.get('id')) extractedId = url.searchParams.get('id');
-                        }
-                    } catch(e) {
-                        console.warn("Lettura QR grezza (non URL)");
-                    }
-
-                    // 3. Salva la squadra
-                    if(extractedId) {
-                        document.getElementById('team-input').value = extractedId.toUpperCase();
-                        window.saveNewTeam();
+                    // Ha letto il QR! Ferma la scansione e processa
+                    if (html5QrCode.isScanning) {
+                        html5QrCode.stop().then(() => window.processQR(decodedText)).catch(() => window.processQR(decodedText));
+                    } else {
+                        window.processQR(decodedText);
                     }
                 },
-                (errorMessage) => { /* ignora frame vuoti */ }
+                (errorMessage) => { /* Ignora i fotogrammi vuoti */ }
             ).catch((err) => {
                 window.stopQRScanner();
                 Swal.fire({
-                    icon: 'error',
-                    title: 'FOTOCAMERA BLOCCATA',
-                    text: "Assicurati di aver dato i permessi alla fotocamera e di aprire l'App su Chrome o Safari.",
+                    icon: 'error', title: 'FOTOCAMERA BLOCCATA', 
+                    text: "Impossibile accedere alla fotocamera. Ricarica la pagina o controlla i permessi.", 
                     background: '#0f172a', color: '#fff'
                 });
             });
         };
 
+        window.processQR = (text) => {
+            let extractedId = text.trim();
+            try {
+                if (text.includes('http')) {
+                    const url = new URL(text);
+                    if (url.searchParams.get('sq')) extractedId = url.searchParams.get('sq');
+                    else if (url.searchParams.get('id')) extractedId = url.searchParams.get('id');
+                } else if (text.includes('?sq=')) {
+                    extractedId = text.split('?sq=')[1].split('&')[0];
+                } else if (text.includes('?id=')) {
+                    extractedId = text.split('?id=')[1].split('&')[0];
+                }
+            } catch(e) {}
+
+            if(extractedId) {
+                document.getElementById('team-input').value = extractedId.toUpperCase();
+                window.saveNewTeam();
+            }
+        };
+
         window.stopQRScanner = () => {
-            if (html5QrCode) {
-                try { html5QrCode.stop().catch(e => {}); } catch(err) {}
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => html5QrCode.clear()).catch(e => {});
             }
             document.getElementById('qr-reader').style.display = 'none';
             document.getElementById('btn-start-qr').style.display = 'flex';
@@ -442,7 +438,6 @@
             localStorage.setItem('pc_app_saved_team', val);
             location.reload();
         };
-
         // -----------------------------------------------------
         // 3. VERIFICA SQUADRA E LOGIN
         // -----------------------------------------------------
@@ -497,9 +492,15 @@
             }
         };
 
-        window.logoutApp = (isAuto = false) => {
+window.logoutApp = (isAuto = false) => {
             if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-            localStorage.clear();
+            
+            // Rimuove SOLO i dati della squadra, senza toccare impostazioni o GPS salvati
+            localStorage.removeItem('pc_app_auth');
+            localStorage.removeItem('pc_app_saved_team');
+            localStorage.removeItem('app_ultima_via');
+            localStorage.removeItem('app_ultima_pos');
+            
             if (isAuto) {
                 Swal.fire({
                     title: 'SESSIONE SCADUTA',
