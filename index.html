@@ -124,6 +124,11 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(20px); }
+
+        /* CORREZIONE VIDEO QR CODE */
+        #qr-reader { width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+        #qr-reader video { width: 100% !important; height: auto !important; object-fit: cover; border-radius: 12px; }
+        #btn-chiudi-qr { display: none; } /* Nascosto di default */
     </style>
 </head>
 <body>
@@ -352,47 +357,84 @@
         } else {
             document.getElementById('team-select-screen').style.display = 'flex';
         }
-// -----------------------------------------------------
+
+        // -----------------------------------------------------
         // 2. FUNZIONI SCANNER QR E INSERIMENTO MANUALE
         // -----------------------------------------------------
+        let html5QrCode = null;
+
         window.startQRScanner = () => {
             document.getElementById('btn-start-qr').style.display = 'none';
             document.getElementById('qr-reader').style.display = 'block';
+            
+            // Mostra il tasto per annullare
+            let btnChiudi = document.getElementById('btn-chiudi-qr');
+            if(!btnChiudi) {
+                btnChiudi = document.createElement('button');
+                btnChiudi.id = 'btn-chiudi-qr';
+                btnChiudi.className = 'w-full bg-red-900/50 border border-red-500 text-red-400 py-3 rounded-xl font-bold uppercase text-xs mb-4 mt-2 transition-all';
+                btnChiudi.innerText = '✖ ANNULLA SCANSIONE';
+                btnChiudi.onclick = window.stopQRScanner;
+                document.getElementById('qr-reader').after(btnChiudi);
+            }
+            btnChiudi.style.display = 'block';
 
-            // Usiamo il motore puro per forzare la fotocamera posteriore
-            const html5QrCode = new Html5Qrcode("qr-reader");
+            html5QrCode = new Html5Qrcode("qr-reader");
+
+            // Riquadro di scansione responsivo (70% dello schermo)
+            const qrConfig = {
+                fps: 10,
+                qrbox: (viewfinderWidth, viewFinderHeight) => {
+                    let minEdgeSize = Math.min(viewfinderWidth, viewFinderHeight);
+                    return { width: Math.floor(minEdgeSize * 0.7), height: Math.floor(minEdgeSize * 0.7) };
+                }
+            };
 
             html5QrCode.start(
-                { facingMode: "environment" }, // FORZA LA FOTOCAMERA POSTERIORE
-                { fps: 10, qrbox: { width: 220, height: 220 } },
+                { facingMode: "environment" }, // Forza la camera posteriore
+                qrConfig,
                 (decodedText) => {
-                    // QR LETTO CON SUCCESSO
-                    let extractedId = decodedText;
-                    if(decodedText.includes('?id=')) extractedId = new URL(decodedText).searchParams.get('id');
-                    if(decodedText.includes('?sq=')) extractedId = new URL(decodedText).searchParams.get('sq');
-                    
+                    // 1. Ferma subito la camera per evitare doppie letture
+                    window.stopQRScanner();
+
+                    // 2. Lettura sicura del dato (Previene il crash se non è un URL)
+                    let extractedId = decodedText.trim();
+                    try {
+                        if (decodedText.includes('http')) {
+                            const url = new URL(decodedText);
+                            if (url.searchParams.get('sq')) extractedId = url.searchParams.get('sq');
+                            else if (url.searchParams.get('id')) extractedId = url.searchParams.get('id');
+                        }
+                    } catch(e) {
+                        console.warn("Lettura QR grezza (non URL)");
+                    }
+
+                    // 3. Salva la squadra
                     if(extractedId) {
-                        html5QrCode.stop().then(() => {
-                            document.getElementById('qr-reader').style.display = 'none';
-                            document.getElementById('team-input').value = extractedId.toUpperCase();
-                            window.saveNewTeam();
-                        });
+                        document.getElementById('team-input').value = extractedId.toUpperCase();
+                        window.saveNewTeam();
                     }
                 },
-                (errorMessage) => { 
-                    // Ignora i frame vuoti durante la scansione
-                }
+                (errorMessage) => { /* ignora frame vuoti */ }
             ).catch((err) => {
-                // ERRORE PERMESSI NEGATI O FOTOCAMERA NON TROVATA
+                window.stopQRScanner();
                 Swal.fire({
                     icon: 'error',
                     title: 'FOTOCAMERA BLOCCATA',
                     text: "Assicurati di aver dato i permessi alla fotocamera e di aprire l'App su Chrome o Safari.",
                     background: '#0f172a', color: '#fff'
                 });
-                document.getElementById('btn-start-qr').style.display = 'flex';
-                document.getElementById('qr-reader').style.display = 'none';
             });
+        };
+
+        window.stopQRScanner = () => {
+            if (html5QrCode) {
+                try { html5QrCode.stop().catch(e => {}); } catch(err) {}
+            }
+            document.getElementById('qr-reader').style.display = 'none';
+            document.getElementById('btn-start-qr').style.display = 'flex';
+            const btnChiudi = document.getElementById('btn-chiudi-qr');
+            if(btnChiudi) btnChiudi.style.display = 'none';
         };
 
         window.saveNewTeam = () => {
