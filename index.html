@@ -79,7 +79,7 @@
         input:checked + .slider:before { transform: translateX(20px); }
 
         /* =========================================
-           UI SCANNER QR (Risolto Zoom e Focus)
+           UI SCANNER QR CORRETTA (No Errori Hardware)
            ========================================= */
         #qr-reader { 
             width: 100%; 
@@ -92,12 +92,12 @@
             position: relative; 
             margin: 0 auto; 
         }
-        /* Zoom ottico visivo applicato al video per avvicinare l'inquadratura */
+        
         #qr-reader video { 
             width: 100% !important; 
             height: 100% !important; 
             object-fit: cover; 
-            transform: scale(1.3); 
+            transform: scale(1.3); /* Zoom puramente visivo */
             transform-origin: center;
         }
         
@@ -112,7 +112,7 @@
 
         /* Mirino ottico */
         .scan-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
-        .scan-target { width: 220px; height: 220px; border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 20px; position: relative; box-shadow: 0 0 20px rgba(59,130,246,0.2); }
+        .scan-target { width: 200px; height: 200px; border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 20px; position: relative; box-shadow: 0 0 20px rgba(59,130,246,0.2); }
         .scan-target::before, .scan-target::after, .scan-target .corner-bl, .scan-target .corner-br { content: ""; position: absolute; width: 40px; height: 40px; border-color: #3b82f6; border-style: solid; }
         .scan-target::before { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-radius: 6px 0 0 0; }
         .scan-target::after { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-radius: 0 6px 0 0; }
@@ -334,6 +334,9 @@
         let viaAttiva = localStorage.getItem('app_ultima_via') || "";
         let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
 
+        // =========================================================
+        // PULIZIA E CHECK URL (Evita il login automatico indesiderato)
+        // =========================================================
         const urlParams = new URLSearchParams(window.location.search);
         const sqIdRaw = urlParams.get('id');
         const savedSqId = localStorage.getItem('pc_app_saved_team');
@@ -341,6 +344,7 @@
         if (sqIdRaw && sqIdRaw.trim() !== "") {
             sqId = sqIdRaw.trim().toUpperCase();
             localStorage.setItem('pc_app_saved_team', sqId); 
+            // Pulisce l'URL per evitare problemi al prossimo reload
             window.history.replaceState({}, document.title, window.location.pathname);
             verificaSquadraELogin();
         } else if (savedSqId) {
@@ -351,7 +355,7 @@
         }
 
         // =========================================================
-        // MOTORE SCANNER QR: RISOLTO BUG ZERO-ZOOM E CRASH
+        // MOTORE SCANNER QR: NESSUNA FORZATURA HARDWARE
         // =========================================================
         let html5QrCode = null;
 
@@ -374,49 +378,47 @@
             }
             btnChiudi.style.display = 'block';
 
-            // Ritardo vitale per permettere al browser di calcolare le dimensioni del div
             setTimeout(() => {
                 if (html5QrCode) { try { html5QrCode.clear(); } catch(e){} }
                 html5QrCode = new Html5Qrcode("qr-reader");
 
-                // ZOOM ALGORITMICO: Invece di leggere tutto, forziamo il taglio centrale di 250px
+                // Configurazione Base: nessuna richiesta di risoluzione estrema che crasha l'app
                 const qrConfig = {
-                    fps: 10,
-                    qrbox: 250, // CRUCIALE: Questo dice al motore di "zoomare" sul centro per leggere
-                    aspectRatio: 1.0
-                };
-
-                // Forza la camera normale e l'autofocus
-                const videoConstraints = {
-                    facingMode: "environment",
-                    width: { ideal: 720 },
-                    height: { ideal: 720 },
-                    advanced: [{ focusMode: "continuous" }]
+                    fps: 15,
+                    qrbox: { width: 250, height: 250 }, // quadrato standard
+                    aspectRatio: 1.0 
                 };
 
                 html5QrCode.start(
-                    videoConstraints,
+                    { facingMode: "environment" },
                     qrConfig,
                     (decodedText) => {
-                        // LETTURA AVVENUTA: Mostra Overlay e ferma la camera
+                        // Ferma immediatamente lo scanner per evitare di leggere 10 volte
+                        if (html5QrCode.isScanning) {
+                            html5QrCode.stop().catch(()=>{});
+                        }
+                        
+                        // Mostra il segno di spunta "LETTO!"
                         successIndicator.style.display = 'flex';
                         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
+                        // Aspetta 1 secondo e poi analizza il codice
                         setTimeout(() => {
-                            if (html5QrCode.isScanning) {
-                                html5QrCode.stop().then(() => window.processQR(decodedText)).catch(() => window.processQR(decodedText));
-                            } else { window.processQR(decodedText); }
-                        }, 500);
+                            window.processQR(decodedText);
+                        }, 1200);
                     },
-                    (errorMessage) => {}
+                    (errorMessage) => { 
+                        // Errori vuoti durante la scansione ignorati
+                    }
                 ).catch((err) => {
+                    console.error("Errore Camera:", err);
                     window.stopQRScanner();
-                    Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: "Ricarica la pagina per sbloccare la fotocamera.", background: '#0f172a', color: '#fff' });
+                    Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: "Impossibile aprire la fotocamera. Inserisci il codice a mano.", background: '#0f172a', color: '#fff' });
                 });
             }, 300);
         };
 
-        // EXTRAPOLAZIONE CODICE ROBUSTA
+        // PARSER DEL CODICE QR (Estrazione infallibile)
         window.processQR = (text) => {
             let extractedId = text.trim();
             try {
@@ -426,7 +428,14 @@
             
             extractedId = extractedId.replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
             
-            if(extractedId) { document.getElementById('team-input').value = extractedId; window.saveNewTeam(); }
+            // Se ha trovato qualcosa di valido
+            if(extractedId && extractedId.length > 0) { 
+                document.getElementById('team-input').value = extractedId; 
+                window.saveNewTeam(); 
+            } else {
+                Swal.fire({ icon: 'error', title: 'QR NON VALIDO', text: "Il QR code non contiene un identificativo di squadra.", background: '#0f172a', color: '#fff' });
+                window.stopQRScanner();
+            }
         };
 
         window.stopQRScanner = () => {
@@ -440,7 +449,8 @@
             const val = document.getElementById('team-input').value.trim().toUpperCase();
             if (val === '') return;
             localStorage.setItem('pc_app_saved_team', val);
-            location.reload(); 
+            // Reindirizza "pulito" togliendo eventuali parametri dall'URL
+            window.location.href = window.location.pathname; 
         };
 
         function verificaSquadraELogin() {
@@ -471,10 +481,30 @@
             }
         };
 
+        // GESTIONE DEL LOGOUT CORRETTA
         window.logoutApp = (isAuto = false) => {
             if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-            localStorage.removeItem('pc_app_auth'); localStorage.removeItem('pc_app_saved_team'); localStorage.removeItem('app_ultima_via'); localStorage.removeItem('app_ultima_pos');
-            if (isAuto) { location.reload(); } else { Swal.fire({ title: 'CAMBIO UNITÀ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'SÌ', confirmButtonColor: '#dc2626', background: '#1e293b', color: '#fff' }).then((r) => { if (r.isConfirmed) location.reload(); }); }
+            localStorage.removeItem('pc_app_auth'); 
+            localStorage.removeItem('pc_app_saved_team'); 
+            localStorage.removeItem('app_ultima_via'); 
+            localStorage.removeItem('app_ultima_pos');
+            
+            if (isAuto) { 
+                window.location.href = window.location.pathname; 
+            } else { 
+                Swal.fire({ 
+                    title: 'CAMBIO UNITÀ?', 
+                    icon: 'warning', 
+                    showCancelButton: true, 
+                    confirmButtonText: 'SÌ', 
+                    confirmButtonColor: '#dc2626', 
+                    background: '#1e293b', color: '#fff' 
+                }).then((r) => { 
+                    if (r.isConfirmed) {
+                        window.location.href = window.location.pathname; // Rimanda all'app pulita
+                    }
+                }); 
+            }
         };
 
         function avviaMotoreApp() {
