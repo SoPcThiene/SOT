@@ -31,7 +31,7 @@
             font-weight: 500; 
         }
         
-        /* SCHERMATE DI SISTEMA FISSE */
+        /* SCHERMATE FISSE */
         #off-screen, #login-screen, #team-select-screen { 
             position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; padding: 16px; text-align: center; 
@@ -54,15 +54,9 @@
         .btn-media span:first-child { font-size: 20px; margin-bottom: 2px; }
         .btn-media:active { background: #334155; transform: scale(0.95); }
         
-        .glow-blue { box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
-        .glow-logo-blue { box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
-        .glow-logo-red { box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
-
         .pulse-red-border { animation: p-red-border 1.5s infinite; border: 2px solid #ef4444; }
         @keyframes p-red-border { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        .pulse-blue-border { animation: p-blue-border 2s infinite; border: 2px solid #3b82f6; }
-        @keyframes p-blue-border { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-
+        
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 34px; }
@@ -70,101 +64,80 @@
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* CORREZIONE VIDEO QR CODE */
-        #qr-reader { width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
-        #qr-reader video { width: 100% !important; height: auto !important; object-fit: cover; border-radius: 12px; }
+        /* FIX VIDEO QR CODE */
+        #qr-reader { width: 100%; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid #334155; }
+        #qr-reader video { width: 100% !important; height: auto !important; object-fit: cover; }
         #btn-chiudi-qr { display: none; }
     </style>
 </head>
 <body>
 
     <div id="team-select-screen" style="display: none;">
-        <div class="relative h-52 w-52 shrink-0 mb-4 mx-auto rounded-full glow-logo-blue logo-container">
+        <div class="relative h-64 w-64 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(59, 130, 246, 0.4);">
             <div class="chasing-border-blue"></div>
             <div class="inner-circle p-2">
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl relative z-20">
             </div>
         </div>
         
-        <h1 class="font-black text-xl sm:text-2xl mb-1 text-white tracking-tight uppercase leading-none">Protezione Civile Thiene</h1>
-        <h2 class="font-bold text-xs mb-4 text-emerald-400 tracking-widest uppercase text-center">Assegnazione Turno</h2>
+        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase leading-none">Protezione Civile Thiene</h1>
+        <h2 class="font-bold text-[10px] mb-6 text-emerald-400 tracking-[0.3em] uppercase text-center">SALA OPERATIVA</h2>
         
-        <div class="relative z-20 bg-slate-800/80 border border-slate-600 rounded-2xl p-4 w-full max-w-[320px] shadow-2xl flex flex-col items-center backdrop-blur-sm mb-6">
-            <button id="btn-install-manual" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-[10px] mb-4 text-white glow-blue animate-pulse">📲 INSTALLA APP SULLA HOME</button>
-            <div id="qr-reader" class="w-full bg-black rounded-xl overflow-hidden mb-3 border border-slate-600 shadow-inner" style="display: none;"></div>
-            <button onclick="window.startQRScanner()" id="btn-start-qr" class="w-full bg-gradient-to-r from-slate-700 to-slate-600 border border-slate-500 py-3.5 rounded-xl font-bold uppercase text-xs mb-4 text-white flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all"><span class="text-xl">📷</span> INQUADRA QR SALA</button>
-            <div class="w-full h-px bg-slate-600 mb-4 relative"><span class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-800 px-3 py-0.5 rounded-full text-[9px] text-slate-400 font-bold uppercase tracking-widest border border-slate-700">Oppure ID Manuale</span></div>
-            <input type="text" id="team-input" class="bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-2xl text-white py-3 w-full tracking-widest outline-none focus:border-emerald-500 transition-colors uppercase mb-3 shadow-inner" placeholder="Es. SQ1">
-            <button onclick="window.saveNewTeam()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 py-3.5 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white tracking-widest">CONFERMA SQUADRA</button>
+        <div class="relative z-20 bg-slate-800/80 border border-slate-600 rounded-3xl p-5 w-full max-w-[340px] shadow-2xl flex flex-col items-center backdrop-blur-md mb-8">
+            <button id="btn-install-manual" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-4 rounded-xl font-black uppercase text-[10px] mb-4 text-white animate-pulse">📲 INSTALLA SULLA HOME</button>
+            <div id="qr-reader" class="w-full mb-3" style="display: none;"></div>
+            <button onclick="window.startQRScanner()" id="btn-start-qr" class="w-full bg-gradient-to-r from-slate-700 to-slate-600 border border-slate-500 py-4 rounded-xl font-black uppercase text-xs mb-5 text-white flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-all">
+                <span class="text-2xl">📷</span> SCANSIONA CODICE SALA
+            </button>
+            <div class="w-full h-px bg-slate-600 mb-5 relative"><span class="absolute left-1/2 -top-2.5 -translate-x-1/2 bg-slate-800 px-4 py-0.5 rounded-full text-[9px] text-slate-400 font-bold uppercase tracking-widest border border-slate-700">Oppure ID Manuale</span></div>
+            <input type="text" id="team-input" class="bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-3xl text-white py-3.5 w-full tracking-[0.2em] outline-none focus:border-emerald-500 transition-colors uppercase mb-4 shadow-inner font-black" placeholder="SQ1">
+            <button onclick="window.saveNewTeam()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 py-4 rounded-xl font-black uppercase text-sm shadow-lg active:scale-95 transition-all text-white tracking-widest">CONFERMA UNITÀ</button>
         </div>
 
-        <div class="absolute bottom-6 left-0 w-full text-center">
-            <div class="text-[12px] font-mono font-black tracking-[0.3em] uppercase mb-1">
-                <span class="text-white">JOK</span><span class="text-red-500">ART</span>
+        <div class="absolute bottom-8 left-0 w-full text-center">
+            <div class="text-[14px] font-mono font-black tracking-[0.4em] uppercase mb-1">
+                <span class="text-white">JOK</span><span class="text-red-600">ART</span>
             </div>
-            <div class="text-[8px] font-bold text-slate-500 tracking-widest uppercase">
-                Support: <span class="text-slate-400">so.pcthiene@gmail.com</span>
-            </div>
+            <div class="text-[8px] font-bold text-slate-500 tracking-widest uppercase">so.pcthiene@gmail.com</div>
         </div>
     </div>
 
     <div id="login-screen" style="display: none;">
-        <div class="relative h-52 w-52 shrink-0 mb-4 mx-auto rounded-full glow-logo-blue logo-container">
+        <div class="relative h-64 w-64 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(59, 130, 246, 0.4);">
             <div class="chasing-border-blue"></div>
             <div class="inner-circle p-2">
                 <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl relative z-20">
             </div>
         </div>
-        <h1 class="font-black text-xl sm:text-2xl mb-1 text-white tracking-tight uppercase leading-none text-center">Protezione Civile Thiene</h1>
-        <h2 class="font-bold text-xs mb-6 text-blue-400 tracking-widest uppercase text-center">SBLOCCO TERMINALE</h2>
-        <button id="btn-install-login" style="display:none;" class="w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-[10px] mb-5 text-white glow-blue animate-pulse relative z-20">📲 INSTALLA APP SULLA HOME</button>
-        <p class="text-slate-400 text-xs mb-3 relative z-20">Codice di sicurezza per <b id="login-sq-name" class="text-white text-sm">...</b></p>
-        <input type="password" id="pin-input" class="relative z-20 bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-4xl text-white py-3 w-full max-w-[250px] mb-5 tracking-[0.5em] outline-none focus:border-blue-500 transition-colors shadow-inner" placeholder="****" inputmode="numeric" maxlength="4">
-        <button onclick="window.checkPin()" class="relative z-20 w-full max-w-[250px] bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white tracking-widest">SBLOCCA APP</button>
-        <button onclick="window.logoutApp(false)" class="relative z-20 mt-6 text-[10px] font-bold text-slate-500 underline uppercase tracking-widest">🔄 Cambia Squadra</button>
+        <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase leading-none text-center">Protezione Civile Thiene</h1>
+        <h2 class="font-bold text-[10px] mb-8 text-blue-400 tracking-[0.3em] uppercase text-center">SBLOCCO TERMINALE</h2>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-3 relative z-20">Inserire PIN per <b id="login-sq-name" class="text-white text-sm">...</b></p>
+        <input type="password" id="pin-input" class="relative z-20 bg-slate-900 border-2 border-slate-600 rounded-xl text-center text-5xl text-white py-4 w-full max-w-[260px] mb-6 tracking-[0.4em] outline-none focus:border-blue-500 transition-colors shadow-inner font-black" placeholder="****" inputmode="numeric" maxlength="4">
+        <button onclick="window.checkPin()" class="relative z-20 w-full max-w-[260px] bg-gradient-to-r from-blue-600 to-blue-500 py-4 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white tracking-widest">SBLOCCA APP</button>
+        <button onclick="window.logoutApp(false)" class="relative z-20 mt-8 text-[11px] font-black text-slate-500 underline uppercase tracking-[0.2em]">🔄 CAMBIA UNITÀ</button>
     </div>
 
     <div id="off-screen" style="display: none;">
-        <div class="relative h-52 w-52 shrink-0 mb-6 mx-auto rounded-full glow-logo-red logo-container">
-            <div class="chasing-border-red"></div>
-            <div class="inner-circle p-2">
-                <img src="logosala.png" alt="Logo" class="w-full h-full object-contain grayscale opacity-60 drop-shadow-2xl relative z-20">
-            </div>
-        </div>
+        <div class="relative h-52 w-52 shrink-0 mb-6 mx-auto rounded-full logo-container"><div class="chasing-border-red"></div><div class="inner-circle p-2"><img src="logosala.png" alt="Logo" class="w-full h-full object-contain grayscale opacity-60 drop-shadow-2xl relative z-20"></div></div>
         <h1 class="font-black text-3xl mb-3 text-white tracking-tight uppercase text-center leading-none">Protezione Civile<br>Thiene</h1>
-        <div class="bg-red-500/10 border border-red-500/30 px-6 py-3 rounded-full mb-6 shadow-lg relative z-20">
-            <h2 class="font-bold text-sm text-red-400 tracking-widest uppercase flex items-center gap-2"><span class="animate-pulse text-red-500">●</span> Standby Operativo</h2>
-        </div>
+        <div class="bg-red-500/10 border border-red-500/30 px-6 py-3 rounded-full mb-6 shadow-lg relative z-20"><h2 class="font-bold text-sm text-red-400 tracking-widest uppercase flex items-center gap-2"><span class="animate-pulse text-red-500">●</span> Standby Operativo</h2></div>
         <p class="text-slate-400 text-xs uppercase tracking-widest leading-relaxed text-center relative z-20">App temporaneamente bloccata<br>dalla Sala Radio</p>
     </div>
 
-    <header class="px-3 py-2.5 bg-slate-900 border-b border-slate-700 flex justify-between items-center shrink-0 shadow-lg">
+    <header class="px-3 py-3 bg-slate-900 border-b border-slate-700 flex justify-between items-center shrink-0 shadow-xl">
         <div class="flex items-center gap-3 w-full">
-            <div class="h-12 w-12 flex shrink-0 items-center justify-center overflow-hidden drop-shadow-md"><img src="logosala.png" alt="Logo" class="w-full h-full object-contain"></div>
+            <div class="h-14 w-14 flex shrink-0 items-center justify-center overflow-hidden"><img src="logosala.png" alt="Logo" class="w-full h-full object-contain"></div>
             <div class="flex flex-col flex-1">
                 <div class="text-[7.5px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 leading-none">Protezione Civile Thiene <span class="text-blue-500 font-black">•</span> Terminale</div>
-                <div class="flex items-center justify-between">
-                    <h1 id="display-sq" class="font-black text-2xl tracking-tighter text-blue-400 leading-none">---</h1>
-                    <div id="clock" class="font-mono text-base font-bold text-yellow-500 leading-none">00:00</div>
-                </div>
+                <div class="flex items-center justify-between"><h1 id="display-sq" class="font-black text-2xl tracking-tighter text-blue-400 leading-none">---</h1><div id="clock" class="font-mono text-base font-bold text-yellow-500 leading-none">00:00</div></div>
                 <div id="display-capo" class="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-1 truncate w-48">CAPO: ---</div>
-                <div class="flex items-center justify-between mt-1">
-                    <div id="current-status" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-900/30 px-1.5 py-0.5 rounded border border-emerald-800">ATTESA...</div>
-                    <div class="flex gap-1">
-                        <div id="live-badge" class="hidden text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse">LIVE 🔴</div>
-                        <div id="gps-badge" class="inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase">GPS AUT</div>
-                        <div id="net-badge" class="inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase">ONLINE</div>
-                    </div>
-                </div>
+                <div class="flex items-center justify-between mt-1"><div id="current-status" class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-900/30 px-1.5 py-0.5 rounded border border-emerald-800">ATTESA...</div><div class="flex gap-1"><div id="live-badge" class="hidden text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse">LIVE 🔴</div><div id="gps-badge" class="inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase">GPS AUT</div><div id="net-badge" class="inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase">ONLINE</div></div></div>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 flex flex-col w-full px-3 py-3 gap-2.5 overflow-y-auto pb-6">
-        <div id="target-banner" class="shrink-0 w-full bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 shadow-inner flex flex-col justify-center min-h-[60px]">
-            <div class="text-center text-slate-500 text-[10px] uppercase font-bold italic tracking-widest">Nessun Target in corso</div>
-        </div>
-
+    <main class="flex-1 flex flex-col w-full px-3 py-3 gap-2.5 overflow-y-auto pb-8">
+        <div id="target-banner" class="shrink-0 w-full bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 shadow-inner flex flex-col justify-center min-h-[60px]"><div class="text-center text-slate-500 text-[10px] uppercase font-bold italic tracking-widest">Nessun Target in corso</div></div>
         <div class="shrink-0 flex flex-col gap-2">
             <div class="grid grid-cols-3 gap-2">
                 <button onclick="window.askStatus('Sede', '🏠')" class="btn-status bg-emerald-600 border-emerald-800 text-white"><span>🏠</span> Sede</button>
@@ -176,199 +149,139 @@
                 <button onclick="window.askStatus('Rientro', '🔙')" class="btn-status bg-sky-500 border-sky-700 text-white"><span>🔙</span> Rientro</button>
             </div>
         </div>
-
         <div class="shrink-0 grid grid-cols-3 gap-2">
             <button onclick="document.getElementById('file-foto').click()" class="btn-media text-white hover:bg-slate-700"><span>📷</span><span class="text-[9px] font-bold">FOTO</span></button>
             <button id="btn-voc" class="btn-media text-white hover:bg-slate-700"><span id="voc-icon">🎤</span><span id="voc-txt" class="text-[9px] font-bold">VOCALE</span></button>
             <button onclick="window.openGPSPanel()" class="btn-media text-emerald-400 hover:bg-slate-700"><span>📍</span><span class="text-[9px] font-bold">POSIZIONE</span></button>
         </div>
         <input type="file" id="file-foto" accept="image/*" capture="camera" class="hidden" onchange="window.upFoto(this.files[0])">
-
-        <div id="last-msg-banner" class="shrink-0 w-full bg-slate-800/80 rounded-xl p-3 border border-slate-600 flex flex-col justify-center" style="display: none;">
-            <div class="flex justify-between items-center mb-1 border-b border-white/10 pb-1">
-                <span id="last-msg-title" class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">🎧 DALLA SALA</span>
-                <span id="last-msg-time" class="text-[10px] font-mono text-slate-400">--:--</span>
-            </div>
-            <span id="last-msg-text" class="text-[13px] text-white font-medium italic leading-snug"></span>
-        </div>
-
-        <div class="mt-auto shrink-0 bg-slate-800 p-2.5 rounded-xl border border-slate-600 flex flex-col gap-2 shadow-lg">
-            <textarea id="msg-input" class="w-full bg-slate-600 border border-slate-500 rounded-lg p-2.5 text-sm placeholder-slate-300 resize-none h-14 text-white leading-tight focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all" placeholder="Scrivi alla sala..."></textarea>
-            <button onclick="window.askFreeMsg()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold uppercase text-[11px] shadow-lg active:scale-95 transition-all tracking-widest text-white">Invia alla Sala</button>
-        </div>
-
-        <div class="shrink-0 mt-2">
-            <button onclick="window.logoutApp(false)" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-400 font-bold uppercase text-[10px] tracking-widest transition-all">🚪 Disconnetti e Cancella Dati</button>
-        </div>
-
-        <div class="shrink-0 text-center pb-2 pt-2 opacity-80">
-            <div class="text-[10px] font-mono font-black tracking-[0.2em] uppercase">
-                <span class="text-white">JOK</span><span class="text-red-500">ART</span>
-            </div>
-            <div class="text-[7px] font-bold text-slate-500 uppercase tracking-tighter">so.pcthiene@gmail.com</div>
-        </div>
+        <div id="last-msg-banner" class="shrink-0 w-full bg-slate-800/80 rounded-xl p-3 border border-slate-600 flex flex-col justify-center" style="display: none;"><div class="flex justify-between items-center mb-1 border-b border-white/10 pb-1"><span id="last-msg-title" class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">🎧 DALLA SALA</span><span id="last-msg-time" class="text-[10px] font-mono text-slate-400">--:--</span></div><span id="last-msg-text" class="text-[13px] text-white font-medium italic leading-snug"></span></div>
+        <div class="mt-auto shrink-0 bg-slate-800 p-2.5 rounded-xl border border-slate-600 flex flex-col gap-2 shadow-lg"><textarea id="msg-input" class="w-full bg-slate-600 border border-slate-500 rounded-lg p-2.5 text-sm placeholder-slate-300 resize-none h-14 text-white leading-tight focus:outline-none focus:border-blue-400" placeholder="Scrivi alla sala..."></textarea><button onclick="window.askFreeMsg()" class="w-full py-3 bg-blue-600 hover:bg-blue-500 rounded-lg font-black uppercase text-[11px] shadow-lg active:scale-95 transition-all tracking-widest text-white">Invia alla Sala</button></div>
+        <div class="shrink-0 mt-2"><button onclick="window.logoutApp(false)" class="w-full py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-400 font-black uppercase text-[10px] tracking-widest transition-all">🚪 DISCONNETTI E CAMBIA UNITÀ</button></div>
+        <div class="shrink-0 text-center pb-2 pt-2 opacity-80"><div class="text-[12px] font-mono font-black tracking-[0.3em] uppercase"><span class="text-white">JOK</span><span class="text-red-500">ART</span></div><div class="text-[7px] font-bold text-slate-500 uppercase tracking-tighter">so.pcthiene@gmail.com</div></div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, update, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
+        // CONFIGURAZIONE
         const config = window.APP_CONFIG || {};
-        let app = null; let db = null;
-        if (config.firebaseSettings) { try { app = initializeApp(config.firebaseSettings); db = getDatabase(app); } catch(e) { console.error(e); } }
+        let db = null;
+        if (config.firebaseSettings) { try { const app = initializeApp(config.firebaseSettings); db = getDatabase(app); } catch(e) { console.error(e); } }
 
         let sqId = null; window.lastNotifiedTargetId = null; window.lastNotifiedMsgTime = null; window.ultimoContattoLocale = Date.now(); window.targetCompletato = null; let liveTrackingTimer = null;
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
         window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '60000'); 
-        let idSalaAttivo = null; let viaAttiva = localStorage.getItem('app_ultima_via') || ""; let ultimaPos = JSON.parse(localStorage.getItem('app_ultima_pos')) || { lat: null, lng: null };
+        let idSalaAttivo = null; let viaAttiva = ""; let ultimaPos = { lat: null, lng: null };
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const sqIdRaw = urlParams.get('id'); const savedSqId = localStorage.getItem('pc_app_saved_team');
-        if (sqIdRaw && sqIdRaw.trim() !== "") { sqId = sqIdRaw.trim().toUpperCase(); localStorage.setItem('pc_app_saved_team', sqId); window.history.replaceState({}, document.title, window.location.pathname); verificaSquadraELogin(); } 
-        else if (savedSqId) { sqId = savedSqId; verificaSquadraELogin(); } 
+        const savedSqId = localStorage.getItem('pc_app_saved_team');
+        if (savedSqId) { sqId = savedSqId; verificaSquadraELogin(); } 
         else { document.getElementById('team-select-screen').style.display = 'flex'; }
 
-        // -----------------------------------------------------
-        // 🎯 FIX SCANNER: RESISTENTE AL LOGOUT
-        // -----------------------------------------------------
+        // --- MOTORE SCANNER QR SICURO ---
         let html5QrCode = null;
-        window.startQRScanner = () => {
+        window.startQRScanner = async () => {
             document.getElementById('btn-start-qr').style.display = 'none';
             document.getElementById('qr-reader').style.display = 'block';
             let btnChiudi = document.getElementById('btn-chiudi-qr');
             if(!btnChiudi) {
                 btnChiudi = document.createElement('button'); btnChiudi.id = 'btn-chiudi-qr';
-                btnChiudi.className = 'w-full bg-red-900/50 border border-red-500 text-red-400 py-3 rounded-xl font-bold uppercase text-xs mb-4 mt-2 transition-all';
+                btnChiudi.className = 'w-full bg-red-900/50 border border-red-500 text-red-400 py-3 rounded-xl font-black uppercase text-[10px] mb-4 mt-2 transition-all';
                 btnChiudi.innerText = '✖ ANNULLA SCANSIONE'; btnChiudi.onclick = window.stopQRScanner;
                 document.getElementById('qr-reader').after(btnChiudi);
             }
             btnChiudi.style.display = 'block';
 
-            // Crea o distruggi per resettare la cache della fotocamera
-            if (html5QrCode) { try { html5QrCode.clear(); } catch(e){} }
+            if (html5QrCode) { try { await html5QrCode.stop(); } catch(e){} }
             html5QrCode = new Html5Qrcode("qr-reader");
 
             html5QrCode.start(
                 { facingMode: "environment" },
                 { fps: 15, qrbox: 250 }, 
-                (decodedText) => {
-                    if (html5QrCode.isScanning) {
-                        html5QrCode.stop().then(() => { window.stopQRScanner(); window.processQR(decodedText); }).catch(() => window.processQR(decodedText));
-                    }
-                },
+                (decodedText) => { window.processQR(decodedText); },
                 (errorMessage) => {}
-            ).catch((err) => {
-                window.stopQRScanner();
-                Swal.fire({ icon: 'error', title: 'FOTOCAMERA BLOCCATA', text: "Permessi negati o fotocamera occupata. Ricarica la pagina.", background: '#0f172a', color: '#fff' });
-            });
+            ).catch((err) => { window.stopQRScanner(); Swal.fire({ icon: 'error', title: 'ERRORE CAMERA', text: "Permessi negati o camera occupata.", background: '#0f172a', color: '#fff' }); });
         };
 
         window.processQR = (text) => {
             let extractedId = text.trim();
             try {
-                if (text.includes('http')) {
-                    const url = new URL(text);
-                    if (url.searchParams.get('sq')) extractedId = url.searchParams.get('sq');
-                    else if (url.searchParams.get('id')) extractedId = url.searchParams.get('id');
-                } else if (text.includes('?sq=')) { extractedId = text.split('?sq=')[1].split('&')[0]; }
+                if (text.includes('?id=')) extractedId = new URL(text).searchParams.get('id');
+                else if (text.includes('?sq=')) extractedId = new URL(text).searchParams.get('sq');
             } catch(e) {}
-            if(extractedId) { document.getElementById('team-input').value = extractedId.toUpperCase(); window.saveNewTeam(); }
+            if(extractedId) { window.stopQRScanner(); document.getElementById('team-input').value = extractedId.toUpperCase(); window.saveNewTeam(); }
         };
 
-        window.stopQRScanner = () => {
-            if (html5QrCode && html5QrCode.isScanning) { html5QrCode.stop().catch(e => {}); }
+        window.stopQRScanner = async () => {
+            if (html5QrCode) { try { await html5QrCode.stop(); html5QrCode.clear(); } catch(e){} }
             document.getElementById('qr-reader').style.display = 'none';
             document.getElementById('btn-start-qr').style.display = 'flex';
             if(document.getElementById('btn-chiudi-qr')) document.getElementById('btn-chiudi-qr').style.display = 'none';
         };
 
-        window.saveNewTeam = () => { const val = document.getElementById('team-input').value.trim().toUpperCase(); if (val === '') return; localStorage.setItem('pc_app_saved_team', val); location.reload(); };
+        window.saveNewTeam = () => { const val = document.getElementById('team-input').value.trim().toUpperCase(); if (!val) return; localStorage.setItem('pc_app_saved_team', val); location.reload(); };
+
+        // --- MOTORE LOGOUT E CAMBIO UNITÀ ---
+        window.logoutApp = (isAuto = false) => {
+            if (liveTrackingTimer) clearInterval(liveTrackingTimer);
+            localStorage.removeItem('pc_app_auth');
+            localStorage.removeItem('pc_app_saved_team');
+            localStorage.removeItem('app_ultima_via');
+            localStorage.removeItem('app_ultima_pos');
+            
+            if (isAuto) { Swal.fire({ title: 'SESSIONE SCADUTA', icon: 'info', background: '#1e293b', color: '#fff' }).then(() => location.reload()); } 
+            else { 
+                Swal.fire({ title: 'CAMBIO UNITÀ?', text: "L'app tornerà alla selezione squadra.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { 
+                    if (r.isConfirmed) location.reload(); 
+                }); 
+            }
+        };
 
         function verificaSquadraELogin() {
+            if (!db) return;
             document.getElementById('display-sq').innerText = sqId; document.getElementById('login-sq-name').innerText = sqId;
-            if (!db) { document.body.innerHTML += `<div class="h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-center z-[50000] absolute inset-0"><div class="bg-amber-900/20 border border-amber-500 p-8 rounded-2xl mb-4"><h1 class="text-white text-xl font-black mb-2">ERRORE DI RETE</h1><p class="text-amber-200 text-sm mb-6">Configura config.js su GitHub.</p></div></div>`; return; }
+            document.getElementById('team-select-screen').style.display = 'none';
             get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
-                if (!snap.exists()) { document.body.innerHTML += `<div class="h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-center z-[50000] absolute inset-0"><div class="bg-amber-900/20 border border-amber-500 p-8 rounded-2xl mb-4"><h1 class="text-white text-xl font-black mb-2">SQUADRA NON REGISTRATA</h1><p class="text-amber-200 text-sm mb-6">La squadra ${sqId} non esiste.</p><button onclick="localStorage.removeItem('pc_app_saved_team'); location.reload();" class="bg-amber-600 text-white px-4 py-3 rounded-xl font-bold uppercase w-full shadow-lg">Cambia</button></div></div>`; return; }
-                if(localStorage.getItem('pc_app_auth') === 'true') { avviaMotoreApp(); } else { document.getElementById('login-screen').style.display = 'flex'; }
+                if (!snap.exists()) { localStorage.removeItem('pc_app_saved_team'); location.reload(); return; }
+                if(localStorage.getItem('pc_app_auth') === 'true') { avviaMotoreApp(); } 
+                else { document.getElementById('login-screen').style.display = 'flex'; }
             });
         }
 
         window.checkPin = () => { if(document.getElementById('pin-input').value === (config.pinAccesso || "2026")) { localStorage.setItem('pc_app_auth', 'true'); document.getElementById('login-screen').style.display = 'none'; update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); avviaMotoreApp(); } else { Swal.fire({ icon: 'error', title: 'PIN Errato', background: '#1e293b', color: '#fff' }); document.getElementById('pin-input').value = ''; } };
 
-        window.logoutApp = (isAuto = false) => {
-            if (liveTrackingTimer) clearInterval(liveTrackingTimer);
-            localStorage.removeItem('pc_app_auth'); localStorage.removeItem('pc_app_saved_team'); localStorage.removeItem('app_ultima_via'); localStorage.removeItem('app_ultima_pos');
-            if (isAuto) { Swal.fire({ title: 'SESSIONE SCADUTA', icon: 'info', background: '#1e293b', color: '#fff' }).then(() => location.reload()); } 
-            else { Swal.fire({ title: 'DISCONNETTI?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc2626', background: '#1e293b', color: '#fff' }).then((r) => { if (r.isConfirmed) location.reload(); }); }
-        };
-
         function avviaMotoreApp() {
-            updateGpsBadge(); if(window.liveTrackingEnabled) window.startLiveTracking();
+            document.getElementById('main-header').parentElement.querySelectorAll('header, main').forEach(el => el.style.display = 'flex');
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
-            setInterval(() => { if (Date.now() - window.ultimoContattoLocale > 43200000) { update(ref(db, `anagrafica_squadre/${sqId}`), { attiva: false }); window.logoutApp(true); } }, 60000);
-            onValue(ref(db, ".info/connected"), (snap) => { const badge = document.getElementById('net-badge'); badge.innerText = snap.val() ? "ONLINE" : "OFFLINE"; badge.className = snap.val() ? "inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase" : "inline-block text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse"; });
-            onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
+            onValue(ref(db, ".info/connected"), (snap) => { const b = document.getElementById('net-badge'); b.innerText = snap.val() ? "ONLINE" : "OFFLINE"; b.className = snap.val() ? "inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase" : "inline-block text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse"; });
+            onValue(query(ref(db, 'brogliaccio'), limitToLast(50)), (snap) => {
                 const data = snap.val(); if (!data) return;
                 const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
                 const target = logs.find(l => l.dir === 'SA' && l.squadra === sqId && l.m1 && l.m1.includes('📍') && l.id !== window.targetCompletato);
                 const banner = document.getElementById('target-banner');
                 if (target) {
-                    idSalaAttivo = target.id; viaAttiva = target.m1.replace('📍', '').trim(); localStorage.setItem('app_ultima_via', viaAttiva);
-                    if (target.lat && target.lng) { ultimaPos = { lat: target.lat, lng: target.lng }; localStorage.setItem('app_ultima_pos', JSON.stringify(ultimaPos)); }
+                    idSalaAttivo = target.id; viaAttiva = target.m1.replace('📍', '').trim();
                     if (target.stato === 'ATTESA') {
                         if (window.lastNotifiedTargetId !== target.id) { if (navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000]); window.lastNotifiedTargetId = target.id; }
                         banner.className = "shrink-0 w-full bg-red-900/80 rounded-xl p-2.5 border pulse-red-border shadow-lg flex flex-col gap-2";
-                        banner.innerHTML = `<div class="flex items-center gap-2"><span class="text-3xl animate-bounce">🚨</span><div class="flex flex-col flex-1 overflow-hidden"><span class="text-[9px] text-red-300 font-bold uppercase tracking-widest text-left">NUOVO ORDINE DALLA SALA</span><span class="text-[12px] text-white font-black truncate">${viaAttiva}</span></div></div><button onclick="window.cRic()" class="w-full bg-red-600 py-2 rounded-lg font-black uppercase text-[10px] shadow active:scale-95 text-white">✅ CONFERMA RICEZIONE</button>`;
+                        banner.innerHTML = `<div class="flex items-center gap-2"><span class="text-3xl animate-bounce">🚨</span><div class="flex flex-col flex-1 overflow-hidden"><span class="text-[9px] text-red-300 font-bold uppercase tracking-widest text-left">ORDINE DALLA SALA</span><span class="text-[12px] text-white font-black truncate">${viaAttiva}</span></div></div><button onclick="window.cRic()" class="w-full bg-red-600 py-2 rounded-lg font-black uppercase text-[10px] shadow text-white">✅ RICEVUTO</button>`;
                     } else {
-                        banner.className = "shrink-0 w-full bg-blue-900/80 rounded-xl p-2.5 border pulse-blue-border shadow-lg flex flex-col gap-2";
-                        banner.innerHTML = `<div class="flex items-center gap-2 mb-0.5"><span class="text-2xl">🚐</span><div class="flex flex-col flex-1 overflow-hidden"><span class="text-[9px] text-blue-300 font-bold uppercase tracking-widest text-left">IN VIAGGIO VERSO:</span><span class="text-[12px] text-white font-bold truncate">${viaAttiva}</span></div></div><div class="flex gap-2"><button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="flex-1 bg-emerald-600 py-2 rounded-lg font-bold uppercase text-[9px] shadow active:scale-95 text-white">📍 NAVIGA</button><button onclick="window.cArr()" class="flex-1 bg-red-600 py-2 rounded-lg font-bold uppercase text-[9px] shadow active:scale-95 text-white border border-red-800">🏁 SUL POSTO</button></div>`;
+                        banner.className = "shrink-0 w-full bg-blue-900/80 rounded-xl p-2.5 border border-blue-500 shadow-lg flex flex-col gap-2";
+                        banner.innerHTML = `<div class="flex items-center gap-2 mb-0.5"><span class="text-2xl">🚐</span><div class="flex flex-col flex-1 overflow-hidden"><span class="text-[9px] text-blue-300 font-bold uppercase tracking-widest text-left">TARGET:</span><span class="text-[12px] text-white font-bold truncate">${viaAttiva}</span></div></div><div class="flex gap-2"><button onclick="window.navig(${target.lat}, ${target.lng})" class="flex-1 bg-emerald-600 py-2 rounded-lg font-bold uppercase text-[9px] shadow text-white">📍 NAVIGA</button><button onclick="window.cArr()" class="flex-1 bg-red-600 py-2 rounded-lg font-bold uppercase text-[9px] shadow text-white">🏁 SUL POSTO</button></div>`;
                     }
-                } else { idSalaAttivo = null; window.disegnaBannerUltimaDest(); }
-                
-                const msgBanner = document.getElementById('last-msg-banner'); const myLogs = logs.filter(l => l.squadra === sqId || l.squadra === 'COMUNICAZIONE GENERALE');
-                let lastMsgText = null; let lastMsgTime = ''; let isBroadcast = false;
-                for (let l of myLogs) { if (l.m1 && l.m1.includes('📍')) continue; if (l.squadra === 'COMUNICAZIONE GENERALE') { lastMsgText = l.m1; lastMsgTime = l.ora; isBroadcast = true; break; } else if (l.dir === 'SA' && l.m1 && l.m1 !== '---') { lastMsgText = l.m1; lastMsgTime = l.ora; isBroadcast = false; break; } }
-                if (lastMsgText) { if (window.lastNotifiedMsgTime !== lastMsgTime) { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); window.lastNotifiedMsgTime = lastMsgTime; } msgBanner.style.display = 'flex'; document.getElementById('last-msg-time').innerText = lastMsgTime; document.getElementById('last-msg-text').innerText = `"${lastMsgText}"`; msgBanner.className = isBroadcast ? "shrink-0 w-full bg-amber-900/40 rounded-xl p-3 border border-amber-600/50 flex flex-col justify-center" : "shrink-0 w-full bg-slate-800/80 rounded-xl p-3 border border-slate-600 flex flex-col justify-center"; document.getElementById('last-msg-title').innerText = isBroadcast ? "📢 COMUNICAZIONE GENERALE" : "🎧 DALLA SALA"; } else { msgBanner.style.display = 'none'; }
+                } else { idSalaAttivo = null; banner.innerHTML = `<div class="text-center text-slate-500 text-[10px] uppercase font-bold italic tracking-widest">Nessun Target attivo</div>`; }
             });
-            onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => { const sq = snap.val(); if (sq) { if (sq.ultimo_contatto) window.ultimoContattoLocale = sq.ultimo_contatto; document.getElementById('display-capo').innerText = sq.capo ? `CAPO: ${sq.capo.toUpperCase()}` : "CAPO: N/D"; document.getElementById('current-status').innerText = sq.stato ? sq.stato.toUpperCase() : 'ATTESA'; document.getElementById('off-screen').style.display = (sq.attiva === false) ? 'flex' : 'none'; } });
+            onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => { const sq = snap.val(); if (sq) { document.getElementById('display-capo').innerText = `CAPO: ${sq.capo?.toUpperCase() || '---'}`; document.getElementById('current-status').innerText = sq.stato?.toUpperCase() || 'ATTESA'; document.getElementById('off-screen').style.display = (sq.attiva === false) ? 'flex' : 'none'; } });
         }
 
-        function updateGpsBadge() { const badge = document.getElementById('gps-badge'); badge.innerText = window.gpsAutoEnabled ? "GPS AUT" : "GPS OFF"; badge.className = window.gpsAutoEnabled ? "inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase" : "inline-block text-[7px] bg-slate-500/20 text-slate-400 px-1.5 py-0.5 rounded border border-slate-500/30 font-bold uppercase"; document.getElementById('live-badge').style.display = window.liveTrackingEnabled ? 'inline-block' : 'none'; }
-        window.inviaNuovo = async (testo, extra = {}) => { const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); let pos = { lat: '', lng: '' }; if (window.gpsAutoEnabled && navigator.geolocation) { try { const p = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 4000 })); pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) }; } catch (e) {} } await update(ref(db, `anagrafica_squadre/${sqId}`), { ...pos, ultimo_contatto: Date.now() }); push(ref(db, 'brogliaccio'), { ora, data: new Date().toLocaleDateString('it-IT'), squadra: sqId, m1: testo.toUpperCase(), dir: 'SQ', stato: 'OK', ...pos, ...extra }).then(() => { Swal.fire({ icon: 'success', title: 'INVIATO', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' }); }); };
-        window.sendSilentGPS = () => { if (navigator.geolocation && window.liveTrackingEnabled) { navigator.geolocation.getCurrentPosition((p) => { update(ref(db, `anagrafica_squadre/${sqId}`), { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) }); }, null, { enableHighAccuracy: true }); } };
-        window.startLiveTracking = () => { if (liveTrackingTimer) clearInterval(liveTrackingTimer); if (window.liveTrackingEnabled) { window.sendSilentGPS(); liveTrackingTimer = setInterval(window.sendSilentGPS, window.liveTrackingInterval); } };
-        window.toggleLiveTrack = (val) => { window.liveTrackingEnabled = val; localStorage.setItem('app_live_track', val); updateGpsBadge(); if (val) window.startLiveTracking(); else if (liveTrackingTimer) clearInterval(liveTrackingTimer); };
-        window.changeLiveInterval = (val) => { window.liveTrackingInterval = parseInt(val); localStorage.setItem('app_live_interval', val); if (window.liveTrackingEnabled) window.startLiveTracking(); };
-        window.openGPSPanel = () => { Swal.fire({ title: 'GESTIONE GPS', background: '#0f172a', color: '#fff', html: `<div style="text-align: left; display: flex; flex-direction: column; gap: 15px;"><div style="background: #1e293b; padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 13px; font-weight: bold;">GPS nei Messaggi</span><label class="switch"><input type="checkbox" ${window.gpsAutoEnabled ? 'checked' : ''} onchange="window.toggleGpsApp(this.checked)"><span class="slider"></span></label></div><div style="background: #1e293b; padding: 12px; border-radius: 12px;"><div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 13px; font-weight: bold; color: #ef4444;">LIVE Tracking 🔴</span><label class="switch"><input type="checkbox" ${window.liveTrackingEnabled ? 'checked' : ''} onchange="window.toggleLiveTrack(this.checked)"><span class="slider"></span></label></div><select onchange="window.changeLiveInterval(this.value)" style="width:100%; margin-top:10px; background:#0f172a; color:white; border:1px solid #475569; padding:8px; border-radius:8px;"><option value="30000" ${window.liveTrackingInterval == 30000 ? 'selected' : ''}>Ogni 30 Sec</option><option value="60000" ${window.liveTrackingInterval == 60000 ? 'selected' : ''}>Ogni 1 Min</option><option value="300000" ${window.liveTrackingInterval == 300000 ? 'selected' : ''}>Ogni 5 Min</option></select></div></div>`, confirmButtonText: 'CHIUDI', confirmButtonColor: '#475569' }); };
-        window.toggleGpsApp = (val) => { window.gpsAutoEnabled = val; localStorage.setItem('app_gps_auto', val); updateGpsBadge(); };
-        window.askStatus = (s, icon) => { Swal.fire({ title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b>${s.toUpperCase()}</b>`, showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { if(r.isConfirmed) { update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s, ultimo_contatto: Date.now() }); } }); };
+        window.askStatus = (s, icon) => { Swal.fire({ title: `STATO: ${s}`, html: `<span class="text-4xl block mb-2">${icon}</span>`, showCancelButton: true, confirmButtonText: 'AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { if(r.isConfirmed) update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s, ultimo_contatto: Date.now() }); }); };
         window.askFreeMsg = () => { const t = document.getElementById('msg-input').value.trim(); if(!t) return; window.inviaNuovo(t).then(() => { document.getElementById('msg-input').value = ""; }); };
-        window.upFoto = (f) => { if (!f) return; const reader = new FileReader(); reader.onload = (e) => { Swal.fire({ title: 'INVIARE FOTO?', html: `<img src="${e.target.result}" class="w-full rounded mt-2">`, showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { if(r.isConfirmed) window.inviaNuovo("📷 FOTO", { mediaUrl: e.target.result, mediaType: 'IMG' }); }); }; reader.readAsDataURL(f); };
-        
-        let mediaRecorder; let audioChunks = []; let recTimer; let recSeconds = 0;
-        document.getElementById('btn-voc').onclick = async () => {
-            const btn = document.getElementById('btn-voc'); const icon = document.getElementById('voc-icon'); const txt = document.getElementById('voc-txt');
-            if (!mediaRecorder || mediaRecorder.state === "inactive") {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream); audioChunks = [];
-                    mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
-                    mediaRecorder.onstop = () => {
-                        stream.getTracks().forEach(t => t.stop()); clearInterval(recTimer);
-                        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType });
-                        const reader = new FileReader(); reader.onload = (e) => { Swal.fire({ title: 'INVIARE VOCALE?', html: `<audio controls class="w-full mt-2"><source src="${e.target.result}"></audio>`, showCancelButton: true, confirmButtonText: 'INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((res) => { if(res.isConfirmed) window.inviaNuovo("🎤 VOCALE", { mediaUrl: e.target.result, mediaType: 'AUDIO' }); }); }; reader.readAsDataURL(audioBlob);
-                    };
-                    mediaRecorder.start(500); btn.classList.add('pulse-red-border'); icon.innerText = "🔴"; recSeconds = 0;
-                    recTimer = setInterval(() => { recSeconds++; txt.innerText = `REC ${Math.floor(recSeconds/60)}:${(recSeconds%60).toString().padStart(2,'0')}`; }, 1000);
-                } catch(err) { Swal.fire({ title: 'Errore Microfono', icon: 'error', background: '#1e293b', color: '#fff' }); }
-            } else { mediaRecorder.stop(); btn.classList.remove('pulse-red-border'); icon.innerText = "🎤"; txt.innerText = "VOCALE"; }
-        };
-
-        window.cRic = () => { if (idSalaAttivo) { update(ref(db, `brogliaccio/${idSalaAttivo}`), { stato: 'OK', m2: '✅ RICEVUTO', ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) }); update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento', ultimo_contatto: Date.now() }); } };
-        window.cArr = () => { if (!idSalaAttivo) return; Swal.fire({ title: 'SUL POSTO?', showCancelButton: true, confirmButtonText: 'SÌ', confirmButtonColor: '#dc2626', background: '#0f172a', color: '#fff' }).then((r) => { if (r.isConfirmed) { window.targetCompletato = idSalaAttivo; update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento', ultimo_contatto: Date.now() }); window.inviaNuovo(`🏁 ARRIVATI: ${viaAttiva}`, { stato: 'ATTESA', dir: 'SQ' }); idSalaAttivo = null; window.disegnaBannerUltimaDest(); } }); };
-        window.disegnaBannerUltimaDest = () => { const banner = document.getElementById('target-banner'); if (viaAttiva && ultimaPos.lat) { banner.className = "shrink-0 w-full bg-slate-800/80 rounded-xl p-2.5 border border-slate-700 shadow flex items-center justify-between"; banner.innerHTML = `<div class="flex flex-col w-[65%]"><span class="text-[8px] text-slate-400 font-bold uppercase tracking-widest text-left">ULTIMA DESTINAZIONE</span><span class="text-[11px] text-white font-bold truncate">${viaAttiva}</span></div><button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="w-[30%] bg-slate-700 text-emerald-400 py-2 rounded-lg font-bold text-[9px] border border-slate-600">📍 NAVIGA</button>`; } else { banner.className = "shrink-0 w-full bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 shadow-inner flex flex-col justify-center min-h-[60px]"; banner.innerHTML = `<div class="text-center text-slate-500 text-[10px] font-bold uppercase tracking-widest">Nessun Target attivo</div>`; } };
         window.navig = (lat, lng) => { window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank'); };
+        window.cRic = () => { if (idSalaAttivo) { update(ref(db, `brogliaccio/${idSalaAttivo}`), { stato: 'OK', m2: '✅ RICEVUTO', ora_risposta: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) }); update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Trasferimento', ultimo_contatto: Date.now() }); } };
+        window.cArr = () => { if (!idSalaAttivo) return; update(ref(db, `anagrafica_squadre/${sqId}`), { stato: 'Intervento', ultimo_contatto: Date.now() }); window.targetCompletato = idSalaAttivo; idSalaAttivo = null; window.inviaNuovo(`🏁 ARRIVATI SUL POSTO`, { stato: 'OK' }); };
+        window.inviaNuovo = async (testo) => { const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); push(ref(db, 'brogliaccio'), { ora, data: new Date().toLocaleDateString('it-IT'), squadra: sqId, m1: testo.toUpperCase(), dir: 'SQ', stato: 'OK' }); };
     </script>
 </body>
 </html>
