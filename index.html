@@ -418,20 +418,21 @@
             });
         };
 
-        window.processQR = (text) => {
+window.processQR = (text) => {
             let extractedId = text.trim();
             
-            // Parsing robusto: estrae il codice sia se è un URL completo sia se è testo semplice
-            try {
-                if (text.includes('?id=')) extractedId = new URL(text).searchParams.get('id');
-                else if (text.includes('?sq=')) extractedId = new URL(text).searchParams.get('sq');
-                else if (text.includes('index.html')) extractedId = text.split('id=')[1] || text.split('sq=')[1];
-            } catch(e) {
-                console.warn("Dato grezzo, provo stringa pura");
+            // Cerca la variabile "id=" o "sq=" ovunque si trovi (URL completo, relativo o testo puro)
+            if (extractedId.includes('id=')) {
+                extractedId = extractedId.split('id=')[1].split('&')[0];
+            } else if (extractedId.includes('sq=')) {
+                extractedId = extractedId.split('sq=')[1].split('&')[0];
             }
             
+            // Pulisce l'ID da eventuali slash o caratteri spuri lasciati dall'URL
+            extractedId = extractedId.replace(/[^a-zA-Z0-9_-]/g, '').toUpperCase();
+            
             if(extractedId) {
-                document.getElementById('team-input').value = extractedId.toUpperCase();
+                document.getElementById('team-input').value = extractedId;
                 window.saveNewTeam();
             }
         };
