@@ -257,11 +257,16 @@
             
             onValue(ref(db, ".info/connected"), (snap) => { const badge = document.getElementById('net-badge'); if(snap.val() === true) { badge.className = "inline-block text-[7px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30 font-bold uppercase shadow-[0_0_10px_rgba(16,185,129,0.3)]"; badge.innerText = "ONLINE"; } else { badge.className = "inline-block text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse shadow-[0_0_10px_rgba(239,68,68,0.3)]"; badge.innerText = "OFFLINE"; } });
 
-            onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
+onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
                 const data = snap.val(); if (!data) return; const logs = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
                 const target = logs.find(l => l.dir === 'SA' && l.squadra === sqId && l.m1 && l.m1.includes('📍') && l.id !== window.targetCompletato); const banner = document.getElementById('target-banner');
                 if (target) {
-                    idSalaAttivo = target.id; viaAttiva = target.m1.replace('📍', '').trim(); localStorage.setItem('app_ultima_via', viaAttiva);
+                    idSalaAttivo = target.id; 
+                    
+                    // 💡 FIX TICKET E SUPPORTO: Estrae solo l'indirizzo pulito tagliando via le tag della Sala!
+                    viaAttiva = target.m1.split('📍')[1] ? target.m1.split('📍')[1].trim() : target.m1.replace('📍', '').trim(); 
+                    localStorage.setItem('app_ultima_via', viaAttiva);
+                    
                     if (target.lat && target.lng) { ultimaPos = { lat: target.lat, lng: target.lng }; localStorage.setItem('app_ultima_pos', JSON.stringify(ultimaPos)); }
                     
                     // BANNER IN LINEA ULTRA COMPATTI
