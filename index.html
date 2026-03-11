@@ -148,25 +148,31 @@
         <p class="text-slate-400 text-xs uppercase tracking-widest leading-relaxed text-center relative z-20 font-bold bg-black/40 px-6 py-3 rounded-xl border border-white/10">App temporaneamente bloccata<br>dalla Sala Radio</p>
     </div>
 
-    <header id="main-header" class="px-3 py-2 bg-slate-900/80 backdrop-blur-xl flex justify-between items-center shrink-0 shadow-2xl hidden relative z-20">
-        <div class="flex items-center gap-3 w-full screen-enter">
-            <div class="h-11 w-11 flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-600/50 bg-black/50 shadow-inner">
-                <img src="logosala.png" alt="Logo" class="w-8 h-8 object-contain">
+<header id="main-header" class="px-3 py-3 bg-slate-900/80 backdrop-blur-xl flex justify-between items-center shrink-0 shadow-2xl hidden relative z-20 border-b border-white/5">
+        <div class="flex items-center gap-3.5 w-full screen-enter">
+            <div class="h-14 w-14 flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-600/50 bg-black/50 shadow-inner">
+                <img src="logosala.png" alt="Logo" class="w-10 h-10 object-contain">
             </div>
-            <div class="flex flex-col flex-1 justify-center">
-                <div class="flex justify-between items-start">
-                    <div class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-0.5">SISTEMA C.O.C. ONLINE</div>
-                    <div id="clock" class="font-mono text-[10px] font-bold text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-900/50 neon-text-emerald">00:00</div>
+            
+            <div class="flex flex-col flex-1 justify-center min-w-0">
+                
+                <div class="flex justify-between items-center mb-0.5">
+                    <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none truncate w-full mt-0.5">
+                        PROTEZIONE CIVILE THIENE <span class="text-blue-500 font-black mx-0.5">-</span> TERMINALE
+                    </div>
+                    <div id="clock" class="font-mono text-[10px] font-bold text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-900/50 neon-text-emerald shrink-0 ml-2">00:00</div>
                 </div>
-                <div class="flex items-end justify-between">
-                    <h1 id="display-sq" class="font-black text-[22px] tracking-tighter text-white leading-none drop-shadow-md">---</h1>
-                    <div class="flex gap-1.5 mb-0.5">
+                
+                <div class="flex items-end justify-between mt-0.5">
+                    <h1 id="display-sq" class="font-black text-[26px] tracking-tighter text-white leading-none drop-shadow-md truncate">---</h1>
+                    <div class="flex gap-1.5 mb-1 shrink-0">
                         <div id="current-status" class="t-badge border border-emerald-500/50 text-emerald-400 bg-emerald-950/80">ATTESA</div>
                         <div id="gps-badge" class="t-badge border border-blue-500/50 text-blue-400 bg-blue-950/80">GPS</div>
                         <div id="live-badge" class="hidden t-badge border border-red-500/50 text-red-400 bg-red-950/80 animate-pulse">LIVE</div>
                     </div>
                 </div>
-                <div id="display-capo" class="text-[9px] font-bold text-blue-300 uppercase tracking-widest truncate w-48 mt-0.5">CAPO: ---</div>
+                
+                <div id="display-capo" class="text-[10px] font-bold text-blue-300 uppercase tracking-widest truncate w-48 mt-1.5">CAPO: ---</div>
             </div>
         </div>
     </header>
@@ -221,11 +227,14 @@
             </div>
         </div>
 
-        <div class="shrink-0 text-center pb-2 pt-1 opacity-50 flex justify-between items-center px-2">
-            <button onclick="window.logoutApp(false)" class="text-[8px] font-bold text-red-500 uppercase tracking-widest bg-red-950/30 px-3 py-1.5 rounded border border-red-900/50 hover:bg-red-900/50 transition-colors">
-                🚪 LOGOUT UNITÀ
+<div class="shrink-0 mt-1 mb-2 screen-enter" style="animation-delay: 0.5s;">
+            <button onclick="window.logoutApp(false)" class="w-full py-2.5 bg-red-950/30 hover:bg-red-900/50 border border-red-900/50 rounded-xl text-red-500/80 hover:text-red-400 font-black uppercase text-[9px] tracking-widest transition-all shadow-[0_0_10px_rgba(239,68,68,0.1)]">
+                🚪 CHIUDI CONNESSIONE E CAMBIA UNITÀ
             </button>
-            <div class="text-[9px] font-mono font-black tracking-[0.3em] uppercase drop-shadow-md">
+        </div>
+
+        <div class="shrink-0 text-center pb-2 opacity-50">
+            <div class="text-[9px] font-mono font-black tracking-[0.3em] uppercase drop-shadow-md leading-none">
                 <span class="text-white">JOK</span><span class="text-red-600">ART</span>
             </div>
         </div>
