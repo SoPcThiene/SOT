@@ -15,70 +15,94 @@
     <script src="config.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; 
+            background-color: #050b14; /* Sfondo ancora più profondo */
             background-image: 
-                radial-gradient(circle at 50% 0%, #1e293b 0%, transparent 70%),
-                linear-gradient(rgba(30, 41, 59, 0.6) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(30, 41, 59, 0.6) 1px, transparent 1px);
-            background-size: 100% 100%, 30px 30px, 30px 30px;
+                radial-gradient(circle at 50% 0%, #0f172a 0%, transparent 70%),
+                linear-gradient(rgba(30, 41, 59, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30, 41, 59, 0.4) 1px, transparent 1px);
+            background-size: 100% 100%, 25px 25px, 25px 25px;
             background-attachment: fixed;
-            color: white; 
-            height: 100vh; 
-            height: 100dvh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            margin: 0; 
-            font-weight: 500; 
+            color: #e2e8f0; 
+            height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; margin: 0; font-weight: 500; 
         }
 
-        .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.15)); background-size: 100% 4px; opacity: 0.3; }
+        .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.2)); background-size: 100% 4px; opacity: 0.4; mix-blend-mode: overlay; }
         
-        #off-screen, #login-screen, #team-select-screen { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; text-align: center; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(10px); overflow: hidden; }
+        /* Schermate di Blocco/Login */
+        #off-screen, #login-screen, #team-select-screen { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; text-align: center; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(15px); overflow: hidden; }
         #login-screen { z-index: 20000; } #team-select-screen { z-index: 30000; }
 
-        .screen-enter { animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.98) translateY(5px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        .screen-enter { animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
+        /* LOGO ANIMATIONS */
         @keyframes spin-chase { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes soft-pulse { 0%, 100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.03); filter: brightness(1.2); } }
+        .chasing-border-blue { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, #3b82f6 100%); animation: spin-chase 2s linear infinite; }
+        .inner-circle { position: absolute; inset: 4px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: inset 0px 0px 20px rgba(0,0,0,0.9); }
+
+        /* NEON TEXT */
+        .neon-text-emerald { text-shadow: 0 0 10px rgba(16, 185, 129, 0.8); }
+        .neon-text-blue { text-shadow: 0 0 10px rgba(59, 130, 246, 0.8); }
+
+        /* PANNELLI GLASSMORPHISM TATTICI */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+            border-radius: 16px;
+        }
+
+        /* BOTTONI STATO (Design Militare) */
+        .btn-status {
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+        }
+        .btn-status:active { transform: scale(0.94); filter: brightness(1.2); }
+        .btn-status::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; border-radius: 0 0 12px 12px; transition: height 0.2s; }
+        .btn-status:active::after { height: 100%; opacity: 0.2; }
         
-        .logo-container { animation: soft-pulse 3s ease-in-out infinite; }
-        .chasing-border-blue { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 60%, #3b82f6 100%); animation: spin-chase 1.5s linear infinite; }
-        .chasing-border-red { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 60%, #ef4444 100%); animation: spin-chase 1.5s linear infinite; }
-        .inner-circle { position: absolute; inset: 5px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: inset 0px 0px 25px rgba(0,0,0,0.9); }
+        .btn-status .icon-box { background: rgba(0,0,0,0.3); border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; font-size: 11px; border: 1px solid rgba(255,255,255,0.05); }
+        .btn-status span.txt { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .neon-text-emerald { text-shadow: 0 0 10px rgba(16, 185, 129, 0.6), 0 0 20px rgba(16, 185, 129, 0.4); }
-        .neon-text-blue { text-shadow: 0 0 10px rgba(59, 130, 246, 0.6), 0 0 20px rgba(59, 130, 246, 0.4); }
+        /* Colori Bottoni Stato */
+        .btn-sede::after { background-color: #10b981; box-shadow: 0 -2px 10px rgba(16, 185, 129, 0.5); } .btn-sede { color: #6ee7b7; }
+        .btn-uscita::after { background-color: #f59e0b; box-shadow: 0 -2px 10px rgba(245, 158, 11, 0.5); } .btn-uscita { color: #fcd34d; }
+        .btn-trasf::after { background-color: #8b5cf6; box-shadow: 0 -2px 10px rgba(139, 92, 246, 0.5); } .btn-trasf { color: #c4b5fd; }
+        .btn-posto::after { background-color: #ef4444; box-shadow: 0 -2px 10px rgba(239, 68, 68, 0.5); } .btn-posto { color: #fca5a5; }
+        .btn-rientro::after { background-color: #0ea5e9; box-shadow: 0 -2px 10px rgba(14, 165, 233, 0.5); } .btn-rientro { color: #7dd3fc; }
 
-        /* PULSANTI ULTRA COMPATTI (Zero scroll) */
-        .btn-status { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; transition: 0.2s; border-bottom-width: 3px; height: 42px; font-weight: 800; text-transform: uppercase; font-size: 9px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; outline: none; }
-        .btn-status span { font-size: 16px; margin-bottom: 1px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4)); }
-        .btn-status:active { transform: scale(0.95); border-bottom-width: 1px; transform: translateY(2px); }
-        
-        .btn-media { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 10px; background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; height: 44px; transition: 0.2s; cursor: pointer; outline: none; box-shadow: 0 2px 4px rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
-        .btn-media span:first-child { font-size: 15px; margin-bottom: 1px; }
-        .btn-media:active { background: #334155; transform: scale(0.95); }
+        /* BOTTONI MEDIA (Foto, Vocale, GPS) */
+        .btn-media { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(71, 85, 105, 0.6); border-radius: 12px; height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .btn-media:active { background: rgba(51, 65, 85, 0.8); transform: scale(0.95); border-color: white; }
+        .btn-media .m-icon { font-size: 14px; margin-bottom: 2px; }
+        .btn-media .m-txt { font-size: 8px; font-weight: 900; letter-spacing: 1px; color: #94a3b8; }
 
-        .pulse-red-border { animation: p-red-border 1.5s infinite; border: 1px solid #ef4444; }
-        @keyframes p-red-border { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        /* TERMINALE TESTO */
+        .terminal-input { background: rgba(2, 6, 23, 0.8); border: 1px solid #334155; border-radius: 8px; color: #34d399; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 10px 12px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.8); transition: all 0.3s; }
+        .terminal-input:focus { border-color: #10b981; outline: none; box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 10px rgba(16, 185, 129, 0.2); }
+        .terminal-input::placeholder { color: #475569; font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
 
-        .pulse-blue-border { animation: p-blue-border 2s infinite; border: 1px solid #3b82f6; }
-        @keyframes p-blue-border { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
-
+        /* TOGGLE SWITCHES */
         .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        input:checked + .slider { background-color: #10b981; }
-        input:checked + .slider:before { transform: translateX(16px); }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); border: 1px solid #000; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: #94a3b8; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        input:checked + .slider { background-color: #10b981; border-color: #047857; }
+        input:checked + .slider:before { transform: translateX(16px); background-color: #fff; box-shadow: 0 0 8px #fff; }
 
-        .input-tactical { background: rgba(15, 23, 42, 0.9); border: 1px solid #334155; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 5px rgba(0,0,0,0.5); transition: all 0.3s ease; }
-        .input-tactical:focus { border-color: #3b82f6; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 10px rgba(59, 130, 246, 0.4); }
+        /* HEADER & BADGES */
+        #main-header { border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .t-badge { padding: 3px 6px; border-radius: 4px; font-size: 7px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .bg-cyber-dark { background: radial-gradient(circle at top right, #1e293b, #020617); }
     </style>
 </head>
 <body>
@@ -124,79 +148,84 @@
         <p class="text-slate-400 text-xs uppercase tracking-widest leading-relaxed text-center relative z-20 font-bold bg-black/40 px-6 py-3 rounded-xl border border-white/10">App temporaneamente bloccata<br>dalla Sala Radio</p>
     </div>
 
-    <header id="main-header" class="px-2 py-1.5 bg-slate-900/90 backdrop-blur-md border-b border-slate-700/80 flex justify-between items-center shrink-0 shadow-lg hidden relative z-20">
-        <div class="flex items-center gap-2 w-full screen-enter">
-            <div class="h-10 w-10 flex shrink-0 items-center justify-center overflow-hidden drop-shadow-md">
-                <img src="logosala.png" alt="Logo" class="w-full h-full object-contain">
+    <header id="main-header" class="px-3 py-2 bg-slate-900/80 backdrop-blur-xl flex justify-between items-center shrink-0 shadow-2xl hidden relative z-20">
+        <div class="flex items-center gap-3 w-full screen-enter">
+            <div class="h-11 w-11 flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-600/50 bg-black/50 shadow-inner">
+                <img src="logosala.png" alt="Logo" class="w-8 h-8 object-contain">
             </div>
-            <div class="flex flex-col flex-1 justify-center mt-0.5">
-                <div class="text-[7px] font-bold text-slate-400 uppercase tracking-widest leading-none">PC Thiene <span class="text-blue-500 font-black">•</span> Terminale</div>
-                <div class="flex items-center justify-between mt-0.5">
-                    <h1 id="display-sq" class="font-black text-xl tracking-tighter text-blue-400 leading-none neon-text-blue">---</h1>
-                    <div id="clock" class="font-mono text-sm font-bold text-emerald-400 leading-none bg-black/50 px-1.5 py-0.5 rounded border border-emerald-900/50 neon-text-emerald">00:00</div>
+            <div class="flex flex-col flex-1 justify-center">
+                <div class="flex justify-between items-start">
+                    <div class="text-[7px] font-bold text-slate-500 uppercase tracking-widest leading-none mb-0.5">SISTEMA C.O.C. ONLINE</div>
+                    <div id="clock" class="font-mono text-[10px] font-bold text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded border border-emerald-900/50 neon-text-emerald">00:00</div>
                 </div>
-                <div class="flex items-center justify-between mt-0.5">
-                    <div id="display-capo" class="text-[8px] font-bold text-slate-300 uppercase tracking-widest truncate w-32">CAPO: ---</div>
-                    <div class="flex gap-1">
-                        <div id="current-status" class="text-[7px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-900/30 px-1.5 py-0.5 rounded border border-emerald-800 shadow-[0_0_5px_rgba(16,185,129,0.2)]">ATTESA</div>
-                        <div id="live-badge" class="hidden text-[7px] bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded border border-red-500/30 font-bold uppercase animate-pulse shadow-[0_0_5px_rgba(239,68,68,0.3)]">LIVE</div>
-                        <div id="gps-badge" class="inline-block text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded border border-blue-500/30 font-bold uppercase">GPS</div>
+                <div class="flex items-end justify-between">
+                    <h1 id="display-sq" class="font-black text-[22px] tracking-tighter text-white leading-none drop-shadow-md">---</h1>
+                    <div class="flex gap-1.5 mb-0.5">
+                        <div id="current-status" class="t-badge border border-emerald-500/50 text-emerald-400 bg-emerald-950/80">ATTESA</div>
+                        <div id="gps-badge" class="t-badge border border-blue-500/50 text-blue-400 bg-blue-950/80">GPS</div>
+                        <div id="live-badge" class="hidden t-badge border border-red-500/50 text-red-400 bg-red-950/80 animate-pulse">LIVE</div>
                     </div>
                 </div>
+                <div id="display-capo" class="text-[9px] font-bold text-blue-300 uppercase tracking-widest truncate w-48 mt-0.5">CAPO: ---</div>
             </div>
         </div>
     </header>
 
-    <main id="main-content" class="flex-1 flex flex-col w-full px-2 py-2 gap-1.5 overflow-hidden pb-1 hidden relative z-10">
+    <main id="main-content" class="flex-1 flex flex-col w-full px-3 py-3 gap-2.5 overflow-hidden hidden relative z-10">
         
-        <div id="target-banner" class="shrink-0 w-full bg-slate-800/60 backdrop-blur-md rounded-xl p-2 border border-slate-600/50 shadow-inner flex flex-col justify-center min-h-[46px] screen-enter">
-            <div class="text-center text-slate-500 text-[9px] uppercase font-bold italic tracking-widest">Nessun Target in corso</div>
+        <div id="target-banner" class="glass-panel w-full p-3 shrink-0 flex flex-col justify-center min-h-[50px] screen-enter border-t-2 border-t-slate-600">
+            <div class="text-center text-slate-500 text-[10px] uppercase font-bold italic tracking-widest">SISTEMA IN STANDBY</div>
         </div>
 
-        <div class="shrink-0 flex flex-col gap-1.5 screen-enter" style="animation-delay: 0.1s;">
-            <div class="grid grid-cols-3 gap-1.5">
-                <button onclick="window.askStatus('Sede', '🏠')" class="btn-status bg-gradient-to-b from-emerald-600 to-emerald-700 border-emerald-900 text-white"><span>🏠</span> Sede</button>
-                <button onclick="window.askStatus('Uscita', '🚚')" class="btn-status bg-gradient-to-b from-amber-500 to-amber-600 border-amber-800 text-slate-900"><span>🚚</span> Uscita</button>
-                <button onclick="window.askStatus('Trasferimento', '🚐')" class="btn-status bg-gradient-to-b from-violet-600 to-violet-700 border-violet-900 text-white"><span>🚐</span> Trasf.</button>
+        <div class="shrink-0 flex flex-col gap-2 screen-enter" style="animation-delay: 0.1s;">
+            <div class="text-[8px] font-black text-slate-500 uppercase tracking-widest pl-1 mb-[-4px]">Aggiornamento Stato Operativo</div>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="window.askStatus('Sede', '🏠')" class="btn-status btn-sede"><div class="icon-box">🏠</div><span class="txt">Sede</span></button>
+                <button onclick="window.askStatus('Uscita', '🚚')" class="btn-status btn-uscita"><div class="icon-box">🚚</div><span class="txt">Uscita</span></button>
+                <button onclick="window.askStatus('Trasferimento', '🚐')" class="btn-status btn-trasf"><div class="icon-box">🚐</div><span class="txt">Trasf.</span></button>
             </div>
-            <div class="grid grid-cols-2 gap-1.5">
-                <button onclick="window.askStatus('Intervento', '🚨')" class="btn-status bg-gradient-to-b from-red-600 to-red-700 border-red-900 text-white"><span>🚨</span> Sul Posto</button>
-                <button onclick="window.askStatus('Rientro', '🔙')" class="btn-status bg-gradient-to-b from-sky-500 to-sky-600 border-sky-800 text-white"><span>🔙</span> Rientro</button>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="window.askStatus('Intervento', '🚨')" class="btn-status btn-posto"><div class="icon-box">🚨</div><span class="txt">Sul Posto</span></button>
+                <button onclick="window.askStatus('Rientro', '🔙')" class="btn-status btn-rientro"><div class="icon-box">🔙</div><span class="txt">Rientro</span></button>
             </div>
         </div>
 
-        <div class="shrink-0 grid grid-cols-3 gap-1.5 screen-enter" style="animation-delay: 0.2s;">
-            <button onclick="document.getElementById('file-foto').click()" class="btn-media text-white hover:bg-slate-700 border-slate-600 hover:border-slate-400"><span>📷</span><span class="text-[8px] font-black tracking-wider uppercase">FOTO</span></button>
-            <button id="btn-voc" class="btn-media text-white hover:bg-slate-700 border-slate-600 hover:border-slate-400"><span id="voc-icon">🎤</span><span id="voc-txt" class="text-[8px] font-black tracking-wider uppercase">VOCALE</span></button>
-            <button onclick="window.openGPSPanel()" class="btn-media text-blue-400 hover:bg-slate-700 border-slate-600 hover:border-blue-400 hover:shadow-[0_0_10px_rgba(59,130,246,0.3)]"><span>📍</span><span class="text-[8px] font-black tracking-wider uppercase">POSIZIONE</span></button>
+        <div class="shrink-0 screen-enter" style="animation-delay: 0.2s;">
+            <div class="text-[8px] font-black text-slate-500 uppercase tracking-widest pl-1 mb-1">Strumenti Modulo</div>
+            <div class="grid grid-cols-3 gap-2 bg-slate-900/50 p-2 rounded-2xl border border-slate-800">
+                <button onclick="document.getElementById('file-foto').click()" class="btn-media hover:bg-slate-700 hover:text-white text-slate-300"><span class="m-icon">📷</span><span class="m-txt">FOTO</span></button>
+                <button id="btn-voc" class="btn-media hover:bg-slate-700 hover:text-white text-slate-300"><span id="voc-icon" class="m-icon">🎤</span><span id="voc-txt" class="m-txt">VOCALE</span></button>
+                <button onclick="window.openGPSPanel()" class="btn-media border-blue-900/50 bg-blue-950/30 hover:bg-blue-900 text-blue-300"><span class="m-icon">📍</span><span class="m-txt text-blue-400">MAPPA</span></button>
+            </div>
         </div>
         <input type="file" id="file-foto" accept="image/*" capture="camera" class="hidden" onchange="window.upFoto(this.files[0])">
 
-        <div id="last-msg-banner" class="shrink-0 w-full bg-slate-800/80 backdrop-blur-md rounded-xl p-2 border border-slate-600 shadow-[0_2px_10px_rgba(0,0,0,0.5)] flex flex-col justify-center screen-enter" style="display: none; animation-delay: 0.3s;">
-            <div class="flex justify-between items-center mb-0.5 border-b border-white/10 pb-0.5">
-                <span id="last-msg-title" class="text-[9px] font-black text-blue-400 uppercase tracking-widest neon-text-blue">🎧 DALLA SALA</span>
-                <span id="last-msg-time" class="text-[9px] font-mono font-bold text-slate-400">--:--</span>
+        <div id="last-msg-banner" class="glass-panel w-full p-3 shrink-0 flex flex-col justify-center screen-enter border-t-2 border-t-blue-500" style="display: none; animation-delay: 0.3s;">
+            <div class="flex justify-between items-center mb-1 border-b border-slate-700 pb-1">
+                <span id="last-msg-title" class="text-[9px] font-black text-blue-400 uppercase tracking-widest flex items-center gap-1"><span class="text-[12px]">🎧</span> DALLA SALA</span>
+                <span id="last-msg-time" class="text-[9px] font-mono font-bold text-slate-400 bg-slate-900 px-1.5 rounded">--:--</span>
             </div>
-            <span id="last-msg-text" class="text-[11px] text-white font-medium italic leading-tight"></span>
+            <span id="last-msg-text" class="text-[12px] text-white font-medium italic leading-snug"></span>
         </div>
 
-        <div class="mt-auto shrink-0 bg-slate-800/80 backdrop-blur-md p-2 rounded-xl border border-slate-600 flex flex-col shadow-lg screen-enter" style="animation-delay: 0.4s;">
-            <div class="flex gap-1.5">
-                <textarea id="msg-input" class="input-tactical flex-1 rounded-lg p-2 text-[11px] placeholder-slate-400 resize-none h-10 text-white leading-tight" placeholder="Scrivi alla sala radio..."></textarea>
-                <button onclick="window.askFreeMsg()" class="w-12 shrink-0 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg font-black text-xl shadow-lg active:scale-95 transition-all text-white border border-blue-400/30 flex items-center justify-center">
-                    🚀
+        <div class="mt-auto shrink-0 glass-panel p-2 flex flex-col screen-enter mb-1" style="animation-delay: 0.4s;">
+            <div class="flex items-center gap-2 mb-1 pl-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Terminale Trasmissione</span>
+            </div>
+            <div class="flex gap-2">
+                <textarea id="msg-input" class="terminal-input flex-1 resize-none h-[42px]" placeholder="> INSERISCI TESTO..."></textarea>
+                <button onclick="window.askFreeMsg()" class="w-[50px] shrink-0 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-lg shadow-lg active:scale-95 transition-all text-white border border-emerald-400 flex items-center justify-center">
+                    ➤
                 </button>
             </div>
         </div>
 
-        <div class="shrink-0 mt-0.5 screen-enter" style="animation-delay: 0.5s;">
-            <button onclick="window.logoutApp(false)" class="w-full py-2 bg-black/40 hover:bg-black/60 border border-red-900/50 hover:border-red-500/50 rounded-lg text-slate-400 hover:text-red-400 font-black uppercase text-[9px] tracking-widest transition-all">
-                🚪 CHIUDI CONNESSIONE E CAMBIA UNITÀ
+        <div class="shrink-0 text-center pb-2 pt-1 opacity-50 flex justify-between items-center px-2">
+            <button onclick="window.logoutApp(false)" class="text-[8px] font-bold text-red-500 uppercase tracking-widest bg-red-950/30 px-3 py-1.5 rounded border border-red-900/50 hover:bg-red-900/50 transition-colors">
+                🚪 LOGOUT UNITÀ
             </button>
-        </div>
-
-        <div class="shrink-0 text-center pb-1 pt-1 opacity-70">
-            <div class="text-[10px] font-mono font-black tracking-[0.3em] uppercase drop-shadow-md leading-none">
+            <div class="text-[9px] font-mono font-black tracking-[0.3em] uppercase drop-shadow-md">
                 <span class="text-white">JOK</span><span class="text-red-600">ART</span>
             </div>
         </div>
@@ -319,4 +348,5 @@ onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
         if(btnInstallManual) btnInstallManual.addEventListener('click', installaApp); if(btnInstallLogin) btnInstallLogin.addEventListener('click', installaApp);
     </script>
 </body>
+
 </html>
