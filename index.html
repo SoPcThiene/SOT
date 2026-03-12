@@ -288,6 +288,7 @@
             });
         }
 
+// --- CONTROLLO ISTANTANEO ---
         window.checkPin = () => {
             const pinInput = document.getElementById('pin-input');
             const pinInserito = pinInput.value.trim();
@@ -295,56 +296,41 @@
             if (!pinInserito) return;
 
             const btn = document.querySelector('button[onclick="window.checkPin()"]');
-            
+            const testoOriginale = btn ? btn.innerHTML : "SBLOCCA UNITÀ";
             if (btn) {
                 btn.innerHTML = "VERIFICA..."; 
                 btn.classList.add("animate-pulse");
             }
 
+            // Magia: il controllo ora è immediato usando la memoria locale
             if (String(pinInserito) === window.pinSegretoAttuale) {
-                // 🎉 PIN CORRETTO: Cambia colore al bottone e mostra l'avviso di successo
+                // 🎉 PIN CORRETTO
                 if (btn) {
                     btn.classList.remove("animate-pulse");
                     btn.innerHTML = "ACCESSO CONSENTITO";
-                    btn.classList.replace("from-blue-600", "from-emerald-600");
-                    btn.classList.replace("to-blue-500", "to-emerald-500");
+                    btn.classList.remove("from-blue-600", "to-blue-500", "hover:from-blue-500", "hover:to-blue-400");
+                    btn.classList.add("from-emerald-600", "to-emerald-500", "hover:from-emerald-500", "hover:to-emerald-400");
                 }
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'SBLOCCATO',
-                    text: 'Collegamento alla Sala confermato.',
-                    toast: true,
-                    position: 'top',
-                    timer: 1500,
-                    showConfirmButton: false,
-                    background: '#1e293b',
-                    color: '#10b981'
-                });
-
                 setTimeout(() => { 
                     localStorage.setItem('pc_app_auth', 'true'); 
                     document.getElementById('login-screen').style.display = 'none'; 
                     update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); 
                     avviaMotoreApp(); 
-                }, 1000);
-
+                }, 500);
             } else {
-                // ❌ PIN ERRATO: Ripristina il bottone e mostra la finestra rossa
+                // ❌ PIN ERRATO
                 if (btn) {
-                    btn.innerHTML = "SBLOCCA UNITÀ"; 
+                    btn.innerHTML = testoOriginale; 
                     btn.classList.remove("animate-pulse");
                 }
-                pinInput.value = '';
-                
                 Swal.fire({ 
                     icon: 'error', 
                     title: 'ACCESSO NEGATO', 
-                    text: 'Il codice PIN inserito è errato.', 
+                    text: 'Codice PIN errato', 
                     background: '#1e293b', 
-                    color: '#fff',
-                    confirmButtonColor: '#ef4444'
+                    color: '#fff' 
                 }); 
+                pinInput.value = '';
             }
         };
 
