@@ -121,8 +121,7 @@
         <div class="relative z-20 bg-slate-800/60 border border-slate-600/50 rounded-3xl p-5 w-full max-w-[320px] shadow-2xl flex flex-col items-center backdrop-blur-xl mb-6 screen-enter">
             <button id="btn-install-manual" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-3 rounded-xl font-black uppercase text-[10px] mb-5 text-white animate-pulse shadow-[0_0_15px_rgba(59,130,246,0.5)]">📲 INSTALLA APP SULLA HOME</button>
             <div class="flex items-center gap-2 mb-2"><span class="animate-pulse text-emerald-400">●</span><p class="text-emerald-400 text-[10px] font-bold uppercase tracking-widest">Identificativo Unità</p></div>
-            <input type="text" id="team-input" class="input-tactical rounded-2xl text-center text-4xl text-white py-3 w-full tracking-[0.2em] outline-none uppercase mb-5 font-black" placeholder="SQ1">
-            <button onclick="window.saveNewTeam()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 py-3.5 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white border border-emerald-400/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]">INIZIALIZZA TERMINALE</button>
+<input type="text" id="team-input" class="bg-slate-900/80 border-2 border-slate-600 focus:border-emerald-500 focus:bg-slate-800 rounded-2xl text-center text-4xl text-white py-3 w-full tracking-[0.2em] outline-none uppercase mb-5 font-black shadow-inner transition-all" placeholder="SQ1">            <button onclick="window.saveNewTeam()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 py-3.5 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white border border-emerald-400/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]">INIZIALIZZA TERMINALE</button>
         </div>
         <div class="absolute bottom-4 left-0 w-full text-center pb-2"><div class="text-[12px] font-mono font-black tracking-[0.4em] uppercase mb-1 drop-shadow-md"><span class="text-white">JOK</span><span class="text-red-600">ART</span></div><div class="text-[7px] font-bold text-slate-500 tracking-widest uppercase">Support: so.pcthiene@gmail.com</div></div>
     </div>
@@ -134,9 +133,7 @@
         <div class="relative z-20 bg-slate-800/60 border border-slate-600/50 rounded-3xl p-5 w-full max-w-[320px] shadow-2xl flex flex-col items-center backdrop-blur-xl screen-enter">
             <button id="btn-install-login" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-3 rounded-xl font-black uppercase text-[10px] mb-4 text-white animate-pulse shadow-[0_0_15px_rgba(59,130,246,0.5)]">📲 INSTALLA APP SULLA HOME</button>
             <div class="flex items-center gap-2 mb-2"><span class="animate-pulse text-blue-400">🔒</span><p class="text-blue-400 text-[10px] font-bold uppercase tracking-widest">Codice per <b id="login-sq-name" class="text-white ml-1">...</b></p></div>
-            <input type="password" id="pin-input" class="input-tactical rounded-2xl text-center text-4xl text-white py-3 w-full mb-5 tracking-[0.4em] outline-none font-black" placeholder="****" inputmode="numeric" maxlength="4">
-            <button onclick="window.checkPin()" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-3.5 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white tracking-widest border border-blue-400/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">SBLOCCA UNITÀ</button>
-            <button onclick="window.logoutApp(false)" class="mt-4 text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-[0.2em] transition-colors bg-slate-900/50 px-4 py-2 rounded-full border border-slate-700">🔄 CAMBIA UNITÀ</button>
+<input type="password" id="pin-input" class="bg-slate-900/80 border-2 border-slate-600 focus:border-blue-500 focus:bg-slate-800 rounded-2xl text-center text-4xl text-white py-3 w-full mb-5 tracking-[0.4em] outline-none font-black shadow-inner transition-all" placeholder="****" inputmode="numeric" maxlength="4">            <button onclick="window.logoutApp(false)" class="mt-4 text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-[0.2em] transition-colors bg-slate-900/50 px-4 py-2 rounded-full border border-slate-700">🔄 CAMBIA UNITÀ</button>
         </div>
         <div class="absolute bottom-4 left-0 w-full text-center pb-2"><div class="text-[12px] font-mono font-black tracking-[0.4em] uppercase mb-1 drop-shadow-md"><span class="text-white">JOK</span><span class="text-red-600">ART</span></div><div class="text-[7px] font-bold text-slate-500 tracking-widest uppercase">Support: so.pcthiene@gmail.com</div></div>
     </div>
@@ -275,21 +272,30 @@
             });
         }
 
-        window.checkPin = () => {
-            const pinInserito = document.getElementById('pin-input').value;
-            const btn = event.currentTarget;
+       window.checkPin = async () => {
+            const pinInput = document.getElementById('pin-input');
+            const pinInserito = pinInput.value.trim();
             
             if (!pinInserito) return;
 
+            // Prende il bottone per l'animazione
+            const btn = document.querySelector('#login-screen button');
+            const testoOriginale = btn.innerHTML;
             btn.innerHTML = "VERIFICA CLOUD..."; 
             btn.classList.add("animate-pulse");
 
-            // Va a leggere il PIN segreto in tempo reale da Firebase
-            get(ref(db, 'configurazione/pin_volontari')).then((snapshot) => {
-                // Se non hai ancora impostato nulla dalla Sala, usa 0000 come default
-                const pinSegreto = snapshot.val() || "0000";
-
-                if (pinInserito === pinSegreto) {
+            try {
+                // Legge il PIN da Firebase
+                const snapshot = await get(ref(db, 'configurazione/pin_volontari'));
+                let pinSegreto = snapshot.val();
+                
+                // Se su Firebase non c'è ancora nulla, forza il "0000"
+                if (pinSegreto === null || pinSegreto === undefined) {
+                    pinSegreto = "0000";
+                }
+                
+                // LA BLINDATURA: Converte entrambi in testo semplice prima di confrontarli
+                if (String(pinInserito) === String(pinSegreto)) {
                     // 🎉 PIN CORRETTO
                     setTimeout(() => { 
                         localStorage.setItem('pc_app_auth', 'true'); 
@@ -298,18 +304,18 @@
                         avviaMotoreApp(); 
                     }, 300);
                 } else {
-                    // ❌ PIN ERRATO
-                    btn.innerHTML = "SBLOCCA UNITÀ"; 
+                    // ❌ PIN ERRATO (Blocca tutto)
+                    btn.innerHTML = testoOriginale; 
                     btn.classList.remove("animate-pulse");
                     Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: 'Codice PIN errato', background: '#1e293b', color: '#fff' }); 
-                    document.getElementById('pin-input').value = '';
+                    pinInput.value = '';
                 }
-            }).catch((error) => {
-                // In caso di problemi di connessione
-                btn.innerHTML = "SBLOCCA UNITÀ"; 
+            } catch (error) {
+                // ❌ ERRORE DI RETE
+                btn.innerHTML = testoOriginale; 
                 btn.classList.remove("animate-pulse");
-                Swal.fire({ icon: 'error', title: 'ERRORE DI RETE', text: 'Impossibile contattare la Sala Operativa', background: '#1e293b', color: '#fff' });
-            });
+                Swal.fire({ icon: 'error', title: 'ERRORE DI RETE', text: 'Impossibile contattare la Sala', background: '#1e293b', color: '#fff' });
+            }
         };
 
         window.logoutApp = (isAuto = false) => {
