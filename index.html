@@ -288,17 +288,19 @@
             });
         }
 
-       window.checkPin = async () => {
+window.checkPin = async () => {
             const pinInput = document.getElementById('pin-input');
             const pinInserito = pinInput.value.trim();
             
             if (!pinInserito) return;
 
-            // Prende il bottone per l'animazione
-            const btn = document.querySelector('#login-screen button');
-            const testoOriginale = btn.innerHTML;
-            btn.innerHTML = "VERIFICA CLOUD..."; 
-            btn.classList.add("animate-pulse");
+            // Prende il bottone esatto di sblocco
+            const btn = document.querySelector('button[onclick="window.checkPin()"]');
+            const testoOriginale = btn ? btn.innerHTML : "SBLOCCA UNITÀ";
+            if (btn) {
+                btn.innerHTML = "VERIFICA CLOUD..."; 
+                btn.classList.add("animate-pulse");
+            }
 
             try {
                 // Legge il PIN da Firebase
@@ -310,7 +312,7 @@
                     pinSegreto = "0000";
                 }
                 
-                // LA BLINDATURA: Converte entrambi in testo semplice prima di confrontarli
+                // LA BLINDATURA: Converte entrambi in testo
                 if (String(pinInserito) === String(pinSegreto)) {
                     // 🎉 PIN CORRETTO
                     setTimeout(() => { 
@@ -320,16 +322,26 @@
                         avviaMotoreApp(); 
                     }, 300);
                 } else {
-                    // ❌ PIN ERRATO (Blocca tutto)
-                    btn.innerHTML = testoOriginale; 
-                    btn.classList.remove("animate-pulse");
-                    Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: 'Codice PIN errato', background: '#1e293b', color: '#fff' }); 
+                    // ❌ PIN ERRATO (Con "Raggi X" per scoprire l'errore)
+                    if (btn) {
+                        btn.innerHTML = testoOriginale; 
+                        btn.classList.remove("animate-pulse");
+                    }
+                    Swal.fire({ 
+                        icon: 'error', 
+                        title: 'ACCESSO NEGATO', 
+                        html: `Il PIN non corrisponde.<br><br><span style="font-size:12px; color:#94a3b8;">Hai scritto: <b style="color:white;">${pinInserito}</b><br>Firebase aspetta: <b style="color:#10b981;">${pinSegreto}</b></span>`, 
+                        background: '#1e293b', 
+                        color: '#fff' 
+                    }); 
                     pinInput.value = '';
                 }
             } catch (error) {
                 // ❌ ERRORE DI RETE
-                btn.innerHTML = testoOriginale; 
-                btn.classList.remove("animate-pulse");
+                if (btn) {
+                    btn.innerHTML = testoOriginale; 
+                    btn.classList.remove("animate-pulse");
+                }
                 Swal.fire({ icon: 'error', title: 'ERRORE DI RETE', text: 'Impossibile contattare la Sala', background: '#1e293b', color: '#fff' });
             }
         };
