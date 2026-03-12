@@ -35,6 +35,8 @@
         
         #off-screen, #login-screen, #team-select-screen { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; text-align: center; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(15px); overflow: hidden; }
         #login-screen { z-index: 20000; } #team-select-screen { z-index: 30000; }
+        /* FORZA I POPUP A STARE SOPRA LA SCHERMATA DI LOGIN */
+        .swal2-container { z-index: 99999 !important; }
 
         .screen-enter { animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
