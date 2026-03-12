@@ -288,61 +288,53 @@
             });
         }
 
-window.checkPin = async () => {
+// --- PRE-CARICAMENTO PIN IN BACKGROUND ---
+        window.pinSegretoAttuale = "0000"; // PIN di emergenza di base
+        if (db) {
+            onValue(ref(db, 'configurazione/pin_volontari'), (snap) => {
+                if(snap.exists() && snap.val() !== null) {
+                    window.pinSegretoAttuale = String(snap.val());
+                }
+            });
+        }
+
+        // --- CONTROLLO ISTANTANEO ---
+        window.checkPin = () => {
             const pinInput = document.getElementById('pin-input');
             const pinInserito = pinInput.value.trim();
             
             if (!pinInserito) return;
 
-            // Prende il bottone esatto di sblocco
             const btn = document.querySelector('button[onclick="window.checkPin()"]');
             const testoOriginale = btn ? btn.innerHTML : "SBLOCCA UNITÀ";
             if (btn) {
-                btn.innerHTML = "VERIFICA CLOUD..."; 
+                btn.innerHTML = "ELABORAZIONE..."; 
                 btn.classList.add("animate-pulse");
             }
 
-            try {
-                // Legge il PIN da Firebase
-                const snapshot = await get(ref(db, 'configurazione/pin_volontari'));
-                let pinSegreto = snapshot.val();
-                
-                // Se su Firebase non c'è ancora nulla, forza il "0000"
-                if (pinSegreto === null || pinSegreto === undefined) {
-                    pinSegreto = "0000";
-                }
-                
-                // LA BLINDATURA: Converte entrambi in testo
-                if (String(pinInserito) === String(pinSegreto)) {
-                    // 🎉 PIN CORRETTO
-                    setTimeout(() => { 
-                        localStorage.setItem('pc_app_auth', 'true'); 
-                        document.getElementById('login-screen').style.display = 'none'; 
-                        update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); 
-                        avviaMotoreApp(); 
-                    }, 300);
-                } else {
-                    // ❌ PIN ERRATO (Con "Raggi X" per scoprire l'errore)
-                    if (btn) {
-                        btn.innerHTML = testoOriginale; 
-                        btn.classList.remove("animate-pulse");
-                    }
-                    Swal.fire({ 
-                        icon: 'error', 
-                        title: 'ACCESSO NEGATO', 
-                        html: `Il PIN non corrisponde.<br><br><span style="font-size:12px; color:#94a3b8;">Hai scritto: <b style="color:white;">${pinInserito}</b><br>Firebase aspetta: <b style="color:#10b981;">${pinSegreto}</b></span>`, 
-                        background: '#1e293b', 
-                        color: '#fff' 
-                    }); 
-                    pinInput.value = '';
-                }
-            } catch (error) {
-                // ❌ ERRORE DI RETE
+            // Magia: il controllo ora è immediato usando la memoria locale
+            if (String(pinInserito) === window.pinSegretoAttuale) {
+                // 🎉 PIN CORRETTO
+                setTimeout(() => { 
+                    localStorage.setItem('pc_app_auth', 'true'); 
+                    document.getElementById('login-screen').style.display = 'none'; 
+                    update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); 
+                    avviaMotoreApp(); 
+                }, 100);
+            } else {
+                // ❌ PIN ERRATO
                 if (btn) {
                     btn.innerHTML = testoOriginale; 
                     btn.classList.remove("animate-pulse");
                 }
-                Swal.fire({ icon: 'error', title: 'ERRORE DI RETE', text: 'Impossibile contattare la Sala', background: '#1e293b', color: '#fff' });
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'ACCESSO NEGATO', 
+                    text: 'Codice PIN errato', 
+                    background: '#1e293b', 
+                    color: '#fff' 
+                }); 
+                pinInput.value = '';
             }
         };
 
