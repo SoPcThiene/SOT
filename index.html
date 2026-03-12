@@ -18,6 +18,9 @@
        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
         
+        /* FORZA I POPUP A STARE SOPRA LA SCHERMATA DI LOGIN */
+        .swal2-container { z-index: 99999 !important; }
+        
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #050b14; 
@@ -35,8 +38,6 @@
         
         #off-screen, #login-screen, #team-select-screen { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; text-align: center; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(15px); overflow: hidden; }
         #login-screen { z-index: 20000; } #team-select-screen { z-index: 30000; }
-        /* FORZA I POPUP A STARE SOPRA LA SCHERMATA DI LOGIN */
-        .swal2-container { z-index: 99999 !important; }
 
         .screen-enter { animation: fadeInScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
@@ -136,7 +137,7 @@
                 SBLOCCA UNITÀ
             </button>
 
-            <button onclick="window.logoutApp()" class="mt-2 text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-[0.2em] transition-colors bg-slate-900/50 px-4 py-2 rounded-full border border-slate-700">
+            <button onclick="window.cambiaUnita()" class="mt-2 text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-[0.2em] transition-colors bg-slate-900/50 px-4 py-2 rounded-full border border-slate-700">
                 🔄 CAMBIA UNITÀ
             </button>
         </div>
@@ -234,7 +235,7 @@
 
         <div class="shrink-0 mt-1 mb-2 screen-enter" style="animation-delay: 0.5s;">
             <button onclick="window.logoutApp()" class="w-full py-2.5 bg-red-950/30 hover:bg-red-900/50 border border-red-900/50 rounded-xl text-red-500/80 hover:text-red-400 font-black uppercase text-[9px] tracking-widest transition-all shadow-[0_0_10px_rgba(239,68,68,0.1)]">
-                🚪 CHIUDI CONNESSIONE E CAMBIA UNITÀ
+                🚪 DISCONNETTI TERMINALE
             </button>
         </div>
 
@@ -247,7 +248,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update, query, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+        // AGGIUNTA onDisconnect() per il lucchetto anti-doppione
+        import { getDatabase, ref, push, onValue, update, query, limitToLast, get, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
         const config = window.APP_CONFIG || {};
         let app = null; let db = null;
@@ -275,12 +277,20 @@
         function verificaSquadraELogin() {
             if (!db) return; document.getElementById('display-sq').innerText = sqId; document.getElementById('login-sq-name').innerText = sqId; document.getElementById('team-select-screen').style.display = 'none';
             get(ref(db, 'anagrafica_squadre/' + sqId)).then((snap) => {
-                if (!snap.exists()) { Swal.fire({ icon: 'error', title: 'UNITÀ SCONOSCIUTA', text: `La sigla ${sqId} non è in Sala.`, background: '#0f172a', color: '#fff' }).then(() => { window.logoutApp(); }); return; }
-                if(localStorage.getItem('pc_app_auth') === 'true') { avviaMotoreApp(); } else { document.getElementById('login-screen').style.display = 'flex'; }
+                if (!snap.exists()) { Swal.fire({ icon: 'error', title: 'UNITÀ SCONOSCIUTA', text: `La sigla ${sqId} non è in Sala.`, background: '#0f172a', color: '#fff' }).then(() => { window.cambiaUnita(); }); return; }
+                
+                if(localStorage.getItem('pc_app_auth') === 'true') { 
+                    // Se aveva già il PIN salvato, rinnovo il lucchetto di sicurezza!
+                    const lucchettoRef = ref(db, `anagrafica_squadre/${sqId}/in_uso`);
+                    update(ref(db, `anagrafica_squadre/${sqId}`), { in_uso: true });
+                    onDisconnect(lucchettoRef).set(false);
+                    avviaMotoreApp(); 
+                } else { 
+                    document.getElementById('login-screen').style.display = 'flex'; 
+                }
             });
         }
 
-        // --- GESTIONE PIN SINCRONIZZATA CON FIREBASE ---
         window.pinSegretoAttuale = "0000"; 
         if (db) {
             onValue(ref(db, 'configurazione/pin_volontari'), (snap) => {
@@ -290,8 +300,8 @@
             });
         }
 
-// --- CONTROLLO ISTANTANEO ---
-        window.checkPin = () => {
+        // --- CONTROLLO ISTANTANEO PIN E LUCCHETTO ---
+        window.checkPin = async () => {
             const pinInput = document.getElementById('pin-input');
             const pinInserito = pinInput.value.trim();
             
@@ -304,21 +314,50 @@
                 btn.classList.add("animate-pulse");
             }
 
-            // Magia: il controllo ora è immediato usando la memoria locale
             if (String(pinInserito) === window.pinSegretoAttuale) {
-                // 🎉 PIN CORRETTO
-                if (btn) {
-                    btn.classList.remove("animate-pulse");
-                    btn.innerHTML = "ACCESSO CONSENTITO";
-                    btn.classList.remove("from-blue-600", "to-blue-500", "hover:from-blue-500", "hover:to-blue-400");
-                    btn.classList.add("from-emerald-600", "to-emerald-500", "hover:from-emerald-500", "hover:to-emerald-400");
+                
+                // --- MAGIA: CONTROLLO LUCCHETTO ANTI-DOPPIONE ---
+                try {
+                    const snap = await get(ref(db, `anagrafica_squadre/${sqId}/in_uso`));
+                    if (snap.val() === true) {
+                        // LA SQUADRA È GIÀ APERTA DA UN ALTRO TELEFONO!
+                        if (btn) { btn.innerHTML = testoOriginale; btn.classList.remove("animate-pulse"); }
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'SQUADRA IN USO',
+                            html: `Questa unità risulta <b>già attiva</b> su un altro dispositivo.<br><br><span style="font-size:10px; color:#94a3b8;">Chiedi al collega di uscire o chiama la Sala Radio.</span>`,
+                            background: '#1e293b',
+                            color: '#f59e0b'
+                        });
+                        pinInput.value = '';
+                        return; // BLOCCO TUTTO!
+                    }
+
+                    // Se la squadra è libera, metto il mio lucchetto
+                    const lucchettoRef = ref(db, `anagrafica_squadre/${sqId}/in_uso`);
+                    await update(ref(db, `anagrafica_squadre/${sqId}`), { in_uso: true, ultimo_contatto: Date.now() });
+                    // E dico a Firebase di sbloccarla da solo se spengo il telefono!
+                    onDisconnect(lucchettoRef).set(false);
+
+                    // 🎉 ACCESSO CONSENTITO
+                    if (btn) {
+                        btn.classList.remove("animate-pulse");
+                        btn.innerHTML = "ACCESSO CONSENTITO";
+                        btn.classList.remove("from-blue-600", "to-blue-500", "hover:from-blue-500", "hover:to-blue-400");
+                        btn.classList.add("from-emerald-600", "to-emerald-500", "hover:from-emerald-500", "hover:to-emerald-400");
+                    }
+                    setTimeout(() => { 
+                        localStorage.setItem('pc_app_auth', 'true'); 
+                        document.getElementById('login-screen').style.display = 'none'; 
+                        avviaMotoreApp(); 
+                    }, 500);
+
+                } catch (error) {
+                    // Errore di rete durante il controllo lucchetto
+                    if (btn) { btn.innerHTML = testoOriginale; btn.classList.remove("animate-pulse"); }
+                    Swal.fire({ icon: 'error', title: 'ERRORE DI RETE', text: 'Impossibile contattare la Sala', background: '#1e293b', color: '#fff' });
                 }
-                setTimeout(() => { 
-                    localStorage.setItem('pc_app_auth', 'true'); 
-                    document.getElementById('login-screen').style.display = 'none'; 
-                    update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); 
-                    avviaMotoreApp(); 
-                }, 500);
+
             } else {
                 // ❌ PIN ERRATO
                 if (btn) {
@@ -336,18 +375,30 @@
             }
         };
 
-        // --- GESTIONE LOGOUT (CAMBIO UNITÀ SICURO) ---
+        // --- GESTIONE LOGOUT DALLA PLANCIA (Ritorna al PIN) ---
         window.logoutApp = () => {
             if (liveTrackingTimer) clearInterval(liveTrackingTimer); 
-            // Cancella ogni traccia di memoria locale
             localStorage.removeItem('pc_app_auth'); 
-            localStorage.removeItem('pc_app_saved_team'); 
             localStorage.removeItem('app_ultima_via'); 
             localStorage.removeItem('app_ultima_pos');
             
-            // Pulisce l'URL in alto e ricarica: questo forza la comparsa della Selezione Squadra!
+            // Sblocco il lucchetto volontariamente!
+            if (db && sqId) {
+                const lucchettoRef = ref(db, `anagrafica_squadre/${sqId}/in_uso`);
+                update(ref(db, `anagrafica_squadre/${sqId}`), { in_uso: false }).then(() => {
+                    onDisconnect(lucchettoRef).cancel(); // Cancello l'ordine automatico
+                    window.location.reload(); 
+                });
+            } else {
+                window.location.reload(); 
+            }
+        };
+
+        // --- CAMBIA UNITÀ (Dimentica tutto, torna a SQ1) ---
+        window.cambiaUnita = () => {
+            localStorage.removeItem('pc_app_saved_team');
             window.history.replaceState({}, document.title, window.location.pathname); 
-            window.location.href = window.location.pathname; 
+            window.location.reload(); 
         };
 
         function avviaMotoreApp() {
