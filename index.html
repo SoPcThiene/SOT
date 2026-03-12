@@ -276,11 +276,40 @@
         }
 
         window.checkPin = () => {
-            const pinCorretto = config.pinAccesso || "2026"; const btn = event.currentTarget;
-            if(document.getElementById('pin-input').value === pinCorretto) {
-                btn.innerHTML = "VERIFICA..."; btn.classList.add("animate-pulse");
-                setTimeout(() => { localStorage.setItem('pc_app_auth', 'true'); document.getElementById('login-screen').style.display = 'none'; update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); avviaMotoreApp(); }, 300);
-            } else { Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: 'Codice errato', background: '#1e293b', color: '#fff' }); document.getElementById('pin-input').value = ''; }
+            const pinInserito = document.getElementById('pin-input').value;
+            const btn = event.currentTarget;
+            
+            if (!pinInserito) return;
+
+            btn.innerHTML = "VERIFICA CLOUD..."; 
+            btn.classList.add("animate-pulse");
+
+            // Va a leggere il PIN segreto in tempo reale da Firebase
+            get(ref(db, 'configurazione/pin_volontari')).then((snapshot) => {
+                // Se non hai ancora impostato nulla dalla Sala, usa 0000 come default
+                const pinSegreto = snapshot.val() || "0000";
+
+                if (pinInserito === pinSegreto) {
+                    // 🎉 PIN CORRETTO
+                    setTimeout(() => { 
+                        localStorage.setItem('pc_app_auth', 'true'); 
+                        document.getElementById('login-screen').style.display = 'none'; 
+                        update(ref(db, `anagrafica_squadre/${sqId}`), { ultimo_contatto: Date.now() }); 
+                        avviaMotoreApp(); 
+                    }, 300);
+                } else {
+                    // ❌ PIN ERRATO
+                    btn.innerHTML = "SBLOCCA UNITÀ"; 
+                    btn.classList.remove("animate-pulse");
+                    Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: 'Codice PIN errato', background: '#1e293b', color: '#fff' }); 
+                    document.getElementById('pin-input').value = '';
+                }
+            }).catch((error) => {
+                // In caso di problemi di connessione
+                btn.innerHTML = "SBLOCCA UNITÀ"; 
+                btn.classList.remove("animate-pulse");
+                Swal.fire({ icon: 'error', title: 'ERRORE DI RETE', text: 'Impossibile contattare la Sala Operativa', background: '#1e293b', color: '#fff' });
+            });
         };
 
         window.logoutApp = (isAuto = false) => {
