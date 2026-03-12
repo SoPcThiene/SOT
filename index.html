@@ -132,11 +132,27 @@
         <h2 class="font-black text-[11px] mb-6 text-blue-400 tracking-[0.4em] uppercase text-center neon-text-blue">AUTENTICAZIONE</h2>
         <div class="relative z-20 bg-slate-800/60 border border-slate-600/50 rounded-3xl p-5 w-full max-w-[320px] shadow-2xl flex flex-col items-center backdrop-blur-xl screen-enter">
             <button id="btn-install-login" style="display:none;" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 py-3 rounded-xl font-black uppercase text-[10px] mb-4 text-white animate-pulse shadow-[0_0_15px_rgba(59,130,246,0.5)]">📲 INSTALLA APP SULLA HOME</button>
-            <div class="flex items-center gap-2 mb-2"><span class="animate-pulse text-blue-400">🔒</span><p class="text-blue-400 text-[10px] font-bold uppercase tracking-widest">Codice per <b id="login-sq-name" class="text-white ml-1">...</b></p></div>
-<input type="password" id="pin-input" class="bg-slate-900/80 border-2 border-slate-600 focus:border-blue-500 focus:bg-slate-800 rounded-2xl text-center text-4xl text-white py-3 w-full mb-5 tracking-[0.4em] outline-none font-black shadow-inner transition-all" placeholder="****" inputmode="numeric" maxlength="4">            <button onclick="window.logoutApp(false)" class="mt-4 text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-[0.2em] transition-colors bg-slate-900/50 px-4 py-2 rounded-full border border-slate-700">🔄 CAMBIA UNITÀ</button>
+<div class="flex items-center gap-2 mb-2">
+            <span class="animate-pulse text-blue-400">🔒</span>
+            <p class="text-blue-400 text-[10px] font-bold uppercase tracking-widest">Codice per <b id="login-sq-name" class="text-white ml-1">...</b></p>
         </div>
-        <div class="absolute bottom-4 left-0 w-full text-center pb-2"><div class="text-[12px] font-mono font-black tracking-[0.4em] uppercase mb-1 drop-shadow-md"><span class="text-white">JOK</span><span class="text-red-600">ART</span></div><div class="text-[7px] font-bold text-slate-500 tracking-widest uppercase">Support: so.pcthiene@gmail.com</div></div>
+        
+        <input type="password" id="pin-input" class="bg-slate-900/80 border-2 border-slate-600 focus:border-blue-500 focus:bg-slate-800 rounded-2xl text-center text-4xl text-white py-3 w-full mb-5 tracking-[0.4em] outline-none font-black shadow-inner transition-all" placeholder="****" inputmode="numeric" maxlength="4">            
+        
+        <button onclick="window.checkPin()" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 py-3.5 rounded-2xl font-black uppercase text-xs shadow-lg active:scale-95 transition-all text-white border border-blue-400/50 mb-2 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+            SBLOCCA UNITÀ
+        </button>
+
+        <button onclick="window.logoutApp(false)" class="mt-2 text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-[0.2em] transition-colors bg-slate-900/50 px-4 py-2 rounded-full border border-slate-700">
+            🔄 CAMBIA UNITÀ
+        </button>
     </div>
+    
+    <div class="absolute bottom-4 left-0 w-full text-center pb-2">
+        <div class="text-[12px] font-mono font-black tracking-[0.4em] uppercase mb-1 drop-shadow-md"><span class="text-white">JOK</span><span class="text-red-600">ART</span></div>
+        <div class="text-[7px] font-bold text-slate-500 tracking-widest uppercase">Support: so.pcthiene@gmail.com</div>
+    </div>
+</div>
 
     <div id="off-screen" style="display: none;">
         <div class="relative h-48 w-48 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(239, 68, 68, 0.5);"><div class="chasing-border-red"></div><div class="inner-circle p-2"><img src="logosala.png" alt="Logo" class="w-full h-full object-contain grayscale opacity-60 drop-shadow-2xl relative z-20"></div></div>
@@ -384,12 +400,17 @@ onValue(query(ref(db, 'brogliaccio'), limitToLast(100)), (snap) => {
         window.navig = (lat, lng) => { window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank'); };
     </script>
 
-    <script>
+<script>
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
         let deferredPrompt; const btnInstallManual = document.getElementById('btn-install-manual'); const btnInstallLogin = document.getElementById('btn-install-login');
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; if(btnInstallManual) btnInstallManual.style.display = 'block'; if(btnInstallLogin) btnInstallLogin.style.display = 'block'; });
         async function installaApp() { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { if(btnInstallManual) btnInstallManual.style.display = 'none'; if(btnInstallLogin) btnInstallLogin.style.display = 'none'; } deferredPrompt = null; } }
         if(btnInstallManual) btnInstallManual.addEventListener('click', installaApp); if(btnInstallLogin) btnInstallLogin.addEventListener('click', installaApp);
+
+        // NUOVA RIGA PER IL TASTO INVIO DELLA TASTIERA
+        document.getElementById('pin-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.checkPin();
+        });
     </script>
 </body>
 
