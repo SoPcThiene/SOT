@@ -299,6 +299,7 @@
 
         let ultMsgInId = null;
         function avviaMotoreApp() {
+            if(window.AndroidBridge) { window.AndroidBridge.impostaSquadra(sqId); }
             document.getElementById('main-header').classList.remove('hidden'); document.getElementById('main-content').classList.remove('hidden'); 
             window.mantieniSchermoAcceso(); updateGpsBadge(); if(window.liveTrackingEnabled) window.startLiveTracking();
             setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); }, 1000);
