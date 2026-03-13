@@ -52,7 +52,9 @@
 
         @keyframes spin-chase { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .chasing-border-blue { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, #3b82f6 100%); animation: spin-chase 2s linear infinite; }
-        .inner-circle { position: absolute; inset: 4px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: inset 0px 0px 20px rgba(0,0,0,0.9); }
+        
+        /* LOGO MODIFICATO: P-0 e SCALE per farlo più grande */
+        .inner-circle { position: absolute; inset: 4px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: inset 0px 0px 20px rgba(0,0,0,0.9); overflow: hidden; }
 
         .neon-text-emerald { text-shadow: 0 0 10px rgba(16, 185, 129, 0.8); }
         .neon-text-blue { text-shadow: 0 0 10px rgba(59, 130, 246, 0.8); }
@@ -103,7 +105,6 @@
 
         #main-header { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .t-badge { padding: 3px 6px; border-radius: 4px; font-size: 7px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .bg-cyber-dark { background: radial-gradient(circle at top right, #1e293b, #020617); }
     </style>
 </head>
 <body>
@@ -113,8 +114,8 @@
     <div id="team-select-screen" style="display: none;">
         <div class="relative h-48 w-48 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);">
             <div class="chasing-border-blue"></div>
-            <div class="inner-circle p-2">
-                <img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl relative z-20">
+            <div class="inner-circle p-0">
+                <img src="logosala.png" alt="Logo" class="w-[85%] h-[85%] object-contain drop-shadow-2xl relative z-20 scale-110">
             </div>
         </div>
         <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase leading-none">Protezione Civile Thiene</h1>
@@ -129,7 +130,12 @@
     </div>
 
     <div id="login-screen" style="display: none;">
-        <div class="relative h-48 w-48 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(59, 130, 246, 0.4);"><div class="chasing-border-blue"></div><div class="inner-circle p-2"><img src="logosala.png" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl relative z-20"></div></div>
+        <div class="relative h-48 w-48 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(59, 130, 246, 0.4);">
+            <div class="chasing-border-blue"></div>
+            <div class="inner-circle p-0">
+                <img src="logosala.png" alt="Logo" class="w-[85%] h-[85%] object-contain drop-shadow-2xl relative z-20 scale-110">
+            </div>
+        </div>
         <h1 class="font-black text-2xl mb-1 text-white tracking-tight uppercase leading-none text-center">Protezione Civile Thiene</h1>
         <h2 class="font-black text-[11px] mb-6 text-blue-400 tracking-[0.4em] uppercase text-center neon-text-blue">AUTENTICAZIONE</h2>
         <div class="relative z-20 bg-slate-800/60 border border-slate-600/50 rounded-3xl p-5 w-full max-w-[320px] shadow-2xl flex flex-col items-center backdrop-blur-xl screen-enter">
@@ -157,7 +163,12 @@
     </div>
 
     <div id="off-screen" style="display: none;">
-        <div class="relative h-48 w-48 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(239, 68, 68, 0.5);"><div class="chasing-border-red"></div><div class="inner-circle p-2"><img src="logosala.png" alt="Logo" class="w-full h-full object-contain grayscale opacity-60 drop-shadow-2xl relative z-20"></div></div>
+        <div class="relative h-48 w-48 shrink-0 mb-6 mx-auto rounded-full logo-container" style="box-shadow: 0 0 40px rgba(239, 68, 68, 0.5);">
+            <div class="chasing-border-red"></div>
+            <div class="inner-circle p-0">
+                <img src="logosala.png" alt="Logo" class="w-[85%] h-[85%] object-contain grayscale opacity-60 drop-shadow-2xl relative z-20 scale-110">
+            </div>
+        </div>
         <h1 class="font-black text-3xl mb-3 text-white tracking-tight uppercase text-center leading-none">Protezione Civile<br>Thiene</h1>
         <div class="bg-red-900/40 border border-red-500/50 px-6 py-3 rounded-full mb-6 shadow-[0_0_30px_rgba(239,68,68,0.3)] relative z-20 screen-enter"><h2 class="font-black text-sm text-red-400 tracking-[0.2em] uppercase flex items-center gap-3"><span class="animate-ping text-red-500">●</span> STANDBY OPERATIVO <span class="animate-ping text-red-500">●</span></h2></div>
         <p class="text-slate-400 text-xs uppercase tracking-widest leading-relaxed text-center relative z-20 font-bold bg-black/40 px-6 py-3 rounded-xl border border-white/10">App temporaneamente bloccata<br>dalla Sala Radio</p>
@@ -166,7 +177,7 @@
     <header id="main-header" class="px-3 py-3 bg-slate-900/80 backdrop-blur-xl flex justify-between items-center shrink-0 shadow-2xl hidden relative z-20 border-b border-white/5 safe-top">
         <div class="flex items-center gap-3.5 w-full screen-enter">
             <div class="h-14 w-14 flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-600/50 bg-black/50 shadow-inner">
-                <img src="logosala.png" alt="Logo" class="w-10 h-10 object-contain">
+                <img src="logosala.png" alt="Logo" class="w-12 h-12 object-contain scale-110">
             </div>
             
             <div class="flex flex-col flex-1 justify-center min-w-0">
@@ -216,7 +227,7 @@
             <div class="grid grid-cols-3 gap-2 bg-slate-900/50 p-2 rounded-2xl border border-slate-800">
                 <button onclick="document.getElementById('file-foto').click()" class="btn-media hover:bg-slate-700 hover:text-white text-slate-300"><span class="m-icon">📷</span><span class="m-txt">FOTO</span></button>
                 <button id="btn-voc" class="btn-media hover:bg-slate-700 hover:text-white text-slate-300"><span id="voc-icon" class="m-icon">🎤</span><span id="voc-txt" class="m-txt">VOCALE</span></button>
-                <button onclick="window.openGPSPanel()" class="btn-media border-blue-900/50 bg-blue-950/30 hover:bg-blue-900 text-blue-300"><span class="m-icon">📍</span><span class="m-txt text-blue-400">MAPPA</span></button>
+                <button onclick="window.openGPSPanel()" class="btn-media border-blue-900/50 bg-blue-950/30 hover:bg-blue-900 text-blue-300"><span class="m-icon">⚙️</span><span class="m-txt text-blue-400">CONFIG GPS</span></button>
             </div>
         </div>
         <input type="file" id="file-foto" accept="image/*" capture="camera" class="hidden" onchange="window.upFoto(this.files[0])">
@@ -310,7 +321,6 @@
         window.checkPin = async () => {
             const pinInput = document.getElementById('pin-input');
             const pinInserito = pinInput.value.trim();
-            
             if (!pinInserito) return;
 
             const btn = document.querySelector('button[onclick="window.checkPin()"]');
@@ -392,7 +402,6 @@
             onValue(ref(db, `anagrafica_squadre/${sqId}`), (snap) => { const sq = snap.val(); if (sq) { if (sq.ultimo_contatto) window.ultimoContattoLocale = sq.ultimo_contatto; document.getElementById('display-capo').innerText = sq.capo ? `CAPO: ${sq.capo.toUpperCase()}` : "CAPO: N/D"; document.getElementById('current-status').innerText = sq.stato ? sq.stato.toUpperCase() : 'ATTESA'; document.getElementById('off-screen').style.display = (sq.attiva === false) ? 'flex' : 'none'; } });
         }
 
-        // NUOVA FUNZIONE PER LAMPEGGIO RADAR
         window.showGpsPing = () => {
             const txBadge = document.getElementById('gps-tx-indicator');
             const liveBadge = document.getElementById('live-badge');
@@ -419,7 +428,19 @@
         }
         
         window.sendSilentGPS = () => { if (navigator.geolocation && window.liveTrackingEnabled) { navigator.geolocation.getCurrentPosition((p) => { update(ref(db, `anagrafica_squadre/${sqId}`), { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) }); window.showGpsPing(); }, null, { enableHighAccuracy: true }); } };
-        window.inviaNuovo = async (testo, extra = {}) => { const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); let pos = { lat: '', lng: '' }; if (window.gpsAutoEnabled && navigator.geolocation) { try { const p = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 4000 })); pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) }; window.showGpsPing(); } catch (e) {} } await update(ref(db, `anagrafica_squadre/${sqId}`), { ...pos, ultimo_contatto: Date.now() }); push(ref(db, 'brogliaccio'), { ora, data: new Date().toLocaleDateString('it-IT'), squadra: sqId, m1: testo.toUpperCase(), dir: 'SQ', stato: 'OK', ...pos, ...extra }).then(() => { Swal.fire({ icon: 'success', title: 'INVIATO', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' }); }); };
+        
+        // MODIFICA 4: Lo stato è ATTESA, così la riga diventa rossa in Sala
+        window.inviaNuovo = async (testo, extra = {}) => { 
+            const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); 
+            let pos = { lat: '', lng: '' }; 
+            if (window.gpsAutoEnabled && navigator.geolocation) { 
+                try { const p = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 4000 })); pos = { lat: p.coords.latitude.toFixed(6), lng: p.coords.longitude.toFixed(6) }; window.showGpsPing(); } catch (e) {} 
+            } 
+            await update(ref(db, `anagrafica_squadre/${sqId}`), { ...pos, ultimo_contatto: Date.now() }); 
+            push(ref(db, 'brogliaccio'), { ora, data: new Date().toLocaleDateString('it-IT'), squadra: sqId, m1: testo.toUpperCase(), dir: 'SQ', stato: 'ATTESA', ...pos, ...extra }).then(() => { 
+                Swal.fire({ icon: 'success', title: 'INVIATO', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#fff' }); 
+            }); 
+        };
         
         window.startLiveTracking = () => { if (liveTrackingTimer) clearInterval(liveTrackingTimer); if (window.liveTrackingEnabled) { window.sendSilentGPS(); liveTrackingTimer = setInterval(window.sendSilentGPS, window.liveTrackingInterval); } };
         window.toggleLiveTrack = (val) => { window.liveTrackingEnabled = val; localStorage.setItem('app_live_track', val); updateGpsBadge(); if (val) window.startLiveTracking(); else if (liveTrackingTimer) clearInterval(liveTrackingTimer); };
@@ -428,7 +449,18 @@
         window.toggleGpsApp = (val) => { window.gpsAutoEnabled = val; localStorage.setItem('app_gps_auto', val); updateGpsBadge(); };
         window.cercaViaApp = async () => { const ind = document.getElementById('app-man-ind').value; if(!ind) return; try { const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(ind)}&limit=1`); const data = await res.json(); if(data && data.length > 0) { document.getElementById('app-man-lat').value = parseFloat(data[0].lat).toFixed(6); document.getElementById('app-man-lng').value = parseFloat(data[0].lon).toFixed(6); document.getElementById('app-man-ind').value = data[0].display_name.split(',')[0].toUpperCase(); } } catch(e) {} };
         window.inviaGPSManuale = () => { const lat = document.getElementById('app-man-lat').value; const lng = document.getElementById('app-man-lng').value; const via = document.getElementById('app-man-ind').value || "POSIZIONE MANUALE"; if(!lat || !lng) return; window.inviaNuovo(`📍 RIFERIMENTO: ${via}`, { lat: lat, lng: lng }); Swal.close(); };
-        window.askStatus = (s, icon) => { Swal.fire({ title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b class="text-lg">${s.toUpperCase()}</b>`, showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { if(r.isConfirmed) { update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s, ultimo_contatto: Date.now() }); } }); };
+        
+        // MODIFICA 3: Feedback visivo sul cambio stato
+        window.askStatus = (s, icon) => { 
+            Swal.fire({ title: `CONFERMI STATO?`, html: `<span class="text-4xl block mb-2">${icon}</span><b class="text-lg">${s.toUpperCase()}</b>`, showCancelButton: true, confirmButtonText: 'SÌ, AGGIORNA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { 
+                if(r.isConfirmed) { 
+                    update(ref(db, `anagrafica_squadre/${sqId}`), { stato: s, ultimo_contatto: Date.now() }).then(() => {
+                        Swal.fire({ icon: 'success', title: 'STATO AGGIORNATO', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#10b981' });
+                    });
+                } 
+            }); 
+        };
+        
         window.askFreeMsg = () => { const t = document.getElementById('msg-input').value.trim(); if(!t) return; window.inviaNuovo(t).then(() => { document.getElementById('msg-input').value = ""; }); };
         window.upFoto = (f) => { if (!f) return; const reader = new FileReader(); reader.onload = (e) => { Swal.fire({ title: 'INVIARE FOTO?', html: `<img src="${e.target.result}" class="w-full rounded-xl mt-2 border-2 border-slate-600 shadow-lg">`, showCancelButton: true, confirmButtonText: '🚀 INVIA', confirmButtonColor: '#2563eb', background: '#1e293b', color: '#fff' }).then((r) => { if(r.isConfirmed) window.inviaNuovo("📷 FOTO", { mediaUrl: e.target.result, mediaType: 'IMG' }); }); }; reader.readAsDataURL(f); };
         
