@@ -424,6 +424,17 @@
         
         window.disegnaBannerUltimaDest = () => { const banner = document.getElementById('target-banner'); if (viaAttiva && ultimaPos.lat) { banner.className = "shrink-0 w-full bg-slate-800/80 backdrop-blur-md rounded-xl p-2 border border-slate-600 shadow-[0_2px_10px_rgba(0,0,0,0.5)] flex items-center justify-between"; banner.innerHTML = `<div class="flex flex-col flex-1 overflow-hidden"><span class="text-[7px] text-slate-400 font-bold uppercase tracking-widest text-left leading-none">ULTIMA DESTINAZIONE</span><span class="text-[10px] text-white font-bold truncate leading-tight">${viaAttiva}</span></div><button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="bg-slate-700 hover:bg-slate-600 text-emerald-400 px-3 py-1.5 rounded-lg font-bold text-[8px] border border-slate-500 shadow-md shrink-0">📍 NAVIGA</button>`; } else { banner.className = "shrink-0 w-full bg-slate-800/50 backdrop-blur-md rounded-xl p-2 border border-slate-700/50 shadow-inner flex flex-col justify-center min-h-[46px]"; banner.innerHTML = `<div class="text-center text-slate-500 text-[9px] font-bold uppercase tracking-widest">Nessun Target attivo</div>`; } };
         window.navig = (lat, lng) => { window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, '_blank'); };
+    // MOTORE NATIVO: Riceve le coordinate da Android a schermo spento
+        window.updateFromNative = (lat, lng) => {
+            if (window.liveTrackingEnabled && sqId && db) {
+                update(ref(db, `anagrafica_squadre/${sqId}`), { 
+                    lat: parseFloat(lat).toFixed(6), 
+                    lng: parseFloat(lng).toFixed(6),
+                    ultimo_contatto: Date.now()
+                });
+                window.showGpsPing(); // Mostra il badge TX POS
+            }
+        };
     </script>
 </body>
 </html>
