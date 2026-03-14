@@ -33,6 +33,12 @@
             height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; margin: 0; font-weight: 500; 
         }
 
+        /* Barre di scorrimento stilizzate (Cyberpunk) */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(16, 185, 129, 0.5); }
+
         .safe-top { padding-top: calc(12px + env(safe-area-inset-top)) !important; }
         .safe-bottom { padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important; }
 
@@ -45,6 +51,10 @@
         .screen-enter { animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
         @keyframes spin-chase { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* Animazioni WOW Effect */
+        @keyframes scan { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
         
         .chasing-border-blue { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, #3b82f6 100%); animation: spin-chase 2s linear infinite; }
         .inner-circle { position: absolute; inset: 4px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: inset 0px 0px 20px rgba(0,0,0,0.9); overflow: hidden; }
@@ -154,7 +164,7 @@
         </div>
     </header>
 
-    <main id="main-content" class="flex-1 flex flex-col w-full px-3 py-3 pb-[80px] gap-2.5 overflow-hidden hidden relative z-10">
+    <main id="main-content" class="flex-1 flex flex-col w-full px-3 py-3 pb-[100px] gap-2.5 overflow-y-auto hidden relative z-10 scroll-smooth">
         
         <div id="target-banner" class="glass-panel w-full p-3 shrink-0 flex flex-col justify-center min-h-[50px] screen-enter border-t-2 border-t-slate-600">
             <div class="text-center text-slate-500 text-[10px] uppercase font-bold italic tracking-widest">SISTEMA IN STANDBY</div>
@@ -183,7 +193,8 @@
         </div>
         <input type="file" id="file-foto" accept="image/*" capture="camera" class="hidden" onchange="window.upFoto(this.files[0])">
 
-        <div class="flex-1 glass-panel flex flex-col p-2 gap-2 screen-enter" style="animation-delay: 0.3s;">
+        <div class="flex-1 glass-panel flex flex-col p-2 gap-1.5 screen-enter" style="animation-delay: 0.3s;">
+            
             <div id="box-msg-in" class="msg-box msg-box-in hidden">
                 <div class="flex justify-between items-center border-b border-white/10 pb-1 mb-1">
                     <span id="titolo-msg-in" class="text-[8px] font-black text-blue-400 uppercase tracking-widest">🎧 DALLA SALA</span>
@@ -192,7 +203,7 @@
                 <div id="testo-msg-in" class="text-[11px] text-white font-medium italic leading-snug">In attesa di comunicazioni...</div>
             </div>
 
-            <div id="box-msg-out" class="msg-box msg-box-out hidden mt-auto">
+            <div id="box-msg-out" class="msg-box msg-box-out hidden mt-1">
                 <div class="flex justify-between items-center border-b border-white/10 pb-1 mb-1">
                     <span class="text-[8px] font-black text-emerald-500 uppercase tracking-widest">✅ ULTIMO INVIATO</span>
                     <span id="ora-msg-out" class="text-[9px] font-mono text-slate-400">--:--</span>
@@ -200,19 +211,27 @@
                 <div id="testo-msg-out" class="text-[11px] text-slate-300 font-medium leading-snug">Nessun messaggio inviato.</div>
             </div>
             
-            <div id="box-msg-vuoto" class="m-auto text-center text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+            <div id="box-msg-vuoto" class="m-auto text-center text-[9px] font-bold text-slate-500 uppercase tracking-widest py-4">
                 NESSUNA COMUNICAZIONE IN CORSO
             </div>
         </div>
 
-        <div class="shrink-0 glass-panel p-2 flex flex-col screen-enter mb-1" style="animation-delay: 0.4s;">
+        <div class="shrink-0 glass-panel p-2 flex flex-col screen-enter mb-1 relative overflow-hidden transition-all duration-300 focus-within:shadow-[0_0_20px_rgba(16,185,129,0.2)] focus-within:border-emerald-500/50 mt-1" style="animation-delay: 0.4s;">
+            
+            <div class="absolute top-0 left-[-100%] w-[200%] h-[1px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-50 animate-[scan_3s_linear_infinite]"></div>
+            
             <div class="flex items-center gap-2 mb-1 pl-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Terminale Trasmissione</span>
+                <span class="text-[8px] font-black text-emerald-400 uppercase tracking-widest">Canale Uplink Diretto</span>
             </div>
-            <div class="flex gap-2">
-                <textarea id="msg-input" class="terminal-input flex-1 resize-none h-[42px]" placeholder="> SCRIVI ALLA SALA..."></textarea>
-                <button onclick="window.askFreeMsg()" class="w-[50px] shrink-0 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-lg shadow-lg active:scale-95 transition-all text-white border border-emerald-400 flex items-center justify-center">➤</button>
+            
+            <div class="flex gap-2 relative z-10">
+                <textarea id="msg-input" class="terminal-input flex-1 resize-none h-[42px] focus:h-[70px] transition-all duration-300" placeholder="> SCRIVI ALLA SALA..."></textarea>
+                
+                <button onclick="window.askFreeMsg()" class="w-[50px] shrink-0 bg-emerald-600 hover:bg-emerald-400 rounded-xl font-black text-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95 transition-all text-white border border-emerald-400 flex items-center justify-center group overflow-hidden relative">
+                    <span class="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-[shimmer_0.5s_forwards]"></span>
+                    <span class="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform">➤</span>
+                </button>
             </div>
         </div>
     </main>
@@ -534,8 +553,8 @@
                             if (navigator.vibrate) navigator.vibrate([500, 200, 500]); 
                             window.lastNotifiedTargetId = target.id; 
                         }
-                        banner.className = "shrink-0 w-full bg-red-900/80 rounded-xl p-2 border border-red-500 shadow-lg flex items-center justify-between gap-2 screen-enter";
-                        banner.innerHTML = `<div class="flex items-center gap-1.5 flex-1 overflow-hidden"><span class="text-2xl animate-bounce">🚨</span><div class="flex flex-col"><span class="text-[7px] text-red-300 font-bold uppercase tracking-widest text-left leading-none">NUOVO ORDINE</span><span class="text-[10px] text-white font-black truncate leading-tight">${viaAttiva}</span></div></div><button onclick="window.cRic()" class="bg-red-600 hover:bg-red-500 px-3 py-2 rounded-lg font-black uppercase text-[8px] shadow active:scale-95 text-white tracking-widest shrink-0">RICEVUTO</button>`;
+                        banner.className = "shrink-0 w-full bg-red-900/80 rounded-xl p-2 border border-red-500 shadow-lg flex items-center justify-between gap-2 screen-enter relative overflow-hidden";
+                        banner.innerHTML = `<div class="absolute inset-0 bg-red-500/10 animate-pulse"></div><div class="flex items-center gap-1.5 flex-1 overflow-hidden relative z-10"><span class="text-2xl animate-bounce">🚨</span><div class="flex flex-col"><span class="text-[7px] text-red-300 font-bold uppercase tracking-widest text-left leading-none">NUOVO ORDINE</span><span class="text-[10px] text-white font-black truncate leading-tight">${viaAttiva}</span></div></div><button onclick="window.cRic()" class="bg-red-600 hover:bg-red-500 px-3 py-2 rounded-lg font-black uppercase text-[8px] shadow active:scale-95 text-white tracking-widest shrink-0 relative z-10">RICEVUTO</button>`;
                     } else {
                         banner.className = "shrink-0 w-full bg-blue-900/80 rounded-xl p-2 border border-blue-500 shadow-lg flex items-center justify-between gap-1 screen-enter";
                         banner.innerHTML = `<div class="flex items-center gap-1 flex-1 overflow-hidden"><span class="text-xl">🚐</span><div class="flex flex-col"><span class="text-[7px] text-blue-300 font-bold uppercase tracking-widest text-left leading-none">IN VIAGGIO:</span><span class="text-[10px] text-white font-bold truncate leading-tight">${viaAttiva}</span></div></div><div class="flex gap-1 shrink-0"><button onclick="window.navig(${ultimaPos.lat}, ${ultimaPos.lng})" class="bg-emerald-600 hover:bg-emerald-500 px-2 py-1.5 rounded-lg font-bold uppercase text-[8px] shadow active:scale-95 text-white tracking-wider">📍 NAV</button><button onclick="window.cArr()" class="bg-red-600 hover:bg-red-500 px-2 py-1.5 rounded-lg font-bold uppercase text-[8px] shadow active:scale-95 text-white border border-red-800 tracking-wider">🏁 ARR</button></div>`;
@@ -652,6 +671,9 @@
             push(ref(db, 'brogliaccio'), { ora, data: new Date().toLocaleDateString('it-IT'), squadra: sqId, m1: testo.toUpperCase(), dir: 'SQ', stato: 'ATTESA', ...pos, ...extra })
             .then(() => { 
                 Swal.fire({ icon: 'success', title: 'INVIATO', toast: true, position: 'top-end', timer: 1500, showConfirmButton: false, background: '#0f172a', color: '#10b981' }); 
+                // Forza lo scroll verso il basso per mostrare l'ultimo messaggio inviato
+                const mainArea = document.getElementById('main-content');
+                mainArea.scrollTo({ top: mainArea.scrollHeight, behavior: 'smooth' });
             }); 
         };
         
@@ -679,7 +701,6 @@
             
             // IL PONTE ANDROID: Avvisa il telefono in tasca del nuovo tempo
             if(window.AndroidBridge && window.AndroidBridge.impostaIntervalloGps) {
-                // Passa i millisecondi convertiti in secondi per Android
                 window.AndroidBridge.impostaIntervalloGps(window.liveTrackingInterval / 1000); 
             }
         };
