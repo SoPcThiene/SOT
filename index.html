@@ -307,17 +307,30 @@
                         </div>
                     </div>
                     
-                    <div class="p-2 border-t border-slate-700 bg-slate-900/80 flex gap-2">
-                        <button onclick="window.apriPannelloSpecialita()" class="flex-1 bg-indigo-700 hover:bg-indigo-600 border border-indigo-500 text-white text-[9px] font-bold uppercase py-2.5 rounded-lg active:scale-95 transition-colors shadow flex items-center justify-center gap-1.5">
-                            <span class="text-sm">🎖️</span> ABILITAZIONI
-                        </button>
-                        <button onclick="richiediCambioPass()" class="flex-1 bg-slate-700 hover:bg-slate-600 border border-slate-500 text-white text-[9px] font-bold uppercase py-2.5 rounded-lg active:scale-95 transition-colors shadow flex items-center justify-center gap-1.5">
-                            <span class="text-sm">🔑</span> PASSWORD
-                        </button>
-                    </div>
-                </div>
+<div class="p-3 border-t border-slate-700 bg-slate-900/80 flex flex-col gap-2">
+                                                <button onclick="window.apriPannelloSpecialita()" class="w-full bg-indigo-700 hover:bg-indigo-600 border border-indigo-500 text-white text-[10px] font-bold uppercase py-3 rounded-xl active:scale-95 transition-colors shadow flex items-center justify-center gap-2">
+                            <span class="text-sm">🎖️</span> LE MIE ABILITAZIONI
+                        </button>
 
-            </div>
+                                                <button disabled class="w-full bg-slate-800/30 text-slate-500 font-bold py-3 px-4 rounded-xl border border-slate-700/50 cursor-not-allowed flex items-center justify-center gap-2 transition-all">
+                            <span class="text-sm opacity-50">🎒</span>
+                            <span class="text-[9px]">INVENTARIO DPI (PRESTO)</span>
+                        </button>
+
+                                                <button onclick="window.cambiaPasswordOperatore()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-600 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95">
+                            <span class="text-sm text-blue-400">🔑</span>
+                            <span class="text-[9px]">GESTIONE SICUREZZA</span>
+                        </button>
+                    </div>
+                </div>
+
+                                <div class="mt-6 mb-6 text-[13px] font-mono font-bold tracking-[0.2em] uppercase opacity-90 flex items-center justify-center">
+                    <span class="text-slate-400 text-[10px] mr-1">App Engineered by</span> 
+                    <a href="https://www.jokart.it" target="_blank" class="relative group hover:scale-125 transition-all duration-300 inline-block cursor-pointer mx-1">
+                        <span class="text-white relative z-10 transition-colors group-hover:text-red-100">JOK</span><span class="text-red-500 relative z-10 transition-colors group-hover:text-red-400">ART</span>
+                        <div class="absolute inset-0 bg-red-600/40 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 scale-150"></div>
+                    </a>
+                </div>
 
             <div id="tab-tattico" class="tab-content flex-1 flex-col w-full px-3 py-3 gap-2 overflow-y-auto pb-28 relative">
                 
@@ -417,7 +430,7 @@
                 <div id="lista-eventi-app" class="flex flex-col gap-4"></div>
             </div>
 
-            <div id="tab-dpi" class="tab-content flex-1 flex-col w-full px-4 py-5 overflow-y-auto relative pb-28">
+<div id="tab-dpi" class="tab-content flex-1 flex-col w-full px-4 py-5 overflow-y-auto relative pb-28">
                 <div class="flex items-center gap-3 mb-4 px-1">
                     <span class="text-3xl drop-shadow-[0_0_15px_rgba(225,29,72,0.4)]">🎒</span>
                     <div>
@@ -426,13 +439,18 @@
                     </div>
                 </div>
                 
+                <button disabled class="w-full bg-slate-800/30 text-slate-500 font-bold py-3 px-4 rounded-xl border border-slate-700/50 mb-3 cursor-not-allowed flex items-center justify-center gap-2 transition-all">
+                    <span class="text-sm opacity-50">📋</span>
+                    <span class="text-[9px]">RICHIESTA MATERIALE (PRESTO DISPONIBILE)</span>
+                </button>
+
                 <div class="glass-panel p-4 flex flex-col flex-1 min-h-[300px]">
                     <div class="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 border-b border-slate-700/50 pb-2 shrink-0">
                         MATERIALE IN CARICO
                     </div>
                     
                     <div id="lista-dotazioni-magazzino" class="flex-1 overflow-y-auto flex flex-col gap-2.5 custom-scrollbar">
-                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -657,10 +675,73 @@
             auth.signInWithEmailAndPassword(e, p).then(()=> Swal.close()).catch(err => Swal.fire({icon:'error', title:'Errore', text:'Credenziali errate', background: '#0f172a', color: '#fff'}));
         };
 
-        window.richiediCambioPass = () => {
-            const mail = window.currentUserEmailObj || document.getElementById('login-email').value.trim();
-            if(!mail) { Swal.fire('Attenzione', 'Inserisci l\'email per il reset', 'warning'); return; }
-            auth.sendPasswordResetEmail(mail).then(() => Swal.fire({icon:'success', title:'Inviata!', text:'Controlla la posta.', background: '#0f172a', color: '#fff'})).catch(err => Swal.fire({icon:'error', title:'Errore', text:'Email non valida.', background: '#0f172a', color: '#fff'}));
+window.cambiaPasswordOperatore = () => {
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                Swal.fire({ icon: 'error', title: 'Errore', text: 'Devi essere loggato per cambiare password.', background: '#0f172a', color: '#fff' });
+                return;
+            }
+
+            Swal.fire({
+                title: '<div class="text-blue-400 font-black tracking-widest uppercase text-lg border-b border-blue-900/50 pb-2">🔑 SICUREZZA ACCOUNT</div>',
+                html: `
+                    <div class="text-left space-y-4 mt-4">
+                        <div>
+                            <div class="text-[9px] text-slate-400 font-bold tracking-widest uppercase mb-1 ml-1">Email Operatore</div>
+                            <div class="bg-[#010409] border border-slate-700/50 p-2.5 rounded-lg text-slate-300 font-mono text-xs text-center opacity-80 shadow-inner">${user.email}</div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-[9px] text-amber-500 font-bold tracking-widest uppercase mb-1 ml-1">Verifica Identità</div>
+                            <input type="password" id="pass-attuale" class="swal2-input !bg-[#020617] !border-slate-700 !text-white !mx-0 !w-full !h-11 !text-sm !font-mono !text-center focus:!border-amber-500 transition-colors placeholder:text-slate-600" placeholder="Password Attuale">
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800">
+                            <div class="text-[9px] text-emerald-500 font-bold tracking-widest uppercase mb-1 ml-1">Nuove Credenziali</div>
+                            <input type="password" id="pass-nuova" class="swal2-input !bg-[#020617] !border-slate-700 !text-white !mx-0 !w-full !h-11 !text-sm !font-mono !text-center focus:!border-emerald-500 transition-colors placeholder:text-slate-600 mb-3" placeholder="Nuova Password (min 6)">
+                            <input type="password" id="pass-conferma" class="swal2-input !bg-[#020617] !border-slate-700 !text-white !mx-0 !w-full !h-11 !text-sm !font-mono !text-center focus:!border-emerald-500 transition-colors placeholder:text-slate-600" placeholder="Ripeti Nuova Password">
+                        </div>
+                    </div>
+                `,
+                background: '#0f172a', 
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: 'AGGIORNA SICUREZZA',
+                cancelButtonText: 'ANNULLA',
+                confirmButtonColor: '#2563eb',
+                customClass: { confirmButton: 'font-bold tracking-widest text-xs py-3 px-5' },
+                preConfirm: () => {
+                    const attuale = document.getElementById('pass-attuale').value.trim();
+                    const nuova = document.getElementById('pass-nuova').value.trim();
+                    const conferma = document.getElementById('pass-conferma').value.trim();
+
+                    if (!attuale) { Swal.showValidationMessage('Inserisci la tua password attuale!'); return false; }
+                    if (!nuova || nuova.length < 6) { Swal.showValidationMessage('La nuova password deve avere almeno 6 caratteri!'); return false; }
+                    if (nuova !== conferma) { Swal.showValidationMessage('Le nuove password non coincidono!'); return false; }
+
+                    return { attuale, nuova };
+                }
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    Swal.fire({ title: '⏳ Autenticazione...', text: 'Verifica credenziali in corso', showConfirmButton: false, background: '#0f172a', color: '#fff', didOpen: () => Swal.showLoading() });
+                    
+                    const credential = firebase.auth.EmailAuthProvider.credential(user.email, res.value.attuale);
+                    
+                    user.reauthenticateWithCredential(credential).then(() => {
+                        Swal.fire({ title: '⏳ Sincronizzazione Cloud...', showConfirmButton: false, background: '#0f172a', color: '#fff', didOpen: () => Swal.showLoading() });
+                        return user.updatePassword(res.value.nuova);
+                    }).then(() => {
+                        Swal.fire({ icon: 'success', title: 'SISTEMA AGGIORNATO', text: 'La tua password è stata cambiata in modo sicuro.', background: '#0f172a', color: '#fff' });
+                    }).catch((error) => {
+                        console.error(error);
+                        let msgErrore = "Errore durante l'aggiornamento.";
+                        if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                            msgErrore = 'La Password Attuale inserita è ERRATA.';
+                        }
+                        Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: msgErrore, background: '#0f172a', color: '#fff' });
+                    });
+                }
+            });
         };
 
         window.logoutPersonale = () => {
@@ -767,8 +848,11 @@ let dataFormattata = ev.data ? ev.data.split('-').reverse().join('/') : 'N/D';
                             let html = '';
                             snap.val().forEach(dot => {
                                 if(!dot) return; 
-                                let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 'N/D';
+let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 'N/D';
                                 let coloreUsura = dot.stato === 'USURATO' ? 'text-amber-500' : 'text-slate-400';
+                                
+                                // --- NOVITÀ: CREAZIONE BADGE TAGLIA SE ESISTE ---
+                                let badgeTaglia = dot.taglia ? `<span class="text-[10px] bg-purple-900/40 text-purple-400 px-2 py-1 rounded-lg font-black border border-purple-800/50 shadow text-center w-full mt-1">Tg: ${dot.taglia}</span>` : '';
                                 
                                 // --- CONTROLLO STATO TICKET SEGNALAZIONE ---
                                 let ticketStato = (typeof mieSegnalazioni !== 'undefined') ? mieSegnalazioni[dot.nome] : null;
@@ -794,14 +878,18 @@ let dataFormattata = ev.data ? ev.data.split('-').reverse().join('/') : 'N/D';
                                     </button>`;
                                 }
                                 
+                                // --- AGGIORNAMENTO GRAFICA CARD PRODOTTO ---
                                 html += `
                                 <div class="bg-slate-900 border border-slate-700 p-3 rounded-xl mb-2 flex flex-col gap-2 shadow-inner shrink-0">
-                                    <div class="flex justify-between items-center w-full">
-                                        <div class="flex flex-col">
-                                            <span class="text-[11px] font-black text-white uppercase">🦺 ${dot.nome}</span>
-                                            <span class="text-[8px] ${coloreUsura} mt-1 uppercase tracking-widest font-bold">Stato: ${dot.stato} | Scad: ${dataScadenza}</span>
+                                    <div class="flex justify-between items-start w-full">
+                                        <div class="flex flex-col pr-2">
+                                            <span class="text-[11px] font-black text-white uppercase leading-tight">🦺 ${dot.nome}</span>
+                                            <span class="text-[8px] ${coloreUsura} mt-1.5 uppercase tracking-widest font-bold">Stato: ${dot.stato} | Scad: ${dataScadenza}</span>
                                         </div>
-                                        <span class="text-[10px] bg-blue-900/40 text-blue-400 px-2 py-1 rounded-lg font-black border border-blue-800/50 shadow">Q.tà: ${dot.qta || 1}</span>
+                                        <div class="flex flex-col items-end shrink-0">
+                                            <span class="text-[10px] bg-blue-900/40 text-blue-400 px-2 py-1 rounded-lg font-black border border-blue-800/50 shadow text-center w-full">Q.tà: ${dot.qta || 1}</span>
+                                            ${badgeTaglia}
+                                        </div>
                                     </div>
                                     ${btnHtml}
                                 </div>`;
