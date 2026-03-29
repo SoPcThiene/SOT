@@ -255,7 +255,7 @@
 
         <main id="main-content" class="flex-1 flex flex-col w-full relative z-10 overflow-hidden">
             
-<div id="tab-profilo" class="tab-content flex-1 flex-col w-full px-3 py-2 overflow-y-auto relative pb-20">
+            <div id="tab-profilo" class="tab-content flex-1 flex-col w-full px-3 py-2 overflow-y-auto relative pb-20">
                 
                 <div class="flex items-center justify-between mb-2 px-1 mt-1">
                     <div class="flex items-center gap-2">
@@ -307,32 +307,31 @@
                         </div>
                     </div>
                     
-<div class="p-3 border-t border-slate-700 bg-slate-900/80 flex flex-col gap-2">
-                                                <button onclick="window.apriPannelloSpecialita()" class="w-full bg-indigo-700 hover:bg-indigo-600 border border-indigo-500 text-white text-[10px] font-bold uppercase py-3 rounded-xl active:scale-95 transition-colors shadow flex items-center justify-center gap-2">
-                            <span class="text-sm">🎖️</span> LE MIE ABILITAZIONI
-                        </button>
+                    <div class="p-3 border-t border-slate-700 bg-slate-900/80 flex flex-col gap-2">
+                        <button onclick="window.apriPannelloSpecialita()" class="w-full bg-indigo-700 hover:bg-indigo-600 border border-indigo-500 text-white text-[10px] font-bold uppercase py-3 rounded-xl active:scale-95 transition-colors shadow flex items-center justify-center gap-2">
+                            <span class="text-sm">🎖️</span> LE MIE ABILITAZIONI
+                        </button>
 
-                                                <button disabled class="w-full bg-slate-800/30 text-slate-500 font-bold py-3 px-4 rounded-xl border border-slate-700/50 cursor-not-allowed flex items-center justify-center gap-2 transition-all">
-                            <span class="text-sm opacity-50">🎒</span>
-                            <span class="text-[9px]">INVENTARIO DPI (PRESTO)</span>
-                        </button>
+                        <button disabled class="w-full bg-slate-800/30 text-slate-500 font-bold py-3 px-4 rounded-xl border border-slate-700/50 cursor-not-allowed flex items-center justify-center gap-2 transition-all">
+                            <span class="text-sm opacity-50">🎒</span>
+                            <span class="text-[9px]">INVENTARIO DPI (PRESTO)</span>
+                        </button>
 
-                                                <button onclick="window.cambiaPasswordOperatore()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-600 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95">
-                            <span class="text-sm text-blue-400">🔑</span>
-                            <span class="text-[9px]">GESTIONE SICUREZZA</span>
-                        </button>
-                    </div>
-                </div>
+                        <button onclick="window.cambiaPasswordOperatore()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-600 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95">
+                            <span class="text-sm text-blue-400">🔑</span>
+                            <span class="text-[9px]">GESTIONE SICUREZZA</span>
+                        </button>
+                    </div>
+                </div>
 
-                                <div class="mt-6 mb-6 text-[13px] font-mono font-bold tracking-[0.2em] uppercase opacity-90 flex items-center justify-center">
-                    <span class="text-slate-400 text-[10px] mr-1">App Engineered by</span> 
-                    <a href="https://www.jokart.it" target="_blank" class="relative group hover:scale-125 transition-all duration-300 inline-block cursor-pointer mx-1">
-                        <span class="text-white relative z-10 transition-colors group-hover:text-red-100">JOK</span><span class="text-red-500 relative z-10 transition-colors group-hover:text-red-400">ART</span>
-                        <div class="absolute inset-0 bg-red-600/40 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 scale-150"></div>
-                    </a>
-                </div>
-
-            <div id="tab-tattico" class="tab-content flex-1 flex-col w-full px-3 py-3 gap-2 overflow-y-auto pb-28 relative">
+                <div class="mt-6 mb-6 text-[13px] font-mono font-bold tracking-[0.2em] uppercase opacity-90 flex items-center justify-center">
+                    <span class="text-slate-400 text-[10px] mr-1">App Engineered by</span> 
+                    <a href="https://www.jokart.it" target="_blank" class="relative group hover:scale-125 transition-all duration-300 inline-block cursor-pointer mx-1">
+                        <span class="text-white relative z-10 transition-colors group-hover:text-red-100">JOK</span><span class="text-red-500 relative z-10 transition-colors group-hover:text-red-400">ART</span>
+                        <div class="absolute inset-0 bg-red-600/40 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 scale-150"></div>
+                    </a>
+                </div>
+            </div> <div id="tab-tattico" class="tab-content flex-1 flex-col w-full px-3 py-3 gap-2 overflow-y-auto pb-28 relative">
                 
                 <div class="shrink-0 flex justify-between items-center bg-slate-800/80 border border-slate-600 p-2.5 rounded-xl mb-1 shadow-lg">
                     <div class="flex flex-col pl-1">
@@ -430,7 +429,7 @@
                 <div id="lista-eventi-app" class="flex flex-col gap-4"></div>
             </div>
 
-<div id="tab-dpi" class="tab-content flex-1 flex-col w-full px-4 py-5 overflow-y-auto relative pb-28">
+            <div id="tab-dpi" class="tab-content flex-1 flex-col w-full px-4 py-5 overflow-y-auto relative pb-28">
                 <div class="flex items-center gap-3 mb-4 px-1">
                     <span class="text-3xl drop-shadow-[0_0_15px_rgba(225,29,72,0.4)]">🎒</span>
                     <div>
@@ -553,6 +552,7 @@
         let viaAttiva = ""; 
         let ultimaPos = { lat: null, lng: null };
         let mieSegnalazioni = {};
+
         // ==========================================
         // 1. GESTIONE AUTENTICAZIONE E AVVIO
         // ==========================================
@@ -652,7 +652,8 @@
                         document.getElementById('profilo-nome').innerText = window.currentUserNome;
                         document.getElementById('display-sq').innerText = window.currentUserNome;
                         document.getElementById('profilo-matricola').innerText = "MATRICOLA: " + (trovato ? (trovato.matricola || 'N/D') : 'N/D');
-                        document.getElementById('profilo-ruolo').innerText = (trovato ? (trovato.ruolo_badge || 'OPERATORE') : 'OPERATORE').toUpperCase();                        document.getElementById('profilo-tel').innerText = trovato ? (trovato.tel || 'N/D') : 'N/D';
+                        document.getElementById('profilo-ruolo').innerText = (trovato ? (trovato.ruolo_badge || 'OPERATORE') : 'OPERATORE').toUpperCase();
+                        document.getElementById('profilo-tel').innerText = trovato ? (trovato.tel || 'N/D') : 'N/D';
                         document.getElementById('profilo-email').innerText = user.email.toLowerCase();
                         
                         let gruppoSangue = trovato ? (trovato.sangue || 'N/D') : 'N/D';
@@ -675,7 +676,7 @@
             auth.signInWithEmailAndPassword(e, p).then(()=> Swal.close()).catch(err => Swal.fire({icon:'error', title:'Errore', text:'Credenziali errate', background: '#0f172a', color: '#fff'}));
         };
 
-window.cambiaPasswordOperatore = () => {
+        window.cambiaPasswordOperatore = () => {
             const user = firebase.auth().currentUser;
             if (!user) {
                 Swal.fire({ icon: 'error', title: 'Errore', text: 'Devi essere loggato per cambiare password.', background: '#0f172a', color: '#fff' });
@@ -806,7 +807,7 @@ window.cambiaPasswordOperatore = () => {
                             let btnSiClass = miaRisposta === 'CONFERMATO' ? 'bg-emerald-600 text-white border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-emerald-900/40 text-emerald-400 border-emerald-500/50 hover:bg-emerald-600 hover:text-white';
                             let btnNoClass = miaRisposta === 'ASSENTE' ? 'bg-red-600 text-white border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-red-900/40 text-red-400 border-red-500/50 hover:bg-red-600 hover:text-white';
 
-let dataFormattata = ev.data ? ev.data.split('-').reverse().join('/') : 'N/D';
+                            let dataFormattata = ev.data ? ev.data.split('-').reverse().join('/') : 'N/D';
                             // ALLINEATO CON IL BACK OFFICE: ora legge ev.note
                             let bloccoDescrizione = ev.note ? `<div class="text-[11px] text-slate-300 italic bg-slate-900/80 p-2.5 rounded-lg mt-2 mb-2 border border-slate-700/50 leading-snug">📝 ${ev.note}</div>` : '';
                             let dataSafe = ev.data ? ev.data.replace(/-/g, '') : '';
@@ -848,7 +849,8 @@ let dataFormattata = ev.data ? ev.data.split('-').reverse().join('/') : 'N/D';
                             let html = '';
                             snap.val().forEach(dot => {
                                 if(!dot) return; 
-let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 'N/D';
+                                
+                                let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 'N/D';
                                 let coloreUsura = dot.stato === 'USURATO' ? 'text-amber-500' : 'text-slate-400';
                                 
                                 // --- NOVITÀ: CREAZIONE BADGE TAGLIA SE ESISTE ---
@@ -966,7 +968,7 @@ let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 
                     }
                 });
 
-// Target, Chat Sala Radio e Segnalazioni
+                // Target, Chat Sala Radio e Segnalazioni
                 db.ref('brogliaccio').limitToLast(50).on('value', (snap) => {
                     if(!snap.exists()) return;
                     const logs = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val })).reverse();
@@ -1274,7 +1276,7 @@ let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 
             if(ultimaPos.lat) window.open(`https://www.google.com/maps/dir/?api=1&destination=${ultimaPos.lat},${ultimaPos.lng}`, '_blank'); 
         };
 
-// ==========================================
+        // ==========================================
         // 7. FUNZIONI EXTRA (Segnalazione DPI)
         // ==========================================
         window.segnalaDPISingolo = (nomeArticolo) => {
@@ -1397,7 +1399,7 @@ let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 
                 }
             }, null, { enableHighAccuracy: true });
         };
-// ==========================================
+        // ==========================================
         // 9. GESTIONE SPECIALITÀ E PATENTI (POPUP)
         // ==========================================
         window.apriPannelloSpecialita = () => {
