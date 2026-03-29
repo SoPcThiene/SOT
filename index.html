@@ -141,7 +141,7 @@
         <div class="text-blue-400 font-black uppercase tracking-[0.2em] text-xs animate-pulse">Sincronizzazione DB...</div>
     </div>
 
-    <div id="landing-screen" style="display: none;">
+<div id="landing-screen" style="display: none;">
         <div class="flex items-center gap-4 mb-6 z-20">
             <div class="h-28 w-28 bg-slate-900 rounded-full p-2 border-2 border-blue-500/50 shadow-[0_0_25px_rgba(59,130,246,0.5)] flex items-center justify-center logo-container">
                 <img src="SotSystemJA.png" class="w-full h-full object-contain" alt="PC Thiene">
@@ -153,13 +153,24 @@
         <h1 class="font-black text-2xl mb-1 text-white uppercase leading-none drop-shadow-lg">Centro Operativo</h1>
         <h2 class="font-bold text-[10px] mb-8 text-slate-400 tracking-[0.3em] uppercase">Seleziona Accesso</h2>
         
-        <div class="w-full max-w-[320px] flex flex-col gap-4 screen-enter">
+        <div class="w-full max-w-[320px] flex flex-col gap-4 screen-enter relative z-20">
             <button onclick="selezionaModo('PERSONAL')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 py-4 rounded-xl font-black uppercase text-xs shadow-[0_0_20px_rgba(59,130,246,0.4)] active:scale-95 text-white flex items-center justify-center gap-3 border border-blue-400/50 transition-transform">
                 <span class="text-2xl drop-shadow">🪪</span> PROFILO VOLONTARIO
             </button>
             <button onclick="selezionaModo('TERMINAL')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 py-4 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 text-emerald-400 flex items-center justify-center gap-3 transition-colors">
                 <span class="text-2xl drop-shadow">🚐</span> TERMINALE MEZZO
             </button>
+        </div>
+
+        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-0 animate-[fadeInScale_1s_ease-out_0.5s_forwards] z-10 pointer-events-auto">
+            <div class="text-[13px] font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center cursor-pointer group">
+                <span class="text-slate-500 text-[9px] mr-2 transition-colors group-hover:text-slate-300">Engineered by</span> 
+                <a href="https://www.jokart.it" target="_blank" class="relative transition-all duration-500 transform group-hover:scale-125 flex items-center">
+                    <span class="text-white relative z-10 transition-colors duration-300 group-hover:text-red-100 drop-shadow-md">JOK</span>
+                    <span class="text-red-600 relative z-10 transition-colors duration-300 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">ART</span>
+                    <div class="absolute inset-0 bg-red-600/60 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 scale-[2.0]"></div>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -169,7 +180,7 @@
         </div>
         <h2 class="font-black text-lg mb-6 text-blue-400 tracking-[0.2em] uppercase drop-shadow">ACCESSO OPERATORE</h2>
         
-        <div class="glass-panel p-6 w-full max-w-[320px] shadow-2xl flex flex-col screen-enter border border-blue-500/30">
+        <div class="glass-panel p-6 w-full max-w-[320px] shadow-2xl flex flex-col screen-enter border border-blue-500/30 relative z-20">
             <input type="email" id="login-email" class="bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-xl text-center text-sm text-white py-3.5 w-full mb-3 outline-none shadow-inner transition-colors" placeholder="Email (mario.rossi@...)">
             <input type="password" id="login-password" class="bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-xl text-center text-xl text-white py-3.5 w-full mb-5 tracking-[0.3em] outline-none shadow-inner transition-colors" placeholder="••••••">            
             
@@ -177,6 +188,17 @@
                 ACCEDI AL PROFILO
             </button>
             <button onclick="annullaLogin()" class="mt-4 text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors">🔙 TORNA ALLA HOME</button>
+        </div>
+
+        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-0 animate-[fadeInScale_1s_ease-out_0.5s_forwards] z-10 pointer-events-auto">
+            <div class="text-[13px] font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center cursor-pointer group">
+                <span class="text-slate-500 text-[9px] mr-2 transition-colors group-hover:text-slate-300">Engineered by</span> 
+                <a href="https://www.jokart.it" target="_blank" class="relative transition-all duration-500 transform group-hover:scale-125 flex items-center">
+                    <span class="text-white relative z-10 transition-colors duration-300 group-hover:text-red-100 drop-shadow-md">JOK</span>
+                    <span class="text-red-600 relative z-10 transition-colors duration-300 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">ART</span>
+                    <div class="absolute inset-0 bg-red-600/60 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 scale-[2.0]"></div>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -186,7 +208,7 @@
         </div>
         <h2 class="font-black text-lg mb-6 text-emerald-400 tracking-[0.2em] uppercase drop-shadow">SALA OPERATIVA</h2>
         
-        <div class="glass-panel p-6 w-full max-w-[320px] shadow-2xl flex flex-col screen-enter border border-emerald-500/30">
+        <div class="glass-panel p-6 w-full max-w-[320px] shadow-2xl flex flex-col screen-enter border border-emerald-500/30 relative z-20">
             <div id="qr-reader" class="w-full bg-black rounded-xl overflow-hidden mb-2 hidden"></div>
             
             <button onclick="startQRScanner()" id="btn-start-qr" class="w-full bg-slate-700 hover:bg-slate-600 border border-slate-500 py-3.5 rounded-xl font-bold uppercase text-xs mb-3 text-white flex items-center justify-center gap-2 active:scale-95 transition-all">
@@ -204,6 +226,17 @@
             </button>
             <button onclick="annullaLogin()" class="mt-4 text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors">🔙 TORNA ALLA HOME</button>
         </div>
+
+        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-0 animate-[fadeInScale_1s_ease-out_0.5s_forwards] z-10 pointer-events-auto">
+            <div class="text-[13px] font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center cursor-pointer group">
+                <span class="text-slate-500 text-[9px] mr-2 transition-colors group-hover:text-slate-300">Engineered by</span> 
+                <a href="https://www.jokart.it" target="_blank" class="relative transition-all duration-500 transform group-hover:scale-125 flex items-center">
+                    <span class="text-white relative z-10 transition-colors duration-300 group-hover:text-red-100 drop-shadow-md">JOK</span>
+                    <span class="text-red-600 relative z-10 transition-colors duration-300 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">ART</span>
+                    <div class="absolute inset-0 bg-red-600/60 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 scale-[2.0]"></div>
+                </a>
+            </div>
+        </div>
     </div>
 
     <div id="login-screen-pin" style="display: none;">
@@ -212,7 +245,7 @@
         </div>
         <h2 class="font-black text-lg mb-6 text-emerald-400 tracking-[0.2em] uppercase drop-shadow">SBLOCCO UNITÀ</h2>
         
-        <div class="glass-panel p-6 w-full max-w-[320px] shadow-2xl flex flex-col screen-enter items-center border border-emerald-500/30">
+        <div class="glass-panel p-6 w-full max-w-[320px] shadow-2xl flex flex-col screen-enter items-center border border-emerald-500/30 relative z-20">
             <p class="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-2">Unità Operativa: <b id="login-sq-name" class="text-white text-sm ml-1">...</b></p>
             
             <input type="password" id="pin-input" class="bg-slate-900 border border-slate-600 focus:border-emerald-500 rounded-xl text-center text-4xl text-white py-3.5 w-full mb-5 tracking-[0.4em] outline-none transition-colors shadow-inner" placeholder="****" inputmode="numeric" maxlength="4">            
@@ -224,8 +257,18 @@
                 🔄 CAMBIA UNITÀ
             </button>
         </div>
-    </div>
 
+        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-0 animate-[fadeInScale_1s_ease-out_0.5s_forwards] z-10 pointer-events-auto">
+            <div class="text-[13px] font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center cursor-pointer group">
+                <span class="text-slate-500 text-[9px] mr-2 transition-colors group-hover:text-slate-300">Engineered by</span> 
+                <a href="https://www.jokart.it" target="_blank" class="relative transition-all duration-500 transform group-hover:scale-125 flex items-center">
+                    <span class="text-white relative z-10 transition-colors duration-300 group-hover:text-red-100 drop-shadow-md">JOK</span>
+                    <span class="text-red-600 relative z-10 transition-colors duration-300 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">ART</span>
+                    <div class="absolute inset-0 bg-red-600/60 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 scale-[2.0]"></div>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <div id="app-wrapper" class="hidden flex-col h-full w-full relative z-10">
 
@@ -854,8 +897,9 @@
                                 let coloreUsura = dot.stato === 'USURATO' ? 'text-amber-500' : 'text-slate-400';
                                 
                                 // --- NOVITÀ: CREAZIONE BADGE TAGLIA SE ESISTE ---
-                                let badgeTaglia = dot.taglia ? `<span class="text-[10px] bg-purple-900/40 text-purple-400 px-2 py-1 rounded-lg font-black border border-purple-800/50 shadow text-center w-full mt-1">Tg: ${dot.taglia}</span>` : '';
-                                
+// --- NOVITÀ: CREAZIONE BADGE TAGLIA (RICERCA UNIVERSALE) ---
+let valoreTaglia = dot.taglia || dot.Taglia || dot.TAGLIA || "";
+let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text-purple-400 px-2 py-1 rounded-lg font-black border border-purple-800/50 shadow text-center w-full mt-1">Tg: ${valoreTaglia}</span>` : '';                                
                                 // --- CONTROLLO STATO TICKET SEGNALAZIONE ---
                                 let ticketStato = (typeof mieSegnalazioni !== 'undefined') ? mieSegnalazioni[dot.nome] : null;
                                 let btnHtml = '';
