@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PC THIENE - APP PERSONALE</title>
+    <title>SOT SYSTEM - APP OPERATIVA</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
-    <link rel="apple-touch-icon" href="logosala.png">
+    <link rel="apple-touch-icon" href="SotSystemRA.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -144,10 +144,10 @@
     <div id="landing-screen" style="display: none;">
         <div class="flex items-center gap-4 mb-6 z-20">
             <div class="h-28 w-28 bg-slate-900 rounded-full p-2 border-2 border-blue-500/50 shadow-[0_0_25px_rgba(59,130,246,0.5)] flex items-center justify-center logo-container">
-                <img src="logoPCthiene.png" class="w-full h-full object-contain" alt="PC Thiene">
+                <img src="SotSystemJA.png" class="w-full h-full object-contain" alt="PC Thiene">
             </div>
             <div class="h-28 w-28 bg-slate-900 rounded-full p-2 border-2 border-emerald-500/50 shadow-[0_0_25px_rgba(16,185,129,0.5)] flex items-center justify-center logo-container" style="animation-delay: 1.5s;">
-                <img src="logosala.png" class="w-full h-full object-contain" alt="Sala Radio">
+                <img src="SotSystemRA.png" class="w-full h-full object-contain" alt="Sala Radio">
             </div>
         </div>
         <h1 class="font-black text-2xl mb-1 text-white uppercase leading-none drop-shadow-lg">Centro Operativo</h1>
@@ -165,7 +165,7 @@
 
     <div id="login-personal-screen" style="display: none;">
         <div class="h-32 w-32 bg-slate-900 rounded-full p-2 border-2 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.4)] flex items-center justify-center mb-6">
-            <img src="logoPCthiene.png" class="w-full h-full object-contain scale-[1.2] relative z-20">
+            <img src="SotSystemJA.png" class="w-full h-full object-contain scale-[1.2] relative z-20">
         </div>
         <h2 class="font-black text-lg mb-6 text-blue-400 tracking-[0.2em] uppercase drop-shadow">ACCESSO OPERATORE</h2>
         
@@ -182,7 +182,7 @@
 
     <div id="team-select-screen" style="display: none;">
         <div class="h-32 w-32 bg-slate-900 rounded-full p-2 border-2 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center mb-6">
-            <img src="logosala.png" class="w-full h-full object-contain scale-[1.2]">
+            <img src="SotSystemRA.png" class="w-full h-full object-contain scale-[1.2]">
         </div>
         <h2 class="font-black text-lg mb-6 text-emerald-400 tracking-[0.2em] uppercase drop-shadow">SALA OPERATIVA</h2>
         
@@ -208,7 +208,7 @@
 
     <div id="login-screen-pin" style="display: none;">
         <div class="h-32 w-32 bg-slate-900 rounded-full p-2 border-2 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.4)] flex items-center justify-center mb-6">
-            <img src="logosala.png" class="w-full h-full object-contain scale-[1.2]">
+            <img src="SotSystemRA.png" class="w-full h-full object-contain scale-[1.2]">
         </div>
         <h2 class="font-black text-lg mb-6 text-emerald-400 tracking-[0.2em] uppercase drop-shadow">SBLOCCO UNITÀ</h2>
         
@@ -233,12 +233,12 @@
             <div class="flex items-center gap-3 w-full">
                 
                 <div class="h-12 w-12 flex shrink-0 items-center justify-center rounded-full bg-white border border-slate-500 shadow-[0_0_15px_rgba(255,255,255,0.1)] p-1">
-                    <img id="header-logo" src="logoPCthiene.png" class="w-full h-full object-contain scale-[1.1]">
+                    <img id="header-logo" src="SotSystemJA.png" class="w-full h-full object-contain scale-[1.1]">
                 </div>
                 
                 <div class="flex flex-col flex-1 justify-center min-w-0 pr-2 border-r border-slate-700/50">
                     <div class="text-[7px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">
-                        PC THIENE <span class="text-blue-500 font-black mx-1">•</span> <span id="header-mode">APP OPERATIVA</span>
+                        <span id="brand-app-name">SOT SYSTEM</span> <span class="text-blue-500 font-black mx-1">•</span> <span id="header-mode">APP OPERATIVA</span>
                     </div>
                     <h1 id="display-sq" class="font-black text-[16px] sm:text-lg text-white leading-tight drop-shadow-md w-full truncate">
                         NOME COGNOME
@@ -475,6 +475,43 @@
             } catch(e) { console.error("Errore inizializzazione Firebase:", e); } 
         }
 
+        // ==========================================
+        // --- 🎨 SINCRONIZZAZIONE BRANDING DA DB ---
+        // ==========================================
+        window.logoMainApp = 'SotSystemJA.png';
+        window.logoSalaApp = 'SotSystemJA.png';
+
+        if (db) {
+            db.ref('impostazioni/branding').on('value', snap => {
+                if(snap.exists()) {
+                    const b = snap.val();
+                    window.logoMainApp = b.logo_main || window.logoMainApp;
+                    window.logoSalaApp = b.logo_sala || window.logoSalaApp;
+                    
+                    // Aggiorna il nome Ente nell'header
+                    const nameEl = document.getElementById('brand-app-name');
+                    if(nameEl) nameEl.innerText = b.acronimo || 'SOT SYSTEM';
+
+                    // Aggiorna tutte le immagini che stanno usando il default
+                    document.querySelectorAll('img').forEach(img => {
+                        if(img.src.includes('SotSystemJA.png')) {
+                            img.src = window.logoMainApp;
+                        }
+                    });
+                    
+                    // Forza l'aggiornamento del logo in alto a sinistra se siamo già dentro l'app
+                    const headerLogo = document.getElementById('header-logo');
+                    if (headerLogo) {
+                        if (document.getElementById('tab-tattico') && document.getElementById('tab-tattico').classList.contains('active-tab')) {
+                            headerLogo.src = window.logoSalaApp;
+                        } else {
+                            headerLogo.src = window.logoMainApp;
+                        }
+                    }
+                }
+            });
+        }
+
         // Variabili Globali Operative
         window.authMode = localStorage.getItem('auth_mode'); 
         let sqId = null; 
@@ -640,11 +677,11 @@
             if(window.authMode === 'TERMINAL') {
                 document.getElementById('footer-terminal').classList.remove('hidden');
                 document.getElementById('header-mode').innerText = "TERMINALE MEZZO";
-                document.getElementById('header-logo').src = 'logosala.png';
+                document.getElementById('header-logo').src = 'SotSystemRA.png';
             } else {
                 document.getElementById('bottom-nav').classList.remove('hidden');
                 document.getElementById('bottom-nav').classList.add('flex');
-                document.getElementById('header-logo').src = 'logoPCthiene.png';
+                document.getElementById('header-logo').src = 'SotSystemJA.png';
                 switchTab('tab-profilo', document.getElementById('btn-nav-profilo')); 
             }
 
@@ -967,22 +1004,22 @@ let dataFormattata = ev.data ? ev.data.split('-').reverse().join('/') : 'N/D';
             if(tabId === 'tab-tattico') { 
                 btn.classList.add('text-emerald-400'); 
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]');
-                document.getElementById('header-logo').src = 'logosala.png'; 
+                document.getElementById('header-logo').src = 'SotSystemRA.png'; 
             } 
             else if(tabId === 'tab-eventi') {
                 btn.classList.add('text-blue-400'); 
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]');
-                document.getElementById('header-logo').src = 'logoPCthiene.png';
+                document.getElementById('header-logo').src = 'SotSystemJA.png';
             } 
             else if(tabId === 'tab-dpi') {
                 btn.classList.add('text-rose-400'); 
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(225,29,72,0.6)]');
-                document.getElementById('header-logo').src = 'logoPCthiene.png';
+                document.getElementById('header-logo').src = 'SotSystemJA.png';
             }
             else if(tabId === 'tab-profilo') {
                 btn.classList.add('text-purple-400');
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]');
-                document.getElementById('header-logo').src = 'logoPCthiene.png';
+                document.getElementById('header-logo').src = 'SotSystemJA.png';
             }
         };
 
