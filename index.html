@@ -484,6 +484,8 @@
         let map = null;
         let markerMe = null; 
         let markerTarget = null;
+        let gpsTrackerId = null; 
+        let isGpsActive = false;
         
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
@@ -726,7 +728,6 @@
 
             aggiornaStatoBloccoTattico(); 
 
-            // INIZIALIZZA LA MAPPA E CREA IL MOTORE ANTI-SCHERMO GRIGIO (LOOP SALVAVITA)
             if (!map) {
                 map = L.map('map', { zoomControl: false, attributionControl: false }).setView([45.707, 11.465], 13);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
@@ -1478,105 +1479,6 @@
             });
         };
 
-        // ==========================================
-        // 11. 🛡️ SISTEMA DI ATTIVAZIONE LICENZE JOK ART 
-        // ==========================================
-        (function() {
-            const URL_API_LICENZE = "https://www.jokart.it/sotauth/api.php"; 
-
-            async function inizializzaControlloLicenza() {
-                let codiceSalvato = localStorage.getItem('sot_license_key');
-                let emailSalvata = localStorage.getItem('sot_license_email');
-
-                if (!codiceSalvato || !emailSalvata) {
-                    richiediAttivazioneDoppia();
-                } else {
-                    try {
-                        const res = await fetch(`${URL_API_LICENZE}?code=${codiceSalvato}&email=${emailSalvata}`);
-                        const data = await res.json();
-                        
-                        if (!data.valido) {
-                            localStorage.removeItem('sot_license_key');
-                            localStorage.removeItem('sot_license_email');
-                            localStorage.removeItem('sot_license_type');
-                            Swal.fire({
-                                icon: 'error', title: 'ACCESSO NEGATO', text: data.errore, background: '#0f172a', color: '#fff', confirmButtonColor: '#3b82f6', allowOutsideClick: false
-                            }).then(() => richiediAttivazioneDoppia());
-                        } else {
-                            localStorage.setItem('sot_license_type', data.tipo_licenza || 'STANDARD');
-                        }
-                    } catch (e) {
-                        // OFFLINE - Passa in silenzio se l'app è in zona non coperta
-                    }
-                }
-            }
-
-            function richiediAttivazioneDoppia() {
-                if(!document.body) { setTimeout(richiediAttivazioneDoppia, 100); return; }
-
-                let overlay = document.createElement('div');
-                overlay.id = 'license-overlay';
-                overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:#010409; z-index:999999; display:flex; align-items:center; justify-content:center;';
-                document.body.appendChild(overlay);
-
-                Swal.fire({
-                    title: '<div class="text-blue-500 font-black tracking-widest text-2xl mb-1">🔐 AUTENTICAZIONE S.O.T.</div>',
-                    html: `
-                        <p class="text-[11px] text-slate-400 mb-5">Inserisci i dati commerciali forniti da Jok Art per validare il dispositivo.</p>
-                        <div class="text-left space-y-3 px-4">
-                            <div>
-                                <label class="text-[9px] uppercase text-emerald-500 font-bold tracking-widest">Email di Riferimento Cliente</label>
-                                <input id="swal-email" type="email" class="swal-input !w-full !bg-[#020617] !border-slate-700 focus:!border-emerald-500 text-white text-sm" placeholder="es. info@comune.it">
-                            </div>
-                            <div>
-                                <label class="text-[9px] uppercase text-amber-500 font-bold tracking-widest">Chiave di Sicurezza (12 Cifre)</label>
-                                <input id="swal-code" type="text" maxlength="14" class="swal-input !w-full !text-center !text-lg !font-mono !tracking-widest uppercase !bg-[#020617] !border-slate-700 focus:!border-amber-500 text-white" placeholder="XXXX-XXXX-XXXX">
-                            </div>
-                        </div>
-                    `,
-                    background: '#0f172a', color: '#fff', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: true, confirmButtonText: '🚀 VALIDA E SBLOCCA', confirmButtonColor: '#2563eb',
-                    target: document.getElementById('license-overlay'),
-                    didOpen: () => {
-                        document.getElementById('swal-code').addEventListener('input', function(e) {
-                            let target = e.target; let input = target.value.replace(/[^A-Z0-9]/ig, '').toUpperCase();
-                            if(input.length > 8) { target.value = input.substring(0,4) + '-' + input.substring(4,8) + '-' + input.substring(8,12); } 
-                            else if(input.length > 4) { target.value = input.substring(0,4) + '-' + input.substring(4,8); } 
-                            else { target.value = input; }
-                        });
-                    },
-                    preConfirm: async () => {
-                        const email = document.getElementById('swal-email').value.trim().toLowerCase();
-                        const code = document.getElementById('swal-code').value.trim().toUpperCase();
-                        if (!email || !code) return Swal.showValidationMessage("Compila entrambi i campi.");
-                        
-                        Swal.showLoading();
-                        try {
-                            const res = await fetch(`${URL_API_LICENZE}?code=${code}&email=${email}`);
-                            const data = await res.json();
-                            if (data.valido) { return { code: code, email: email, scadenza: data.scadenza, tipo_licenza: data.tipo_licenza }; } 
-                            else { Swal.showValidationMessage(data.errore); return false; }
-                        } catch (e) {
-                            Swal.showValidationMessage("Errore di rete. Impossibile contattare i server Jok Art.");
-                            return false;
-                        }
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        localStorage.setItem('sot_license_key', result.value.code);
-                        localStorage.setItem('sot_license_email', result.value.email);
-                        localStorage.setItem('sot_license_type', result.value.tipo_licenza || 'STANDARD');
-                        
-                        Swal.fire({
-                            icon: 'success', title: 'DISPOSITIVO AUTORIZZATO', text: `Licenza valida fino al: ${result.value.scadenza.split('-').reverse().join('/')}`, background: '#0f172a', color: '#fff', confirmButtonColor: '#10b981'
-                        }).then(() => {
-                            document.getElementById('license-overlay').remove(); 
-                        });
-                    }
-                });
-            }
-
-            setTimeout(inizializzaControlloLicenza, 100);
-        })();
     </script>
 </body>
 </html>
