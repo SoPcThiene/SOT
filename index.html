@@ -25,9 +25,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
         
-        .swal2-container { 
-            z-index: 999999 !important; 
-        }
+        .swal2-container { z-index: 999999 !important; }
         
         body { 
             font-family: 'Inter', sans-serif; 
@@ -37,73 +35,27 @@
                 linear-gradient(rgba(15, 23, 42, 0.4) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(15, 23, 42, 0.4) 1px, transparent 1px);
             background-size: 100% 100%, 30px 30px, 30px 30px;
-            color: #e2e8f0; 
-            height: 100vh; 
-            height: 100dvh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            margin: 0; 
+            color: #e2e8f0; height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; margin: 0; 
         }
 
-        /* SCHERMATE DI INGRESSO E LOADING */
-        #login-personal-screen, 
-        #landing-screen,
-        #login-screen-pin,
-        #team-select-screen,
-        #loading-screen { 
-            position: fixed; 
-            inset: 0; 
-            z-index: 50000; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 16px; 
-            background: rgba(2, 6, 23, 0.95); 
-            backdrop-filter: blur(20px); 
-            overflow: hidden; 
+        #login-personal-screen, #landing-screen, #login-screen-pin, #team-select-screen, #loading-screen { 
+            position: fixed; inset: 0; z-index: 50000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(20px); overflow: hidden; 
         }
-        
         #loading-screen { z-index: 99999; }
-
         .screen-enter { animation: fadeInScale 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeInScale { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        
         .logo-container { animation: soft-pulse 3s ease-in-out infinite; }
         @keyframes soft-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
 
-        .chasing-border-blue { 
-            position: absolute; inset: 0; border-radius: 50%; 
-            background: conic-gradient(from 0deg, transparent 70%, #3b82f6 100%); 
-            animation: spin-chase 2s linear infinite; 
-        }
+        .chasing-border-blue { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, transparent 70%, #3b82f6 100%); animation: spin-chase 2s linear infinite; }
         @keyframes spin-chase { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .inner-circle { position: absolute; inset: 4px; background-color: #0f172a; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: inset 0px 0px 20px rgba(0,0,0,0.9); overflow: hidden; }
 
-        .inner-circle { 
-            position: absolute; inset: 4px; background-color: #0f172a; border-radius: 50%; display: flex; 
-            align-items: center; justify-content: center; z-index: 10; box-shadow: inset 0px 0px 20px rgba(0,0,0,0.9); overflow: hidden; 
-        }
+        .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(51, 65, 85, 0.5); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05); border-radius: 16px; }
 
-        /* GRAFICA TATTICA PANNELLI E BOTTONI */
-        .glass-panel { 
-            background: rgba(15, 23, 42, 0.85); 
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(51, 65, 85, 0.5); 
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05); 
-            border-radius: 16px; 
-        }
-
-        .btn-status { 
-            background: linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 1) 100%); 
-            border: 1px solid rgba(71, 85, 105, 0.4); 
-            border-radius: 12px; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            transition: 0.15s; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.4); 
-        }
-        
+        .btn-status { background: linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 1) 100%); border: 1px solid rgba(71, 85, 105, 0.4); border-radius: 12px; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.15s; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.4); }
         .btn-status:active { transform: scale(0.93); filter: brightness(1.2); }
         .btn-status::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; border-radius: 0 0 12px 12px; }
-        
         .btn-status .icon-box { display: flex; align-items: center; justify-content: center; margin-bottom: 2px; font-size: 16px; drop-shadow: 0 2px 2px rgba(0,0,0,0.5); }
         .btn-status span.txt { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -113,12 +65,10 @@
         .btn-posto::after { background-color: #ef4444; } .btn-posto { color: #fca5a5; }
         .btn-rientro::after { background-color: #0ea5e9; } .btn-rientro { color: #7dd3fc; }
 
-        /* TABS E MAPPA */
         .tab-content { display: none; }
         .active-tab { display: flex !important; animation: fadeInScale 0.2s ease-out; }
         #map { height: 100%; width: 100%; background: #e5e7eb; z-index: 1; border-radius: 12px; }
 
-        /* SWITCH TOGGLES (GPS) */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .3s; border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); border: 1px solid #1e293b;}
@@ -126,9 +76,7 @@
         input:checked + .slider { background-color: #10b981; border-color: #047857; }
         input:checked + .slider:before { transform: translateX(20px); background-color: #fff; }
 
-        /* SCROLLBAR INVISIBILE E FLUIDA */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-        
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
@@ -141,7 +89,7 @@
         <div class="text-blue-400 font-black uppercase tracking-[0.2em] text-xs animate-pulse">Sincronizzazione DB...</div>
     </div>
 
-<div id="landing-screen" style="display: none;">
+    <div id="landing-screen" style="display: none;">
         <div class="flex items-center gap-4 mb-6 z-20">
             <div class="h-28 w-28 bg-slate-900 rounded-full p-2 border-2 border-blue-500/50 shadow-[0_0_25px_rgba(59,130,246,0.5)] flex items-center justify-center logo-container">
                 <img src="SotSystemJA.png" class="w-full h-full object-contain" alt="PC Thiene">
@@ -189,17 +137,6 @@
             </button>
             <button onclick="annullaLogin()" class="mt-4 text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors">🔙 TORNA ALLA HOME</button>
         </div>
-
-        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-0 animate-[fadeInScale_1s_ease-out_0.5s_forwards] z-10 pointer-events-auto">
-            <div class="text-[13px] font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center cursor-pointer group">
-                <span class="text-slate-500 text-[9px] mr-2 transition-colors group-hover:text-slate-300">Engineered by</span> 
-                <a href="https://www.jokart.it" target="_blank" class="relative transition-all duration-500 transform group-hover:scale-125 flex items-center">
-                    <span class="text-white relative z-10 transition-colors duration-300 group-hover:text-red-100 drop-shadow-md">JOK</span>
-                    <span class="text-red-600 relative z-10 transition-colors duration-300 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">ART</span>
-                    <div class="absolute inset-0 bg-red-600/60 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 scale-[2.0]"></div>
-                </a>
-            </div>
-        </div>
     </div>
 
     <div id="team-select-screen" style="display: none;">
@@ -226,17 +163,6 @@
             </button>
             <button onclick="annullaLogin()" class="mt-4 text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors">🔙 TORNA ALLA HOME</button>
         </div>
-
-        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-0 animate-[fadeInScale_1s_ease-out_0.5s_forwards] z-10 pointer-events-auto">
-            <div class="text-[13px] font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center cursor-pointer group">
-                <span class="text-slate-500 text-[9px] mr-2 transition-colors group-hover:text-slate-300">Engineered by</span> 
-                <a href="https://www.jokart.it" target="_blank" class="relative transition-all duration-500 transform group-hover:scale-125 flex items-center">
-                    <span class="text-white relative z-10 transition-colors duration-300 group-hover:text-red-100 drop-shadow-md">JOK</span>
-                    <span class="text-red-600 relative z-10 transition-colors duration-300 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">ART</span>
-                    <div class="absolute inset-0 bg-red-600/60 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 scale-[2.0]"></div>
-                </a>
-            </div>
-        </div>
     </div>
 
     <div id="login-screen-pin" style="display: none;">
@@ -256,17 +182,6 @@
             <button onclick="annullaLogin()" class="mt-3 text-[9px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-colors">
                 🔄 CAMBIA UNITÀ
             </button>
-        </div>
-
-        <div class="absolute bottom-8 w-full flex flex-col items-center justify-center opacity-0 animate-[fadeInScale_1s_ease-out_0.5s_forwards] z-10 pointer-events-auto">
-            <div class="text-[13px] font-mono font-bold tracking-[0.2em] uppercase flex items-center justify-center cursor-pointer group">
-                <span class="text-slate-500 text-[9px] mr-2 transition-colors group-hover:text-slate-300">Engineered by</span> 
-                <a href="https://www.jokart.it" target="_blank" class="relative transition-all duration-500 transform group-hover:scale-125 flex items-center">
-                    <span class="text-white relative z-10 transition-colors duration-300 group-hover:text-red-100 drop-shadow-md">JOK</span>
-                    <span class="text-red-600 relative z-10 transition-colors duration-300 group-hover:text-red-400 drop-shadow-[0_0_8px_rgba(220,38,38,0.8)]">ART</span>
-                    <div class="absolute inset-0 bg-red-600/60 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 scale-[2.0]"></div>
-                </a>
-            </div>
         </div>
     </div>
 
@@ -299,7 +214,6 @@
         <main id="main-content" class="flex-1 flex flex-col w-full relative z-10 overflow-hidden">
             
             <div id="tab-profilo" class="tab-content flex-1 flex-col w-full px-3 py-2 overflow-y-auto relative pb-20">
-                
                 <div class="flex items-center justify-between mb-2 px-1 mt-1">
                     <div class="flex items-center gap-2">
                         <span class="text-2xl drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">🪪</span>
@@ -354,27 +268,19 @@
                         <button onclick="window.apriPannelloSpecialita()" class="w-full bg-indigo-700 hover:bg-indigo-600 border border-indigo-500 text-white text-[10px] font-bold uppercase py-3 rounded-xl active:scale-95 transition-colors shadow flex items-center justify-center gap-2">
                             <span class="text-sm">🎖️</span> LE MIE ABILITAZIONI
                         </button>
-
                         <button disabled class="w-full bg-slate-800/30 text-slate-500 font-bold py-3 px-4 rounded-xl border border-slate-700/50 cursor-not-allowed flex items-center justify-center gap-2 transition-all">
                             <span class="text-sm opacity-50">🎒</span>
                             <span class="text-[9px]">INVENTARIO DPI (PRESTO)</span>
                         </button>
-
                         <button onclick="window.cambiaPasswordOperatore()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-600 transition-all shadow-lg flex items-center justify-center gap-2 active:scale-95">
                             <span class="text-sm text-blue-400">🔑</span>
                             <span class="text-[9px]">GESTIONE SICUREZZA</span>
                         </button>
                     </div>
                 </div>
-
-                <div class="mt-6 mb-6 text-[13px] font-mono font-bold tracking-[0.2em] uppercase opacity-90 flex items-center justify-center">
-                    <span class="text-slate-400 text-[10px] mr-1">App Engineered by</span> 
-                    <a href="https://www.jokart.it" target="_blank" class="relative group hover:scale-125 transition-all duration-300 inline-block cursor-pointer mx-1">
-                        <span class="text-white relative z-10 transition-colors group-hover:text-red-100">JOK</span><span class="text-red-500 relative z-10 transition-colors group-hover:text-red-400">ART</span>
-                        <div class="absolute inset-0 bg-red-600/40 blur-md rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 scale-150"></div>
-                    </a>
-                </div>
-            </div> <div id="tab-tattico" class="tab-content flex-1 flex-col w-full px-3 py-3 gap-2 overflow-y-auto pb-28 relative">
+            </div> 
+            
+            <div id="tab-tattico" class="tab-content flex-1 flex-col w-full px-3 py-3 gap-2 overflow-y-auto pb-28 relative">
                 
                 <div class="shrink-0 flex justify-between items-center bg-slate-800/80 border border-slate-600 p-2.5 rounded-xl mb-1 shadow-lg">
                     <div class="flex flex-col pl-1">
@@ -490,9 +396,7 @@
                     <div class="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-3 border-b border-slate-700/50 pb-2 shrink-0">
                         MATERIALE IN CARICO
                     </div>
-                    
-                    <div id="lista-dotazioni-magazzino" class="flex-1 overflow-y-auto flex flex-col gap-2.5 custom-scrollbar">
-                    </div>
+                    <div id="lista-dotazioni-magazzino" class="flex-1 overflow-y-auto flex flex-col gap-2.5 custom-scrollbar"></div>
                 </div>
             </div>
 
@@ -548,18 +452,15 @@
                     window.logoMainApp = b.logo_main || window.logoMainApp;
                     window.logoSalaApp = b.logo_sala || window.logoSalaApp;
                     
-                    // Aggiorna il nome Ente nell'header
                     const nameEl = document.getElementById('brand-app-name');
                     if(nameEl) nameEl.innerText = b.acronimo || 'SOT SYSTEM';
 
-                    // Aggiorna tutte le immagini che stanno usando il default
                     document.querySelectorAll('img').forEach(img => {
                         if(img.src.includes('SotSystemJA.png')) {
                             img.src = window.logoMainApp;
                         }
                     });
                     
-                    // Forza l'aggiornamento del logo in alto a sinistra se siamo già dentro l'app
                     const headerLogo = document.getElementById('header-logo');
                     if (headerLogo) {
                         if (document.getElementById('tab-tattico') && document.getElementById('tab-tattico').classList.contains('active-tab')) {
@@ -583,21 +484,50 @@
         let map = null;
         let markerMe = null; 
         let markerTarget = null;
-        let gpsTrackerId = null; 
-        let isGpsActive = false;
         
         window.gpsAutoEnabled = localStorage.getItem('app_gps_auto') !== 'false';
         window.liveTrackingEnabled = localStorage.getItem('app_live_track') === 'true';
         window.liveTrackingInterval = parseInt(localStorage.getItem('app_live_interval') || '30000'); 
-        let liveTrackingTimer = null;
+        window.liveTrackingTimer = null;
 
         let idSalaAttivo = null; 
         let viaAttiva = ""; 
-        let ultimaPos = { lat: null, lng: null };
+        window.ultimaPos = { lat: null, lng: null };
         let mieSegnalazioni = {};
+        
+        // La variabile del SUPER LUCCHETTO GLOBALE 🔐
+        window.superLucchettoAperto = false; 
 
         // ==========================================
-        // 1. GESTIONE AUTENTICAZIONE E AVVIO
+        // 1. FUNZIONE MOTORE: AGGANCIO INTERFACCIA SQUADRA
+        // ==========================================
+        function applicaInterfacciaSquadra(nomeSquadra) {
+            window.myTeamId = nomeSquadra;
+            
+            // Se siamo in modalità Terminale Mezzo, la squadra non ha un utente fisico loggato.
+            // Aggiorniamo le scritte per evitare che appaia "NOME COGNOME".
+            if (window.authMode === 'TERMINAL') {
+                window.currentUserNome = "MEZZO " + nomeSquadra;
+                const dSq = document.getElementById('display-sq');
+                if(dSq) dSq.innerText = "UNITÀ OPERATIVA: " + nomeSquadra;
+            }
+            
+            // Aggiorna sempre il nome squadra nel tab tattico
+            const tEl = document.getElementById('tattico-team-name');
+            if(tEl) { 
+                tEl.innerText = "UNITÀ: " + nomeSquadra; 
+                tEl.className = "text-[11px] text-blue-400 font-black uppercase drop-shadow"; 
+            }
+            
+            // MOTORE DI SBLOCCO: Creiamo forzatamente la squadra su Firebase se non esiste.
+            // Questo fa scattare su "true" il superLucchettoAperto e riabilita tutto.
+            db.ref(`anagrafica_squadre/${nomeSquadra}`).update({
+                ultimo_contatto: Date.now()
+            });
+        }
+
+        // ==========================================
+        // 2. GESTIONE AUTENTICAZIONE E AVVIO
         // ==========================================
         window.onload = () => {
             if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(() => {}, () => {}); }
@@ -621,7 +551,7 @@
             if (savedSqId) { 
                 sqId = savedSqId; 
                 if(localStorage.getItem('pc_app_auth') === 'true') { 
-                    window.myTeamId = sqId; 
+                    applicaInterfacciaSquadra(sqId); // <-- Usa il nuovo motore
                     avviaAppTattica(); 
                     switchTab('tab-tattico', document.getElementById('btn-nav-tattico'));
                 } else { 
@@ -645,9 +575,11 @@
                 if (pin === pinCorretto) {
                     localStorage.setItem('pc_app_auth', 'true'); 
                     document.getElementById('login-screen-pin').style.display = 'none';
-                    window.myTeamId = sqId; 
+                    applicaInterfacciaSquadra(sqId); // <-- Usa il nuovo motore
                     avviaAppTattica();
                     switchTab('tab-tattico', document.getElementById('btn-nav-tattico'));
+                    
+                    window.inviaNuovo(`🚐 TERMINALE MEZZO ATTIVATO`, { stato: 'ATTESA' }); // Saluto Iniziale
                 } else { Swal.fire('Errore', 'PIN Errato', 'error'); document.getElementById('pin-input').value = ''; }
             } catch(e) { Swal.fire('Errore', 'Connessione al Server Assente', 'error'); }
         };
@@ -721,10 +653,7 @@
 
         window.cambiaPasswordOperatore = () => {
             const user = firebase.auth().currentUser;
-            if (!user) {
-                Swal.fire({ icon: 'error', title: 'Errore', text: 'Devi essere loggato per cambiare password.', background: '#0f172a', color: '#fff' });
-                return;
-            }
+            if (!user) { Swal.fire({ icon: 'error', title: 'Errore', text: 'Devi essere loggato per cambiare password.', background: '#0f172a', color: '#fff' }); return; }
 
             Swal.fire({
                 title: '<div class="text-blue-400 font-black tracking-widest uppercase text-lg border-b border-blue-900/50 pb-2">🔑 SICUREZZA ACCOUNT</div>',
@@ -734,12 +663,10 @@
                             <div class="text-[9px] text-slate-400 font-bold tracking-widest uppercase mb-1 ml-1">Email Operatore</div>
                             <div class="bg-[#010409] border border-slate-700/50 p-2.5 rounded-lg text-slate-300 font-mono text-xs text-center opacity-80 shadow-inner">${user.email}</div>
                         </div>
-                        
                         <div>
                             <div class="text-[9px] text-amber-500 font-bold tracking-widest uppercase mb-1 ml-1">Verifica Identità</div>
                             <input type="password" id="pass-attuale" class="swal2-input !bg-[#020617] !border-slate-700 !text-white !mx-0 !w-full !h-11 !text-sm !font-mono !text-center focus:!border-amber-500 transition-colors placeholder:text-slate-600" placeholder="Password Attuale">
                         </div>
-
                         <div class="pt-3 border-t border-slate-800">
                             <div class="text-[9px] text-emerald-500 font-bold tracking-widest uppercase mb-1 ml-1">Nuove Credenziali</div>
                             <input type="password" id="pass-nuova" class="swal2-input !bg-[#020617] !border-slate-700 !text-white !mx-0 !w-full !h-11 !text-sm !font-mono !text-center focus:!border-emerald-500 transition-colors placeholder:text-slate-600 mb-3" placeholder="Nuova Password (min 6)">
@@ -747,41 +674,28 @@
                         </div>
                     </div>
                 `,
-                background: '#0f172a', 
-                color: '#fff',
-                showCancelButton: true,
-                confirmButtonText: 'AGGIORNA SICUREZZA',
-                cancelButtonText: 'ANNULLA',
-                confirmButtonColor: '#2563eb',
-                customClass: { confirmButton: 'font-bold tracking-widest text-xs py-3 px-5' },
+                background: '#0f172a', color: '#fff', showCancelButton: true, confirmButtonText: 'AGGIORNA SICUREZZA', cancelButtonText: 'ANNULLA', confirmButtonColor: '#2563eb', customClass: { confirmButton: 'font-bold tracking-widest text-xs py-3 px-5' },
                 preConfirm: () => {
                     const attuale = document.getElementById('pass-attuale').value.trim();
                     const nuova = document.getElementById('pass-nuova').value.trim();
                     const conferma = document.getElementById('pass-conferma').value.trim();
-
                     if (!attuale) { Swal.showValidationMessage('Inserisci la tua password attuale!'); return false; }
                     if (!nuova || nuova.length < 6) { Swal.showValidationMessage('La nuova password deve avere almeno 6 caratteri!'); return false; }
                     if (nuova !== conferma) { Swal.showValidationMessage('Le nuove password non coincidono!'); return false; }
-
                     return { attuale, nuova };
                 }
             }).then((res) => {
                 if (res.isConfirmed) {
                     Swal.fire({ title: '⏳ Autenticazione...', text: 'Verifica credenziali in corso', showConfirmButton: false, background: '#0f172a', color: '#fff', didOpen: () => Swal.showLoading() });
-                    
                     const credential = firebase.auth.EmailAuthProvider.credential(user.email, res.value.attuale);
-                    
                     user.reauthenticateWithCredential(credential).then(() => {
                         Swal.fire({ title: '⏳ Sincronizzazione Cloud...', showConfirmButton: false, background: '#0f172a', color: '#fff', didOpen: () => Swal.showLoading() });
                         return user.updatePassword(res.value.nuova);
                     }).then(() => {
                         Swal.fire({ icon: 'success', title: 'SISTEMA AGGIORNATO', text: 'La tua password è stata cambiata in modo sicuro.', background: '#0f172a', color: '#fff' });
                     }).catch((error) => {
-                        console.error(error);
                         let msgErrore = "Errore durante l'aggiornamento.";
-                        if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                            msgErrore = 'La Password Attuale inserita è ERRATA.';
-                        }
+                        if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') msgErrore = 'La Password Attuale inserita è ERRATA.';
                         Swal.fire({ icon: 'error', title: 'ACCESSO NEGATO', text: msgErrore, background: '#0f172a', color: '#fff' });
                     });
                 }
@@ -794,7 +708,7 @@
         };
 
         // ==========================================
-        // 2. COSTRUZIONE INTERFACCIA E MAPPA
+        // 3. COSTRUZIONE INTERFACCIA E MAPPA
         // ==========================================
         function avviaAppTattica() {
             document.getElementById('app-wrapper').style.display = 'flex';
@@ -828,7 +742,7 @@
         }
 
         // ==========================================
-        // 3. CARICAMENTO EVENTI E DOTAZIONI
+        // 4. CARICAMENTO EVENTI E DOTAZIONI
         // ==========================================
         function caricaEventiEDotazioni() {
             try {
@@ -851,7 +765,6 @@
                             let btnNoClass = miaRisposta === 'ASSENTE' ? 'bg-red-600 text-white border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-red-900/40 text-red-400 border-red-500/50 hover:bg-red-600 hover:text-white';
 
                             let dataFormattata = ev.data ? ev.data.split('-').reverse().join('/') : 'N/D';
-                            // ALLINEATO CON IL BACK OFFICE: ora legge ev.note
                             let bloccoDescrizione = ev.note ? `<div class="text-[11px] text-slate-300 italic bg-slate-900/80 p-2.5 rounded-lg mt-2 mb-2 border border-slate-700/50 leading-snug">📝 ${ev.note}</div>` : '';
                             let dataSafe = ev.data ? ev.data.replace(/-/g, '') : '';
                             let gcalLink = dataSafe ? `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(ev.titolo)}&dates=${dataSafe}T080000Z/${dataSafe}T180000Z&details=${encodeURIComponent(ev.note || '')}&location=${encodeURIComponent(ev.luogo || '')}` : '#';
@@ -886,7 +799,6 @@
                 try {
                     db.ref(`impostazioni/rubrica_volontari/${window.myVolId}/dpi`).on('value', snap => {
                         const contMag = document.getElementById('lista-dotazioni-magazzino');
-                        const contProf = document.getElementById('lista-dotazioni');
                         
                         if(snap.exists() && snap.val().length > 0) {
                             let html = '';
@@ -896,35 +808,29 @@
                                 let dataScadenza = dot.scadenza ? dot.scadenza.split('-').reverse().join('/') : 'N/D';
                                 let coloreUsura = dot.stato === 'USURATO' ? 'text-amber-500' : 'text-slate-400';
                                 
-                                // --- NOVITÀ: CREAZIONE BADGE TAGLIA SE ESISTE ---
-// --- NOVITÀ: CREAZIONE BADGE TAGLIA (RICERCA UNIVERSALE) ---
-let valoreTaglia = dot.taglia || dot.Taglia || dot.TAGLIA || "";
-let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text-purple-400 px-2 py-1 rounded-lg font-black border border-purple-800/50 shadow text-center w-full mt-1">Tg: ${valoreTaglia}</span>` : '';                                
-                                // --- CONTROLLO STATO TICKET SEGNALAZIONE ---
+                                let valoreTaglia = dot.taglia || dot.Taglia || dot.TAGLIA || "";
+                                let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text-purple-400 px-2 py-1 rounded-lg font-black border border-purple-800/50 shadow text-center w-full mt-1">Tg: ${valoreTaglia}</span>` : '';                                
+                                
                                 let ticketStato = (typeof mieSegnalazioni !== 'undefined') ? mieSegnalazioni[dot.nome] : null;
                                 let btnHtml = '';
                                 
                                 if (ticketStato === 'ATTESA') {
-                                    // Segnalazione in corso
                                     btnHtml = `
                                     <div class="w-full bg-amber-900/40 border border-amber-500/50 text-amber-400 text-[8px] font-black uppercase tracking-widest py-2 rounded-lg shadow flex items-center justify-center gap-1.5 mt-1 animate-pulse">
                                         <span class="text-xs">⏳</span> IN ATTESA DI RISCONTRO...
                                     </div>`;
                                 } else if (ticketStato === 'OK') {
-                                    // Segnalazione risolta
                                     btnHtml = `
                                     <button onclick="window.segnalaDPISingolo('${dot.nome}')" class="w-full bg-emerald-900/30 hover:bg-emerald-800 border border-emerald-500/50 text-emerald-400 hover:text-white text-[8px] font-black uppercase tracking-widest py-2 rounded-lg active:scale-95 transition-all shadow flex items-center justify-center gap-1.5 mt-1">
                                         <span class="text-xs">✅</span> TICKET CHIUSO (SEGNALA ANCORA)
                                     </button>`;
                                 } else {
-                                    // Nessuna segnalazione
                                     btnHtml = `
                                     <button onclick="window.segnalaDPISingolo('${dot.nome}')" class="w-full bg-rose-900/30 hover:bg-rose-800 border border-rose-500/50 text-rose-400 hover:text-white text-[8px] font-black uppercase tracking-widest py-2 rounded-lg active:scale-95 transition-all shadow flex items-center justify-center gap-1.5 mt-1">
                                         <span class="text-xs">⚠️</span> SEGNALA PROBLEMA PRODOTTO
                                     </button>`;
                                 }
                                 
-                                // --- AGGIORNAMENTO GRAFICA CARD PRODOTTO ---
                                 html += `
                                 <div class="bg-slate-900 border border-slate-700 p-3 rounded-xl mb-2 flex flex-col gap-2 shadow-inner shrink-0">
                                     <div class="flex justify-between items-start w-full">
@@ -940,20 +846,18 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                                     ${btnHtml}
                                 </div>`;
                             });
-                            
                             if(contMag) contMag.innerHTML = html;
-                            if(contProf) contProf.innerHTML = html;
                         } else {
                             let emptyHtml = '<div class="text-center p-4 border border-dashed border-slate-700 rounded-xl"><p class="text-slate-500 text-[9px] uppercase tracking-widest font-bold">Nessuna dotazione D.P.I. in carico</p></div>';
                             if(contMag) contMag.innerHTML = emptyHtml;
-                            if(contProf) contProf.innerHTML = emptyHtml;
                         }
                     });
                 } catch(e) { console.error("Errore DPI:", e); }
             }
         }
+        
         // ==========================================
-        // 4. FUNZIONI TATTICHE E LUCCHETTO
+        // 5. FUNZIONI TATTICHE E LUCCHETTO GLOBALE
         // ==========================================
         window.uniscitiSquadra = () => {
             Swal.fire({
@@ -977,12 +881,11 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                     const pinCorretto = snap.exists() ? String(snap.val()) : "1234";
 
                     if(res.value.pass === pinCorretto) {
-                        window.myTeamId = res.value.id;
-                        let tEl = document.getElementById('tattico-team-name');
-                        if(tEl) { tEl.innerText = "UNITÀ: " + window.myTeamId; tEl.className = "text-[11px] text-blue-400 font-black uppercase drop-shadow"; }
+                        applicaInterfacciaSquadra(res.value.id); // <-- Usa il nuovo motore
+                        
                         if(document.getElementById('btn-top-squadra')) document.getElementById('btn-top-squadra').style.display = 'flex'; 
                         
-                        window.inviaNuovo(`🙋‍♂️ OPERATORE A BORDO DEL MEZZO`, { stato: 'ATTESA' });
+                        window.inviaNuovo(`🙋‍♂️ OPERATORE COLLEGATO ALLA SQUADRA`, { stato: 'ATTESA' });
                         Swal.fire({icon:'success', title:'Collegato a ' + window.myTeamId, background:'#0f172a', color:'#fff', timer: 2000, showConfirmButton: false});
                         aggiornaStatoBloccoTattico(); 
                     } else { Swal.fire({icon:'error', title:'PIN Errato', text:'Il PIN Operativo non è corretto.', background:'#0f172a', color:'#fff'}); }
@@ -993,6 +896,9 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
         function aggiornaStatoBloccoTattico() {
             const overlay = document.getElementById('overlay-blocco');
             const bloccoSala = document.getElementById('overlay-blocco-sala');
+            
+            // Di default il lucchetto è CHIUSO
+            window.superLucchettoAperto = false;
             
             if(window.authMode === 'TERMINAL' || window.myTeamId) {
                 if(overlay) overlay.style.display = 'none'; 
@@ -1008,36 +914,39 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                                 sEl.className = `px-2 py-1 rounded text-[9px] font-black uppercase shadow-md border flex items-center ${sts==='SUL POSTO'?'bg-red-900/80 text-red-400 border-red-500/50':'bg-emerald-900/80 text-emerald-400 border-emerald-500/50'}`;
                             }
                         }
-                        if(dataSq.attiva === false) { if(bloccoSala) bloccoSala.style.display = 'flex'; } else { if(bloccoSala) bloccoSala.style.display = 'none'; }
+                        
+                        // IL CUORE DEL SUPER LUCCHETTO GLOBALE
+                        if(dataSq.attiva === false) { 
+                            if(bloccoSala) bloccoSala.style.display = 'flex'; 
+                            window.superLucchettoAperto = false; // SALA HA BLOCCATO L'UNITÀ
+                        } else { 
+                            if(bloccoSala) bloccoSala.style.display = 'none'; 
+                            window.superLucchettoAperto = true;  // SQUADRA ATTIVA, LUCE VERDE A GPS E CHAT
+                        }
+                    } else {
+                        // Se la squadra sparisce improvvisamente, chiudiamo il lucchetto per sicurezza
+                        // Se invece si è appena loggato, la funzione applicaInterfacciaSquadra l'ha già creata.
+                        window.superLucchettoAperto = false; 
                     }
                 });
 
-                // Target, Chat Sala Radio e Segnalazioni
                 db.ref('brogliaccio').limitToLast(50).on('value', (snap) => {
                     if(!snap.exists()) return;
                     const logs = Object.entries(snap.val()).map(([id, val]) => ({ id, ...val })).reverse();
                     
-                    // --- NOVITÀ: MAPPA LE SEGNALAZIONI DEL VOLONTARIO ---
                     mieSegnalazioni = {};
                     logs.forEach(l => {
-                        // Se è una mia segnalazione DPI
                         if (l.utente === window.currentUserNome && l.m1 && l.m1.includes('📦 SEGNALAZIONE D.P.I.')) {
-                            // Estrai il nome del prodotto dalle parentesi quadre
                             let match = l.m1.match(/\[(.*?)\]/);
                             if (match && match[1]) {
                                 let nomeProdotto = match[1];
-                                // Se non è già stata censita una più recente, memorizzala
-                                if(!mieSegnalazioni[nomeProdotto]) {
-                                    mieSegnalazioni[nomeProdotto] = l.stato; // 'ATTESA' o 'OK'
-                                }
+                                if(!mieSegnalazioni[nomeProdotto]) { mieSegnalazioni[nomeProdotto] = l.stato; }
                             }
                         }
                     });
-                    
-                    // Ridisegna i DPI per aggiornare i bottoni
                     caricaEventiEDotazioni();
 
-                    if(!window.myTeamId) return; // Da qui in giù serve essere in squadra   
+                    if(!window.myTeamId) return; 
                     const target = logs.find(l => l.dir === 'SA' && l.squadra === window.myTeamId && l.m1 && l.m1.includes('📍') && l.id !== window.targetCompletato);
                     const banner = document.getElementById('target-banner');
                     const btnCentraTarget = document.getElementById('btn-centra-target');
@@ -1112,6 +1021,7 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                 });
 
             } else {
+                window.superLucchettoAperto = false; // NON SEI LOGGATO
                 if(overlay) overlay.style.display = 'flex'; 
                 if(bloccoSala) bloccoSala.style.display = 'none';
                 if(document.getElementById('btn-top-squadra')) document.getElementById('btn-top-squadra').style.display = 'none';
@@ -1121,7 +1031,7 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
         }
 
         // ==========================================
-        // 5. GESTIONE TABS
+        // 6. GESTIONE TABS
         // ==========================================
         window.switchTab = (tabId, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
@@ -1138,30 +1048,32 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
             if(tabId === 'tab-tattico') { 
                 btn.classList.add('text-emerald-400'); 
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]');
-                document.getElementById('header-logo').src = 'SotSystemRA.png'; 
+                document.getElementById('header-logo').src = window.logoSalaApp; 
             } 
             else if(tabId === 'tab-eventi') {
                 btn.classList.add('text-blue-400'); 
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]');
-                document.getElementById('header-logo').src = 'SotSystemJA.png';
+                document.getElementById('header-logo').src = window.logoMainApp;
             } 
             else if(tabId === 'tab-dpi') {
                 btn.classList.add('text-rose-400'); 
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(225,29,72,0.6)]');
-                document.getElementById('header-logo').src = 'SotSystemJA.png';
+                document.getElementById('header-logo').src = window.logoMainApp;
             }
             else if(tabId === 'tab-profilo') {
                 btn.classList.add('text-purple-400');
                 btn.querySelector('.icon-nav').classList.add('drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]');
-                document.getElementById('header-logo').src = 'SotSystemJA.png';
+                document.getElementById('header-logo').src = window.logoMainApp;
             }
         };
 
         // ==========================================
-        // 6. INVIO DATI CENTRALE (GPS INCLUSO) E AZIONI TATTICHE
+        // 7. INVIO DATI CENTRALE (GPS INCLUSO) E AZIONI TATTICHE
         // ==========================================
         window.inviaNuovo = async (testo, extra = {}) => {
-            if(!window.myTeamId) return;
+            // IL SUPER LUCCHETTO APPLICATO AI MESSAGGI E AGLI STATI
+            if(!window.myTeamId || String(window.myTeamId).trim() === "" || !window.superLucchettoAperto) return;
+            
             const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }); 
             let pos = { lat: '', lng: '' }; 
             
@@ -1321,7 +1233,7 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
         };
 
         // ==========================================
-        // 7. FUNZIONI EXTRA (Segnalazione DPI)
+        // 8. FUNZIONI EXTRA (Segnalazione DPI)
         // ==========================================
         window.segnalaDPISingolo = (nomeArticolo) => {
             Swal.fire({
@@ -1333,11 +1245,10 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                 inputValidator: (value) => { if (!value) return 'Devi descrivere il problema!' }
             }).then((res) => {
                 if(res.isConfirmed) {
-                    // Crea il pacchetto dati forzando l'invio diretto al Brogliaccio
                     db.ref('brogliaccio').push({
                         ora: new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}), 
                         data: new Date().toLocaleDateString('it-IT'),
-                        squadra: window.myTeamId || window.currentUserNome, // Se non è su un mezzo, usa il suo nome
+                        squadra: window.myTeamId || window.currentUserNome, 
                         utente: window.currentUserNome,
                         m1: `📦 SEGNALAZIONE D.P.I. [${nomeArticolo}]: ${res.value.toUpperCase()}`, 
                         dir: 'SQ', 
@@ -1357,7 +1268,7 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
         };
 
         // ==========================================
-        // 8. GESTIONE E CONTROLLO GPS 
+        // 9. GESTIONE E CONTROLLO GPS 
         // ==========================================
         function updateGpsBadge() { 
             const badge = document.getElementById('gps-badge');
@@ -1409,12 +1320,12 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
         window.toggleLiveTrack = (val) => { window.liveTrackingEnabled = val; localStorage.setItem('app_live_track', val); if (val) { window.startLiveTracking(); Swal.fire({toast:true, position:'top', title: 'Live Tracking Attivato', icon:'success', timer:1500, showConfirmButton:false, background:'#0f172a', color:'#fff'}); } else { if (window.liveTrackingTimer) clearInterval(window.liveTrackingTimer); } updateGpsBadge(); };
         window.changeLiveInterval = (val) => { window.liveTrackingInterval = parseInt(val); localStorage.setItem('app_live_interval', val); if (window.liveTrackingEnabled) { window.startLiveTracking(); } };
 
-        // 🛡️ CORREZIONE 1: INVIO SILENZIOSO BLINDATO ANTI-FANTASMI
+        // 🛡️ CORREZIONE: INVIO SILENZIOSO BLINDATO DAL SUPER LUCCHETTO GLOBALE
         window.sendSilentGPS = () => { 
-            if (navigator.geolocation && window.liveTrackingEnabled && window.myTeamId && window.myTeamId.trim() !== "") { 
+            if (navigator.geolocation && window.liveTrackingEnabled && window.myTeamId && String(window.myTeamId).trim() !== "" && window.superLucchettoAperto) { 
                 navigator.geolocation.getCurrentPosition((pos) => { 
                     const { latitude, longitude } = pos.coords;
-                    db.ref(`anagrafica_squadre/${window.myTeamId.trim()}`).update({ lat: latitude.toFixed(6), lng: longitude.toFixed(6), ultimo_contatto: Date.now() }); 
+                    db.ref(`anagrafica_squadre/${String(window.myTeamId).trim()}`).update({ lat: latitude.toFixed(6), lng: longitude.toFixed(6), ultimo_contatto: Date.now() }); 
                     if(typeof window.showGpsPing === 'function') window.showGpsPing();
                 }, null, { enableHighAccuracy: true }); 
             } 
@@ -1427,10 +1338,8 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                 window.liveTrackingTimer = setInterval(window.sendSilentGPS, window.liveTrackingInterval); 
             } 
         };
-
-        window.centraMappaSuTarget = () => { if(window.markerTarget && window.map) window.map.setView(window.markerTarget.getLatLng(), 17); };
         
-        // 🛡️ CORREZIONE 2: CENTRATURA MAPPA BLINDATA ANTI-FANTASMI
+        // 🛡️ CORREZIONE: CENTRATURA MAPPA BLINDATA DAL SUPER LUCCHETTO GLOBALE
         window.centraMappaSuGPS = () => { 
             if (!navigator.geolocation) { Swal.fire({toast:true, position:'top', title: 'GPS non supportato', timer:1500, showConfirmButton:false, background:'#0f172a', color:'#fff'}); return; }
             navigator.geolocation.getCurrentPosition((pos) => {
@@ -1445,15 +1354,18 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                 
                 if(window.map) window.map.setView([latitude, longitude], 17); 
                 
-                // IL CONTROLLO CHE IMPEDISCE DI CREARE I FANTASMI SU FIREBASE
-                if(window.myTeamId && window.myTeamId.trim() !== "") {
-                    db.ref(`anagrafica_squadre/${window.myTeamId.trim()}`).update({ lat: latitude.toFixed(6), lng: longitude.toFixed(6), ultimo_contatto: Date.now() }); 
+                // SUPER LUCCHETTO GLOBALE SUL GPS
+                if(window.myTeamId && String(window.myTeamId).trim() !== "" && window.superLucchettoAperto) {
+                    db.ref(`anagrafica_squadre/${String(window.myTeamId).trim()}`).update({ lat: latitude.toFixed(6), lng: longitude.toFixed(6), ultimo_contatto: Date.now() }); 
                     if(typeof window.showGpsPing === 'function') window.showGpsPing();
                 }
             }, null, { enableHighAccuracy: true });
         };
+
+        window.centraMappaSuTarget = () => { if(window.markerTarget && window.map) window.map.setView(window.markerTarget.getLatLng(), 17); };
+
         // ==========================================
-        // 9. GESTIONE SPECIALITÀ E PATENTI (POPUP)
+        // 10. GESTIONE SPECIALITÀ E PATENTI (POPUP)
         // ==========================================
         window.apriPannelloSpecialita = () => {
             if(!window.myVolId) return;
@@ -1478,7 +1390,6 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                 if(tutteLeSpecs.length > 0) {
                     html += '<div class="text-[9px] text-blue-400 font-black uppercase tracking-widest mb-1 mt-4">🎖️ Corsi e Specialità</div>';
                     tutteLeSpecs.forEach((s, idx) => {
-                        // Il gestionale master potrebbe averle salvate come 'specializzazioni' o 'corsi'
                         let nodeName = vol.corsi ? 'corsi' : (vol.specializzazioni ? 'specializzazioni' : 'spec');
                         html += `<div class="bg-slate-800 p-2.5 rounded-lg border border-blue-500/30 mb-1.5 flex justify-between items-center shadow-inner"><span class="text-[11px] text-blue-300 font-bold uppercase">${s}</span><button onclick="window.rimuoviSpec('${nodeName}', ${idx})" class="text-red-500 px-2 font-black text-lg active:scale-95">✖</button></div>`;
                     });
@@ -1537,9 +1448,7 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                         
                         if(!vol[nodeName]) vol[nodeName] = [];
                         
-                        // Formatta: NOME (GG/MM/AAAA)
                         let stringaFinale = data ? `${nome} (${data.split('-').reverse().join('/')})` : nome;
-
                         vol[nodeName].push(stringaFinale);
                         
                         db.ref(`impostazioni/rubrica_volontari/${window.myVolId}/${nodeName}`).set(vol[nodeName])
@@ -1568,6 +1477,106 @@ let badgeTaglia = valoreTaglia ? `<span class="text-[10px] bg-purple-900/40 text
                 }
             });
         };
+
+        // ==========================================
+        // 11. 🛡️ SISTEMA DI ATTIVAZIONE LICENZE JOK ART 
+        // ==========================================
+        (function() {
+            const URL_API_LICENZE = "https://www.jokart.it/sotauth/api.php"; 
+
+            async function inizializzaControlloLicenza() {
+                let codiceSalvato = localStorage.getItem('sot_license_key');
+                let emailSalvata = localStorage.getItem('sot_license_email');
+
+                if (!codiceSalvato || !emailSalvata) {
+                    richiediAttivazioneDoppia();
+                } else {
+                    try {
+                        const res = await fetch(`${URL_API_LICENZE}?code=${codiceSalvato}&email=${emailSalvata}`);
+                        const data = await res.json();
+                        
+                        if (!data.valido) {
+                            localStorage.removeItem('sot_license_key');
+                            localStorage.removeItem('sot_license_email');
+                            localStorage.removeItem('sot_license_type');
+                            Swal.fire({
+                                icon: 'error', title: 'ACCESSO NEGATO', text: data.errore, background: '#0f172a', color: '#fff', confirmButtonColor: '#3b82f6', allowOutsideClick: false
+                            }).then(() => richiediAttivazioneDoppia());
+                        } else {
+                            localStorage.setItem('sot_license_type', data.tipo_licenza || 'STANDARD');
+                        }
+                    } catch (e) {
+                        // OFFLINE - Passa in silenzio se l'app è in zona non coperta
+                    }
+                }
+            }
+
+            function richiediAttivazioneDoppia() {
+                if(!document.body) { setTimeout(richiediAttivazioneDoppia, 100); return; }
+
+                let overlay = document.createElement('div');
+                overlay.id = 'license-overlay';
+                overlay.style = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:#010409; z-index:999999; display:flex; align-items:center; justify-content:center;';
+                document.body.appendChild(overlay);
+
+                Swal.fire({
+                    title: '<div class="text-blue-500 font-black tracking-widest text-2xl mb-1">🔐 AUTENTICAZIONE S.O.T.</div>',
+                    html: `
+                        <p class="text-[11px] text-slate-400 mb-5">Inserisci i dati commerciali forniti da Jok Art per validare il dispositivo.</p>
+                        <div class="text-left space-y-3 px-4">
+                            <div>
+                                <label class="text-[9px] uppercase text-emerald-500 font-bold tracking-widest">Email di Riferimento Cliente</label>
+                                <input id="swal-email" type="email" class="swal-input !w-full !bg-[#020617] !border-slate-700 focus:!border-emerald-500 text-white text-sm" placeholder="es. info@comune.it">
+                            </div>
+                            <div>
+                                <label class="text-[9px] uppercase text-amber-500 font-bold tracking-widest">Chiave di Sicurezza (12 Cifre)</label>
+                                <input id="swal-code" type="text" maxlength="14" class="swal-input !w-full !text-center !text-lg !font-mono !tracking-widest uppercase !bg-[#020617] !border-slate-700 focus:!border-amber-500 text-white" placeholder="XXXX-XXXX-XXXX">
+                            </div>
+                        </div>
+                    `,
+                    background: '#0f172a', color: '#fff', allowOutsideClick: false, allowEscapeKey: false, showConfirmButton: true, confirmButtonText: '🚀 VALIDA E SBLOCCA', confirmButtonColor: '#2563eb',
+                    target: document.getElementById('license-overlay'),
+                    didOpen: () => {
+                        document.getElementById('swal-code').addEventListener('input', function(e) {
+                            let target = e.target; let input = target.value.replace(/[^A-Z0-9]/ig, '').toUpperCase();
+                            if(input.length > 8) { target.value = input.substring(0,4) + '-' + input.substring(4,8) + '-' + input.substring(8,12); } 
+                            else if(input.length > 4) { target.value = input.substring(0,4) + '-' + input.substring(4,8); } 
+                            else { target.value = input; }
+                        });
+                    },
+                    preConfirm: async () => {
+                        const email = document.getElementById('swal-email').value.trim().toLowerCase();
+                        const code = document.getElementById('swal-code').value.trim().toUpperCase();
+                        if (!email || !code) return Swal.showValidationMessage("Compila entrambi i campi.");
+                        
+                        Swal.showLoading();
+                        try {
+                            const res = await fetch(`${URL_API_LICENZE}?code=${code}&email=${email}`);
+                            const data = await res.json();
+                            if (data.valido) { return { code: code, email: email, scadenza: data.scadenza, tipo_licenza: data.tipo_licenza }; } 
+                            else { Swal.showValidationMessage(data.errore); return false; }
+                        } catch (e) {
+                            Swal.showValidationMessage("Errore di rete. Impossibile contattare i server Jok Art.");
+                            return false;
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        localStorage.setItem('sot_license_key', result.value.code);
+                        localStorage.setItem('sot_license_email', result.value.email);
+                        localStorage.setItem('sot_license_type', result.value.tipo_licenza || 'STANDARD');
+                        
+                        Swal.fire({
+                            icon: 'success', title: 'DISPOSITIVO AUTORIZZATO', text: `Licenza valida fino al: ${result.value.scadenza.split('-').reverse().join('/')}`, background: '#0f172a', color: '#fff', confirmButtonColor: '#10b981'
+                        }).then(() => {
+                            document.getElementById('license-overlay').remove(); 
+                        });
+                    }
+                });
+            }
+
+            setTimeout(inizializzaControlloLicenza, 100);
+        })();
     </script>
 </body>
 </html>
