@@ -426,6 +426,36 @@
     </div>
 
     <script>
+        // ==========================================
+        // 0. SCRIPT DEI PERMESSI DI SISTEMA
+        // ==========================================
+        function richiediPermessoNotifiche() {
+            if (!('Notification' in window)) {
+                console.warn("Notifiche non supportate dal browser.");
+                return;
+            }
+            if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') console.log("✅ Permesso NOTIFICHE accordato.");
+                });
+            }
+        }
+
+        let wakeLock = null;
+        const richiediWakeLock = async () => {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('✅ Wake Lock attivato.');
+                    wakeLock.addEventListener('release', () => console.log('Wake Lock rilasciato.'));
+                }
+            } catch (err) { console.warn(`Wake Lock errore: ${err.message}`); }
+        };
+
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') richiediWakeLock();
+        });
+
         // Inizializzazione Firebase
         const config = window.APP_CONFIG || {};
         let db = null;
@@ -456,9 +486,7 @@
                     if(nameEl) nameEl.innerText = b.acronimo || 'SOT SYSTEM';
 
                     document.querySelectorAll('img').forEach(img => {
-                        if(img.src.includes('SotSystemJA.png')) {
-                            img.src = window.logoMainApp;
-                        }
+                        if(img.src.includes('SotSystemJA.png')) img.src = window.logoMainApp;
                     });
                     
                     const headerLogo = document.getElementById('header-logo');
@@ -561,6 +589,10 @@ function applicaInterfacciaSquadra(nomeSquadra) {
                     applicaInterfacciaSquadra(sqId); // <-- Usa il nuovo motore
                     avviaAppTattica(); 
                     switchTab('tab-tattico', document.getElementById('btn-nav-tattico'));
+                    
+                    // CHIEDIAMO I PERMESSI ORA!
+                    richiediPermessoNotifiche();
+                    richiediWakeLock();
                 } else { 
                     document.getElementById('login-sq-name').innerText = sqId; 
                     document.getElementById('login-screen-pin').style.display = 'flex'; 
@@ -587,6 +619,10 @@ function applicaInterfacciaSquadra(nomeSquadra) {
                     switchTab('tab-tattico', document.getElementById('btn-nav-tattico'));
                     
                     window.inviaNuovo(`🚐 TERMINALE MEZZO ATTIVATO`, { stato: 'ATTESA' }); // Saluto Iniziale
+                    
+                    // CHIEDIAMO I PERMESSI ORA!
+                    richiediPermessoNotifiche();
+                    richiediWakeLock();
                 } else { Swal.fire('Errore', 'PIN Errato', 'error'); document.getElementById('pin-input').value = ''; }
             } catch(e) { Swal.fire('Errore', 'Connessione al Server Assente', 'error'); }
         };
@@ -643,6 +679,10 @@ function applicaInterfacciaSquadra(nomeSquadra) {
                         
                         avviaAppTattica();
                         caricaEventiEDotazioni();
+                        
+                        // CHIEDIAMO I PERMESSI ORA CHE È LOGGATO!
+                        richiediPermessoNotifiche();
+                        richiediWakeLock();
                     });
                 } else {
                     document.getElementById('loading-screen').style.display = 'none';
@@ -655,7 +695,13 @@ function applicaInterfacciaSquadra(nomeSquadra) {
             const e = document.getElementById('login-email').value.trim(); const p = document.getElementById('login-password').value;
             if(!e || !p) { Swal.fire('Attenzione', 'Inserisci Email e Password', 'warning'); return; }
             Swal.fire({ title: 'Accesso...', background: '#0f172a', color: '#fff', didOpen: () => Swal.showLoading() });
-            auth.signInWithEmailAndPassword(e, p).then(()=> Swal.close()).catch(err => Swal.fire({icon:'error', title:'Errore', text:'Credenziali errate', background: '#0f172a', color: '#fff'}));
+            auth.signInWithEmailAndPassword(e, p)
+            .then(()=> {
+                Swal.close();
+                // Anche qui, subito dopo un click manuale
+                richiediPermessoNotifiche();
+                richiediWakeLock();
+            }).catch(err => Swal.fire({icon:'error', title:'Errore', text:'Credenziali errate', background: '#0f172a', color: '#fff'}));
         };
 
         window.cambiaPasswordOperatore = () => {
@@ -894,6 +940,9 @@ function applicaInterfacciaSquadra(nomeSquadra) {
                         window.inviaNuovo(`🙋‍♂️ OPERATORE COLLEGATO ALLA SQUADRA`, { stato: 'ATTESA' });
                         Swal.fire({icon:'success', title:'Collegato a ' + window.myTeamId, background:'#0f172a', color:'#fff', timer: 2000, showConfirmButton: false});
                         aggiornaStatoBloccoTattico(); 
+                        
+                        // Anche dopo essersi uniti a una squadra
+                        richiediPermessoNotifiche();
                     } else { Swal.fire({icon:'error', title:'PIN Errato', text:'Il PIN Operativo non è corretto.', background:'#0f172a', color:'#fff'}); }
                 }
             });
